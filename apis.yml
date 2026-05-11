@@ -1,0 +1,91 @@
+aid: jumpcloud
+name: JumpCloud
+description: >-
+  JumpCloud is an open directory platform that unifies identity, access, and
+  device management across users, devices, networks, and SaaS applications.
+  Its cloud directory supports SSO, MFA, device management (MDM), conditional
+  access policies, RADIUS, LDAP, and HR system integration. JumpCloud's REST
+  APIs (V1 and V2) provide programmatic access to users, groups, systems,
+  policies, applications, and directory insights for IT automation.
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Identity
+  - Directory Services
+  - SSO
+  - MFA
+  - Device Management
+  - MDM
+  - IT Operations
+  - Zero Trust
+url: https://raw.githubusercontent.com/api-evangelist/jumpcloud/refs/heads/main/apis.yml
+created: '2026-05-11'
+modified: '2026-05-11'
+specificationVersion: '0.19'
+apis:
+  - aid: jumpcloud:v1-api
+    name: JumpCloud API V1
+    description: >-
+      REST API for managing core directory resources including users, systems,
+      system users, tags, commands, policies, and SSO applications. Uses API
+      key authentication via the x-api-key header.
+    humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+    baseURL: https://console.jumpcloud.com/api
+    tags:
+      - Identity
+      - Directory Services
+      - Users
+      - Systems
+      - Policies
+    properties:
+      - type: Documentation
+        url: https://docs.jumpcloud.com/api/1.0/index.html
+  - aid: jumpcloud:v2-api
+    name: JumpCloud API V2
+    description: >-
+      REST API V2 for managing groups, group memberships, associations,
+      directory insights, system insights, organizations, and modern policies.
+      Uses API key authentication via the x-api-key header.
+    humanURL: https://docs.jumpcloud.com/api/2.0/index.html
+    baseURL: https://console.jumpcloud.com/api/v2
+    tags:
+      - Identity
+      - Groups
+      - Associations
+      - Directory Insights
+    properties:
+      - type: Documentation
+        url: https://docs.jumpcloud.com/api/2.0/index.html
+  - aid: jumpcloud:system-context-api
+    name: JumpCloud System Context API
+    description: >-
+      API for managed systems to interact with JumpCloud on their own behalf
+      using HTTP Signatures authentication. Used for system-initiated actions
+      such as user provisioning and event reporting.
+    humanURL: https://docs.jumpcloud.com/api/systemcontext/index.html
+    baseURL: https://console.jumpcloud.com/api/systems
+    tags:
+      - Systems
+      - Agents
+      - HTTP Signatures
+    properties:
+      - type: Documentation
+        url: https://docs.jumpcloud.com/api/systemcontext/index.html
+      - type: GitHub
+        url: https://github.com/TheJumpCloud/SystemContextAPI
+common:
+  - type: Website
+    url: https://jumpcloud.com
+  - type: Documentation
+    url: https://docs.jumpcloud.com
+  - type: Support
+    url: https://jumpcloud.com/support
+  - type: Sign Up
+    url: https://console.jumpcloud.com/signup
+  - type: Pricing
+    url: https://jumpcloud.com/pricing
+  - type: GitHub Organization
+    url: https://github.com/TheJumpCloud
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
