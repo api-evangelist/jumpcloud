@@ -80,11 +80,11 @@ common:
     url: https://docs.jumpcloud.com
   - type: Support
     url: https://jumpcloud.com/support
-  - type: Sign Up
+  - type: SignUp
     url: https://console.jumpcloud.com/signup
   - type: Pricing
     url: https://jumpcloud.com/pricing
-  - type: GitHub Organization
+  - type: GitHubOrganization
     url: https://github.com/TheJumpCloud
 maintainers:
   - FN: Kin Lane
