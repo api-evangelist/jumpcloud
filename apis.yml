@@ -74,6 +74,8 @@ apis:
       - type: GitHub
         url: https://github.com/TheJumpCloud/SystemContextAPI
 common:
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/jumpcloud
   - type: Website
     url: https://jumpcloud.com
   - type: Documentation
