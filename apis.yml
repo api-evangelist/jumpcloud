@@ -88,6 +88,8 @@ common:
     url: https://jumpcloud.com/pricing
   - type: GitHubOrganization
     url: https://github.com/TheJumpCloud
+  - type: LLMsTxt
+    url: https://jumpcloud.com/llms.txt
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
