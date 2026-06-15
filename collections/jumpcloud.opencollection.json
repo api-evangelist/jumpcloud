@@ -1,0 +1,249 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "JumpCloud API V1",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Application Templates",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List SSO/SAML application templates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://console.jumpcloud.com/api/application-templates"
+          },
+          "docs": "Returns the list of pre-built application templates available for SSO/SAML integration."
+        },
+        {
+          "info": {
+            "name": "Retrieve an application template",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://console.jumpcloud.com/api/application-templates/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ]
+          },
+          "docs": "Returns a specific application template by its identifier."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Applications",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List SSO/SAML applications",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://console.jumpcloud.com/api/applications"
+          },
+          "docs": "Returns the list of configured SSO/SAML applications for the organization."
+        },
+        {
+          "info": {
+            "name": "Create an SSO/SAML application",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://console.jumpcloud.com/api/applications"
+          },
+          "docs": "Creates a new SSO/SAML application in the organization."
+        },
+        {
+          "info": {
+            "name": "Retrieve an application",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://console.jumpcloud.com/api/applications/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ]
+          },
+          "docs": "Retrieve an application"
+        },
+        {
+          "info": {
+            "name": "Update an application",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://console.jumpcloud.com/api/applications/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ]
+          },
+          "docs": "Update an application"
+        },
+        {
+          "info": {
+            "name": "Delete an application",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://console.jumpcloud.com/api/applications/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ]
+          },
+          "docs": "Delete an application"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Commands",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List commands",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://console.jumpcloud.com/api/commands"
+          },
+          "docs": "Returns the list of commands defined for the organization."
+        },
+        {
+          "info": {
+            "name": "Create a command",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://console.jumpcloud.com/api/commands"
+          },
+          "docs": "Creates a new command definition that can later be triggered on systems."
+        },
+        {
+          "info": {
+            "name": "Trigger a command",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://console.jumpcloud.com/api/command/trigger/:triggername",
+            "params": [
+              {
+                "name": "triggername",
+                "value": "",
+                "type": "path",
+                "description": "The configured trigger name of the command to execute."
+              }
+            ]
+          },
+          "docs": "Executes a command by its configured trigger name."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Command Results",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List command results",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://console.jumpcloud.com/api/commandresults"
+          },
+          "docs": "Returns the list of execution results for previously triggered commands."
+        },
+        {
+          "info": {
+            "name": "Retrieve a command result",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://console.jumpcloud.com/api/commandresults/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ]
+          },
+          "docs": "Retrieve a command result"
+        },
+        {
+          "info": {
+            "name": "Delete a command result",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://console.jumpcloud.com/api/commandresults/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ]
+          },
+          "docs": "Delete a command result"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
