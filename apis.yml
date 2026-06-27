@@ -82,13 +82,13 @@ common:
     url: https://docs.jumpcloud.com
   - type: Support
     url: https://jumpcloud.com/support
-  - type: SignUp
+  - type: Signup
     url: https://console.jumpcloud.com/signup
   - type: Pricing
     url: https://jumpcloud.com/pricing
   - type: GitHubOrganization
     url: https://github.com/TheJumpCloud
-  - type: LLMsTxt
+  - type: LlmsText
     url: https://jumpcloud.com/llms.txt
 maintainers:
   - FN: Kin Lane
