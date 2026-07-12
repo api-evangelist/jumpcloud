@@ -1,0 +1,16 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/jumpcloud-openapi.yml
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+schemes:
+- name: ApiKeyAuth
+  type: apiKey
+  in: header
+  parameter: x-api-key
+  description: JumpCloud API key from the Admin Console > API Settings.
+  sources:
+  - openapi/jumpcloud-openapi.yml

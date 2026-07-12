@@ -74,6 +74,10 @@ apis:
       - type: GitHub
         url: https://github.com/TheJumpCloud/SystemContextAPI
 common:
+  - type: DomainSecurity
+    url: security/jumpcloud-domain-security.yml
+  - type: Authentication
+    url: authentication/jumpcloud-authentication.yml
   - type: LinkedIn
     url: https://www.linkedin.com/company/jumpcloud
   - type: Website
@@ -90,6 +94,8 @@ common:
     url: https://github.com/TheJumpCloud
   - type: LlmsText
     url: https://jumpcloud.com/llms.txt
+  - url: https://jumpcloud.com/blog/feed
+    type: Blog
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
