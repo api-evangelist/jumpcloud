@@ -1,0 +1,60 @@
+openapi: 3.1.0
+info:
+  title: JumpCloud API V1 Application Templates Commands API
+  description: REST API for managing core JumpCloud directory resources including applications, application templates, commands, and command results. Authenticated via the x-api-key header obtained from the JumpCloud Admin Console (username dropdown > API Settings). Multi-tenant administrators must additionally pass an x-org-id header.
+  version: '1.0'
+  contact:
+    name: JumpCloud
+    url: https://docs.jumpcloud.com/api/1.0/index.html
+servers:
+- url: https://console.jumpcloud.com/api
+  description: JumpCloud production API
+security:
+- ApiKeyAuth: []
+tags:
+- name: Commands
+  description: Commands that can be executed across managed systems.
+paths:
+  /commands:
+    get:
+      summary: List commands
+      description: Returns the list of commands defined for the organization.
+      operationId: listCommands
+      tags:
+      - Commands
+      responses:
+        '200':
+          description: A list of commands.
+    post:
+      summary: Create a command
+      description: Creates a new command definition that can later be triggered on systems.
+      operationId: createCommand
+      tags:
+      - Commands
+      responses:
+        '201':
+          description: The created command.
+  /command/trigger/{triggername}:
+    post:
+      summary: Trigger a command
+      description: Executes a command by its configured trigger name.
+      operationId: triggerCommand
+      tags:
+      - Commands
+      parameters:
+      - name: triggername
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The configured trigger name of the command to execute.
+      responses:
+        '200':
+          description: Trigger acknowledged.
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: JumpCloud API key from the Admin Console > API Settings.

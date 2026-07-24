@@ -1,0 +1,63 @@
+openapi: 3.1.0
+info:
+  title: JumpCloud API V1 Application Templates Command Results API
+  description: REST API for managing core JumpCloud directory resources including applications, application templates, commands, and command results. Authenticated via the x-api-key header obtained from the JumpCloud Admin Console (username dropdown > API Settings). Multi-tenant administrators must additionally pass an x-org-id header.
+  version: '1.0'
+  contact:
+    name: JumpCloud
+    url: https://docs.jumpcloud.com/api/1.0/index.html
+servers:
+- url: https://console.jumpcloud.com/api
+  description: JumpCloud production API
+security:
+- ApiKeyAuth: []
+tags:
+- name: Command Results
+  description: Execution results produced by commands run against systems.
+paths:
+  /commandresults:
+    get:
+      summary: List command results
+      description: Returns the list of execution results for previously triggered commands.
+      operationId: listCommandResults
+      tags:
+      - Command Results
+      responses:
+        '200':
+          description: A list of command results.
+  /commandresults/{id}:
+    get:
+      summary: Retrieve a command result
+      operationId: getCommandResult
+      tags:
+      - Command Results
+      parameters:
+      - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: The requested command result.
+    delete:
+      summary: Delete a command result
+      operationId: deleteCommandResult
+      tags:
+      - Command Results
+      parameters:
+      - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          description: Command result deleted.
+components:
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Resource identifier.
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: JumpCloud API key from the Admin Console > API Settings.

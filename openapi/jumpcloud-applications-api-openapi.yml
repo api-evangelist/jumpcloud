@@ -1,0 +1,82 @@
+openapi: 3.1.0
+info:
+  title: JumpCloud API V1 Application Templates Applications API
+  description: REST API for managing core JumpCloud directory resources including applications, application templates, commands, and command results. Authenticated via the x-api-key header obtained from the JumpCloud Admin Console (username dropdown > API Settings). Multi-tenant administrators must additionally pass an x-org-id header.
+  version: '1.0'
+  contact:
+    name: JumpCloud
+    url: https://docs.jumpcloud.com/api/1.0/index.html
+servers:
+- url: https://console.jumpcloud.com/api
+  description: JumpCloud production API
+security:
+- ApiKeyAuth: []
+tags:
+- name: Applications
+  description: SSO/SAML applications configured in the organization.
+paths:
+  /applications:
+    get:
+      summary: List SSO/SAML applications
+      description: Returns the list of configured SSO/SAML applications for the organization.
+      operationId: listApplications
+      tags:
+      - Applications
+      responses:
+        '200':
+          description: A list of applications.
+    post:
+      summary: Create an SSO/SAML application
+      description: Creates a new SSO/SAML application in the organization.
+      operationId: createApplication
+      tags:
+      - Applications
+      responses:
+        '201':
+          description: The created application.
+  /applications/{id}:
+    get:
+      summary: Retrieve an application
+      operationId: getApplication
+      tags:
+      - Applications
+      parameters:
+      - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: The requested application.
+    put:
+      summary: Update an application
+      operationId: updateApplication
+      tags:
+      - Applications
+      parameters:
+      - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: The updated application.
+    delete:
+      summary: Delete an application
+      operationId: deleteApplication
+      tags:
+      - Applications
+      parameters:
+      - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          description: Application deleted.
+components:
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Resource identifier.
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: JumpCloud API key from the Admin Console > API Settings.
