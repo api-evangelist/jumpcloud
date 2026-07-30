@@ -8,7 +8,19 @@ description: >-
   APIs (V1 and V2) provide programmatic access to users, groups, systems,
   policies, applications, and directory insights for IT automation.
 type: Index
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/jumpcloud.png
 tags:
   - Identity
   - Directory Services
@@ -23,56 +35,93 @@ created: '2026-05-11'
 modified: '2026-05-11'
 specificationVersion: '0.19'
 apis:
-  - aid: jumpcloud:v1-api
-    name: JumpCloud API V1
-    description: >-
-      REST API for managing core directory resources including users, systems,
-      system users, tags, commands, policies, and SSO applications. Uses API
-      key authentication via the x-api-key header.
-    humanURL: https://docs.jumpcloud.com/api/1.0/index.html
-    baseURL: https://console.jumpcloud.com/api
-    tags:
-      - Identity
-      - Directory Services
-      - Users
-      - Systems
-      - Policies
-    properties:
-      - type: Documentation
-        url: https://docs.jumpcloud.com/api/1.0/index.html
-  - aid: jumpcloud:v2-api
-    name: JumpCloud API V2
-    description: >-
-      REST API V2 for managing groups, group memberships, associations,
-      directory insights, system insights, organizations, and modern policies.
-      Uses API key authentication via the x-api-key header.
-    humanURL: https://docs.jumpcloud.com/api/2.0/index.html
-    baseURL: https://console.jumpcloud.com/api/v2
-    tags:
-      - Identity
-      - Groups
-      - Associations
-      - Directory Insights
-    properties:
-      - type: Documentation
-        url: https://docs.jumpcloud.com/api/2.0/index.html
-  - aid: jumpcloud:system-context-api
-    name: JumpCloud System Context API
-    description: >-
-      API for managed systems to interact with JumpCloud on their own behalf
-      using HTTP Signatures authentication. Used for system-initiated actions
-      such as user provisioning and event reporting.
-    humanURL: https://docs.jumpcloud.com/api/systemcontext/index.html
-    baseURL: https://console.jumpcloud.com/api/systems
-    tags:
-      - Systems
-      - Agents
-      - HTTP Signatures
-    properties:
-      - type: Documentation
-        url: https://docs.jumpcloud.com/api/systemcontext/index.html
-      - type: GitHub
-        url: https://github.com/TheJumpCloud/SystemContextAPI
+- aid: jumpcloud:v1-api
+  name: JumpCloud API V1
+  description: >-
+    REST API for managing core directory resources including users, systems, system users, tags, commands,
+    policies, and SSO applications. Uses API key authentication via the x-api-key header.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Identity
+  - Directory Services
+  - Users
+  - Systems
+  - Policies
+  properties:
+  - type: Documentation
+    url: https://docs.jumpcloud.com/api/1.0/index.html
+- aid: jumpcloud:v2-api
+  name: JumpCloud API V2
+  description: >-
+    REST API V2 for managing groups, group memberships, associations, directory insights, system insights,
+    organizations, and modern policies. Uses API key authentication via the x-api-key header.
+  humanURL: https://docs.jumpcloud.com/api/2.0/index.html
+  baseURL: https://console.jumpcloud.com/api/v2
+  tags:
+  - Identity
+  - Groups
+  - Associations
+  - Directory Insights
+  properties:
+  - type: Documentation
+    url: https://docs.jumpcloud.com/api/2.0/index.html
+- aid: jumpcloud:system-context-api
+  name: JumpCloud System Context API
+  description: >-
+    API for managed systems to interact with JumpCloud on their own behalf using HTTP Signatures authentication.
+    Used for system-initiated actions such as user provisioning and event reporting.
+  humanURL: https://docs.jumpcloud.com/api/systemcontext/index.html
+  baseURL: https://console.jumpcloud.com/api/systems
+  tags:
+  - Systems
+  - Agents
+  - HTTP Signatures
+  properties:
+  - type: Documentation
+    url: https://docs.jumpcloud.com/api/systemcontext/index.html
+  - type: GitHub
+    url: https://github.com/TheJumpCloud/SystemContextAPI
+- aid: jumpcloud:jumpcloud-application-templates-api
+  name: JumpCloud Application Templates API
+  description: SSO/SAML application templates available for use.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Application Templates
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-application-templates-api-openapi.yml
+- aid: jumpcloud:jumpcloud-applications-api
+  name: JumpCloud Applications API
+  description: SSO/SAML applications configured in the organization.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Applications
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-applications-api-openapi.yml
+- aid: jumpcloud:jumpcloud-command-results-api
+  name: JumpCloud Command Results API
+  description: Execution results produced by commands run against systems.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Command Results
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-command-results-api-openapi.yml
+- aid: jumpcloud:jumpcloud-commands-api
+  name: JumpCloud Commands API
+  description: Commands that can be executed across managed systems.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Commands
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-commands-api-openapi.yml
 common:
   - type: AgenticAccess
     url: agentic-access/jumpcloud-agentic-access.yml
