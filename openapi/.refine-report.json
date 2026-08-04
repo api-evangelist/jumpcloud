@@ -1,0 +1,20 @@
+{
+  "provider": "jumpcloud",
+  "sources": [
+    "jumpcloud-application-templates-api-openapi.yml",
+    "jumpcloud-applications-api-openapi.yml",
+    "jumpcloud-command-results-api-openapi.yml",
+    "jumpcloud-commands-api-openapi.yml"
+  ],
+  "outputs": [
+    "jumpcloud-application-templates-api-openapi.yml",
+    "jumpcloud-applications-api-openapi.yml",
+    "jumpcloud-command-results-api-openapi.yml",
+    "jumpcloud-commands-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
