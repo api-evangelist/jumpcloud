@@ -1,0 +1,67 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "JumpCloud API V1 Application Templates Commands API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Commands",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List commands",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://console.jumpcloud.com/api/commands"
+          },
+          "docs": "Returns the list of commands defined for the organization."
+        },
+        {
+          "info": {
+            "name": "Create a command",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://console.jumpcloud.com/api/commands"
+          },
+          "docs": "Creates a new command definition that can later be triggered on systems."
+        },
+        {
+          "info": {
+            "name": "Trigger a command",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://console.jumpcloud.com/api/command/trigger/:triggername",
+            "params": [
+              {
+                "name": "triggername",
+                "value": "",
+                "type": "path",
+                "description": "The configured trigger name of the command to execute."
+              }
+            ]
+          },
+          "docs": "Executes a command by its configured trigger name."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

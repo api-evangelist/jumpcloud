@@ -1,0 +1,283 @@
+{
+  "item": [
+    {
+      "id": "7e4caceb-f769-4507-acb6-85f2d3a4d2b2",
+      "name": "Command Results",
+      "description": {
+        "content": "Execution results produced by commands run against systems.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "aa54e220-6a21-4abd-98d8-d099a556b1b6",
+          "name": "List command results",
+          "request": {
+            "name": "List command results",
+            "description": {
+              "content": "Returns the list of execution results for previously triggered commands.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "commandresults"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5676e3b4-68ee-4902-8c55-2e1c9405a677",
+              "name": "A list of command results.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "commandresults"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d9677ee8-362b-4f76-86e5-0cea33b2931b",
+          "name": "Retrieve a command result",
+          "request": {
+            "name": "Retrieve a command result",
+            "description": {},
+            "url": {
+              "path": [
+                "commandresults",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) Resource identifier."
+                }
+              ]
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "c7122390-e59d-4704-95f4-9fd91c9495fe",
+              "name": "The requested command result.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "commandresults",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Resource identifier."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "dd9d593f-2afd-46f2-af10-eb60cec0feb1",
+          "name": "Delete a command result",
+          "request": {
+            "name": "Delete a command result",
+            "description": {},
+            "url": {
+              "path": [
+                "commandresults",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) Resource identifier."
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "559396a1-5a6c-4776-a944-d02df5f32593",
+              "name": "Command result deleted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "commandresults",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) Resource identifier."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://console.jumpcloud.com/api",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "x-api-key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "4cfa080a-e420-438a-a554-4442d2c427fa",
+    "name": "JumpCloud API V1 Application Templates Command Results API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "REST API for managing core JumpCloud directory resources including applications, application templates, commands, and command results. Authenticated via the x-api-key header obtained from the JumpCloud Admin Console (username dropdown > API Settings). Multi-tenant administrators must additionally pass an x-org-id header.\n\nContact Support:\n Name: JumpCloud",
+      "type": "text/plain"
+    }
+  }
+}

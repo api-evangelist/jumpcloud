@@ -1,0 +1,273 @@
+{
+  "item": [
+    {
+      "id": "56a945bd-5612-4b5b-9d80-a1361736a1ef",
+      "name": "Commands",
+      "description": {
+        "content": "Commands that can be executed across managed systems.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "4eb0453c-cdae-4117-a975-b3fe4d178591",
+          "name": "List commands",
+          "request": {
+            "name": "List commands",
+            "description": {
+              "content": "Returns the list of commands defined for the organization.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "commands"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "381c0509-8c3e-4188-81e1-07b3047e185a",
+              "name": "A list of commands.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "commands"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d1d7d176-e4ad-44cd-9c99-c28a70dab27d",
+          "name": "Create a command",
+          "request": {
+            "name": "Create a command",
+            "description": {
+              "content": "Creates a new command definition that can later be triggered on systems.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "commands"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "c5f5ae87-8a55-45bb-bafa-5ba48fe6925f",
+              "name": "The created command.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "commands"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "00db1a6a-45a5-444b-ac35-4eea940827db",
+          "name": "Trigger a command",
+          "request": {
+            "name": "Trigger a command",
+            "description": {
+              "content": "Executes a command by its configured trigger name.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "command",
+                "trigger",
+                ":triggername"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "triggername",
+                  "description": "(Required) The configured trigger name of the command to execute."
+                }
+              ]
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "d119b5cc-e7d3-440e-8b7a-2eab115476b7",
+              "name": "Trigger acknowledged.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "command",
+                    "trigger",
+                    ":triggername"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "triggername",
+                      "description": "(Required) The configured trigger name of the command to execute."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://console.jumpcloud.com/api",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "x-api-key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "b7d31b50-491c-44f4-8f4f-f151bf6515fe",
+    "name": "JumpCloud API V1 Application Templates Commands API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "REST API for managing core JumpCloud directory resources including applications, application templates, commands, and command results. Authenticated via the x-api-key header obtained from the JumpCloud Admin Console (username dropdown > API Settings). Multi-tenant administrators must additionally pass an x-org-id header.\n\nContact Support:\n Name: JumpCloud",
+      "type": "text/plain"
+    }
+  }
+}

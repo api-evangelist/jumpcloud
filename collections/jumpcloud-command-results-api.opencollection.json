@@ -1,0 +1,75 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "JumpCloud API V1 Application Templates Command Results API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Command Results",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List command results",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://console.jumpcloud.com/api/commandresults"
+          },
+          "docs": "Returns the list of execution results for previously triggered commands."
+        },
+        {
+          "info": {
+            "name": "Retrieve a command result",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://console.jumpcloud.com/api/commandresults/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ]
+          },
+          "docs": "Retrieve a command result"
+        },
+        {
+          "info": {
+            "name": "Delete a command result",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://console.jumpcloud.com/api/commandresults/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ]
+          },
+          "docs": "Delete a command result"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
