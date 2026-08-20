@@ -45,6 +45,12 @@ apis:
   tags:
   - Identity
   - Directory Services
+  - User
+  - Systems
+  - Policies
+  tags_raw:
+  - Identity
+  - Directory Services
   - Users
   - Systems
   - Policies
@@ -59,6 +65,11 @@ apis:
   humanURL: https://docs.jumpcloud.com/api/2.0/index.html
   baseURL: https://console.jumpcloud.com/api/v2
   tags:
+  - Identity
+  - Group
+  - Associations
+  - Directory Insights
+  tags_raw:
   - Identity
   - Groups
   - Associations
@@ -98,6 +109,8 @@ apis:
   humanURL: https://docs.jumpcloud.com/api/1.0/index.html
   baseURL: https://console.jumpcloud.com/api
   tags:
+  - Application
+  tags_raw:
   - Applications
   properties:
   - type: OpenAPI
