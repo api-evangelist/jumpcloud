@@ -8,6 +8,18 @@ description: >-
   APIs (V1 and V2) provide programmatic access to users, groups, systems,
   policies, applications, and directory insights for IT automation.
 type: Index
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: unknown
   onboarding: self-serve
