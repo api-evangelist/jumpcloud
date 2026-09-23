@@ -1,10 +1,7 @@
 {
   "provider": "jumpcloud",
   "sources": [
-    "jumpcloud-application-templates-api-openapi.yml",
-    "jumpcloud-applications-api-openapi.yml",
-    "jumpcloud-command-results-api-openapi.yml",
-    "jumpcloud-commands-api-openapi.yml"
+    "_original/jumpcloud-openapi.yml"
   ],
   "outputs": [
     "jumpcloud-application-templates-api-openapi.yml",
@@ -15,6 +12,15 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "jumpcloud-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "jumpcloud-application-templates-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "jumpcloud-applications-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "jumpcloud-command-results-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "jumpcloud-commands-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
