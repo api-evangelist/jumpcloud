@@ -36,6 +36,10 @@ accessModel:
   generated: '2026-09-03'
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/jumpcloud.png
+x-docs-platform: redoc
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-10-03
+x-docs-hosting: github-pages
 tags:
 - Identity
 - Directory Services
@@ -46,6 +50,7 @@ tags:
 - IT Operations
 - Zero Trust
 - Identity Federation
+- Identity and Access Management
 url: https://raw.githubusercontent.com/api-evangelist/jumpcloud/refs/heads/main/apis.yml
 created: '2026-05-11'
 modified: '2026-09-16'
@@ -149,6 +154,9 @@ apis:
   - type: OpenAPI
     url: openapi/jumpcloud-commands-api-openapi.yml
 common:
+- type: CapabilityMap
+  url: capabilities/jumpcloud-capability-edges.yml
+  name: JumpCloud Business Capability Map
 - type: AgenticAccess
   url: agentic-access/jumpcloud-agentic-access.yml
 - type: DomainSecurity
