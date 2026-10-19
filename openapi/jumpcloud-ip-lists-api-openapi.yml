@@ -1,0 +1,971 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud IP Lists API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Ip Lists
+paths:
+  /iplists:
+    x-functionalities-tags:
+    - ip-lists
+    get:
+      summary: List IP Lists
+      tags:
+      - Ip Lists
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IPList'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      operationId: iplists_list
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_listCount_x-total-count'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      description: 'Retrieve all IP lists.
+
+
+        #### Sample Request
+
+        ```
+
+        curl https://console.jumpcloud.com/api/v2/iplists \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - authn
+      - authn.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/iplists?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --header 'x-total-count: SOME_INTEGER_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/iplists\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-total-count\": \"SOME_INTEGER_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-total-count", "SOME_INTEGER_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/iplists?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      summary: Create IP List
+      operationId: iplists_post
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPList'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      description: 'Create an IP list.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/iplists \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "name": "Sample IP List",
+
+        "ips": [
+
+        "192.168.10.12",
+
+        "192.168.10.20 - 192.168.10.30",
+
+        "123.225.10.0/32"
+
+        ]
+
+        }''
+
+        ```'
+      tags:
+      - Ip Lists
+      security:
+      - x-api-key: []
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        $ref: '#/components/requestBodies/IPListRequest'
+      x-scopes:
+      - authn
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/iplists \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"name\":\"string\",\"description\":\"string\",\"ips\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/iplists\"\n\npayload = {\n    \"name\": \"string\",\n    \"description\": \"string\",\n    \"ips\": [\"string\"]\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/iplists'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"name":"string","description":"string","ips":["string"]}'''
+  /iplists/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - ip-lists
+    get:
+      summary: Get an IP list
+      tags:
+      - Ip Lists
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPList'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      operationId: iplists_get
+      description: 'Return a specific IP list.
+
+
+        #### Sample Request
+
+        ```
+
+        curl https://console.jumpcloud.com/api/v2/iplists/{id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      security:
+      - x-api-key: []
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      x-scopes:
+      - authn
+      - authn.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/iplists/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/iplists/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/iplists/{id}'' -Method GET -Headers $headers'
+    patch:
+      summary: Update an IP list
+      tags:
+      - Ip Lists
+      operationId: iplists_patch
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPList'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      description: 'Update a specific IP list.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X PATCH https://console.jumpcloud.com/api/v2/iplists/{id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{"name": "New IP List Name"}''
+
+        ```'
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        $ref: '#/components/requestBodies/IPListRequest'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - authn
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PATCH \\\n  --url https://console.jumpcloud.com/api/v2/iplists/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"name\":\"string\",\"description\":\"string\",\"ips\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/iplists/{id}\"\n\npayload = {\n    \"name\": \"string\",\n    \"description\": \"string\",\n    \"ips\": [\"string\"]\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PATCH\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/iplists/{id}'' -Method PATCH -Headers $headers -ContentType ''application/json'' -Body ''{"name":"string","description":"string","ips":["string"]}'''
+    put:
+      summary: Replace an IP list
+      operationId: iplists_put
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPList'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      description: 'Replace a specific IP list.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X PUT https://console.jumpcloud.com/api/v2/iplists/{id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "name": "Sample IP List",
+
+        "ips": [
+
+        "192.168.10.10"
+
+        ]
+
+        }''
+
+        ```'
+      security:
+      - x-api-key: []
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        $ref: '#/components/requestBodies/IPListRequest'
+      tags:
+      - Ip Lists
+      x-scopes:
+      - authn
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/iplists/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"name\":\"string\",\"description\":\"string\",\"ips\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/iplists/{id}\"\n\npayload = {\n    \"name\": \"string\",\n    \"description\": \"string\",\n    \"ips\": [\"string\"]\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/iplists/{id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"name":"string","description":"string","ips":["string"]}'''
+    delete:
+      summary: Delete an IP list
+      operationId: iplists_delete
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPList'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      tags:
+      - Ip Lists
+      description: 'Delete a specific IP list.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X DELETE https://console.jumpcloud.com/api/v2/iplists/{id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      x-scopes:
+      - authn
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/iplists/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/iplists/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"DELETE\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/iplists/{id}'' -Method DELETE -Headers $headers'
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      x-examples: {}
+      description: ''
+      properties:
+        code:
+          format: int32
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        status:
+          type: string
+          description: HTTP status description
+    ErrorDetails:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          details:
+            description: 'Describes a list of objects with more detailed information of the given error. Each detail schema is according to one of the messages defined in Google''s API: https://github.com/googleapis/googleapis/blob/master/google/rpc/error_details.proto'
+            type: array
+            items:
+              type: object
+              additionalProperties: true
+              description: Object according to Google's API.
+    IPList:
+      title: IPList
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        ips:
+          type: array
+          items:
+            type: string
+        managedBy:
+          type: string
+          description: IP list ownership.
+          readOnly: true
+          enum:
+          - ORGANIZATION
+          - ENTERPRISE
+    IPListRequest:
+      title: IPListRequest
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        ips:
+          type: array
+          items:
+            type: string
+  parameters:
+    trait_multiTenantRequestHeaders_x-org-id:
+      description: Organization identifier that can be obtained from console settings.
+      in: header
+      name: x-org-id
+      schema:
+        type: string
+    trait_filter_filter:
+      description: 'A filter to apply to the query.
+
+
+        **Filter structure**: `<field>:<operator>:<value>`.
+
+
+        **field** = Populate with a valid field from an endpoint response.
+
+
+        **operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.
+
+        _Note: v1 operators differ from v2 operators._
+
+
+        **value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.
+
+
+        **EX:** `GET /api/v2/groups?filter=name:eq:Test+Group`'
+      in: query
+      name: filter
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_skip_skip:
+      description: The offset into the records to return.
+      in: query
+      name: skip
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    trait_sort_sort:
+      description: 'The comma separated fields used to sort the collection.
+
+        Default sort is ascending, prefix with `-` to sort descending.
+
+        '
+      in: query
+      name: sort
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_listCount_x-total-count:
+      in: header
+      name: x-total-count
+      schema:
+        type: integer
+    trait_limit_limit:
+      description: The number of records to return at once. Limited to 100.
+      in: query
+      name: limit
+      schema:
+        type: integer
+        default: 10
+  responses:
+    trait_standardErrors_404:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+    trait_standardErrors_409:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_401:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_403:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  requestBodies:
+    IPListRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IPListRequest'
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

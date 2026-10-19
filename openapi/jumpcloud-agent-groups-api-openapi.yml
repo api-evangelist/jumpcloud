@@ -1,0 +1,980 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Agent Groups API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Agent Groups
+  description: 'Use the Agent Groups API to create and manage agent groups in your organization. Agent groups organize agents and provide a reusable way to assign applications to multiple agents.
+
+
+    Add or remove agents from a group, manage the group''s application assignments, and retrieve the agents and applications assigned to the group. Agents receive access to applications assigned to their groups.'
+paths:
+  /agentgroups:
+    x-functionalities-tags:
+    - agent-groups
+    get:
+      description: Retrieves a paginated list of agent groups in your organization.
+      operationId: groups_agent_list
+      parameters:
+      - $ref: '#/components/parameters/trait_fields_fields'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AgentGroup'
+                type: array
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      summary: List agent groups
+      tags:
+      - Agent Groups
+      x-scopes:
+      - groups
+      - groups.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/agentgroups?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/agentgroups\"\n\nquerystring = {\"fields\":\"SOME_ARRAY_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/agentgroups?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      description: Creates a new agent group in your organization.
+      operationId: groups_agent_post
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        $ref: '#/components/requestBodies/AgentGroupData'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentGroup'
+      security:
+      - x-api-key: []
+      summary: Create an agent group
+      tags:
+      - Agent Groups
+      x-scopes:
+      - groups
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/agentgroups \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"attributes\":{},\"description\":\"string\",\"name\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/agentgroups\"\n\npayload = {\n    \"attributes\": {},\n    \"description\": \"string\",\n    \"name\": \"string\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/agentgroups'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"attributes":{},"description":"string","name":"string"}'''
+  /agentgroups/{group_id}/associations:
+    parameters:
+    - description: Agent group ID (24-character hexadecimal string).
+      in: path
+      name: group_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - agent-groups
+    - agent-associations
+    get:
+      description: Retrieves a list of all applications assigned to an agent group in your organization.
+      operationId: graph_agentGroupAssociationsList
+      parameters:
+      - $ref: '#/components/parameters/trait_graphTargetsAgentGroup_targets'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphConnection'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List an agent group's assigned applications
+      tags:
+      - Agent Groups
+      x-scopes:
+      - associations.groups
+      - associations.groups.readonly
+      - associations
+      - associations.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/associations?targets=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/associations\"\n\nquerystring = {\"targets\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/associations?targets=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+    post:
+      description: Add or remove application assignments for an agent group in your organization.
+      operationId: graph_agentGroupAssociationsPost
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphOperation-AgentGroup'
+      responses:
+        '204':
+          description: OK
+      security:
+      - x-api-key: []
+      summary: Manage an agent group's assigned applications
+      tags:
+      - Agent Groups
+      x-scopes:
+      - associations.groups
+      - associations
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/associations \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"id\":\"string\",\"op\":\"add\",\"type\":\"application\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/associations\"\n\npayload = {\n    \"id\": \"string\",\n    \"op\": \"add\",\n    \"type\": \"application\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/associations'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"id":"string","op":"add","type":"application"}'''
+  /agentgroups/{group_id}/members:
+    parameters:
+    - description: Agent group ID (24-character hexadecimal string).
+      in: path
+      name: group_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - agent-groups
+    - agent-members
+    get:
+      description: Retrieves agents directly assigned to an agent group.
+      operationId: graph_agentGroupMembersList
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphConnection'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the members of an agent group
+      tags:
+      - Agent Groups
+      x-scopes:
+      - agents
+      - agents.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/members?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/members\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/members?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+    post:
+      description: Add or remove agents from an agent group in your organization.
+      operationId: graph_agentGroupMembersPost
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphOperation-AgentGroup-Member'
+      responses:
+        '204':
+          description: OK
+      security:
+      - x-api-key: []
+      summary: Manage the members of an agent group
+      tags:
+      - Agent Groups
+      x-scopes:
+      - groups
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/members \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"id\":\"string\",\"op\":\"add\",\"type\":\"agent\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/members\"\n\npayload = {\n    \"id\": \"string\",\n    \"op\": \"add\",\n    \"type\": \"agent\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/agentgroups/{group_id}/members'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"id":"string","op":"add","type":"agent"}'''
+  /agentgroups/{group_id}:
+    parameters:
+    - description: Agent group ID (24-character hexadecimal string).
+      in: path
+      name: group_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - agent-groups
+    delete:
+      description: Permanently deletes an agent group.
+      operationId: groups_agent_delete
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentGroup'
+      security:
+      - x-api-key: []
+      summary: Delete an agent group
+      tags:
+      - Agent Groups
+      x-scopes:
+      - groups
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/agentgroups/{group_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/agentgroups/{group_id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"DELETE\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/agentgroups/{group_id}'' -Method DELETE -Headers $headers'
+    get:
+      description: Retrieves an agent group in your organization.
+      operationId: groups_agent_get
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentGroup'
+      security:
+      - x-api-key: []
+      summary: Retrieve an agent group
+      tags:
+      - Agent Groups
+      x-scopes:
+      - groups
+      - groups.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/agentgroups/{group_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/agentgroups/{group_id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/agentgroups/{group_id}'' -Method GET -Headers $headers'
+    patch:
+      description: Updates an agent group. Omitted fields are left unchanged.
+      operationId: groups_agent_patch
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        $ref: '#/components/requestBodies/AgentGroupData'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentGroup'
+      security:
+      - x-api-key: []
+      summary: Update an agent group
+      tags:
+      - Agent Groups
+      x-scopes:
+      - groups
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PATCH \\\n  --url https://console.jumpcloud.com/api/v2/agentgroups/{group_id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"attributes\":{},\"description\":\"string\",\"name\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/agentgroups/{group_id}\"\n\npayload = {\n    \"attributes\": {},\n    \"description\": \"string\",\n    \"name\": \"string\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PATCH\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/agentgroups/{group_id}'' -Method PATCH -Headers $headers -ContentType ''application/json'' -Body ''{"attributes":{},"description":"string","name":"string"}'''
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      x-examples: {}
+      description: ''
+      properties:
+        code:
+          format: int32
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        status:
+          type: string
+          description: HTTP status description
+    GraphObject:
+      properties:
+        attributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        id:
+          description: The ObjectID of the graph object.
+          type: string
+        type:
+          description: The type of graph object.
+          type: string
+      required:
+      - type
+      - id
+      title: GraphObject
+      type: object
+    GraphAttributes:
+      additionalProperties: true
+      description: The graph attributes.
+      title: GraphAttributes
+      type:
+      - object
+      - 'null'
+    AgentGroupData:
+      properties:
+        attributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        description:
+          description: Description of the agent group.
+          type: string
+        name:
+          description: Display name of the agent group.
+          type: string
+      required:
+      - name
+      title: AgentGroupData
+      type: object
+    GraphOperation:
+      properties:
+        id:
+          description: The ObjectID of graph object being added or removed as an association.
+          type: string
+        op:
+          description: How to modify the graph connection.
+          enum:
+          - add
+          - remove
+          - update
+          type: string
+      required:
+      - id
+      - op
+      title: GraphOperation
+      type: object
+    AgentGroup:
+      properties:
+        attributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        description:
+          description: Description of the agent group.
+          type: string
+        id:
+          description: Agent group ID (24-character hexadecimal string).
+          type: string
+        name:
+          description: Display name of the agent group. Can be used in the `filter` query parameter when listing agent groups.
+          type: string
+        organizationObjectId:
+          description: ID of the organization that owns the agent group (24-character hexadecimal string).
+          type:
+          - string
+          - 'null'
+        type:
+          description: The type of the group; always `agent_group` for an agent group.
+          enum:
+          - agent_group
+          type: string
+      title: AgentGroup
+      type: object
+    GraphConnection:
+      description: Represents an edge between two graph objects. From can be omitted if it is clear from context.
+      properties:
+        attributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        from:
+          $ref: '#/components/schemas/GraphObject'
+        to:
+          $ref: '#/components/schemas/GraphObject'
+      required:
+      - to
+      title: GraphConnection
+      type: object
+    GraphOperation-AgentGroup-Member:
+      allOf:
+      - $ref: '#/components/schemas/GraphOperation'
+      - properties:
+          type:
+            description: The member type. The only supported value is `agent`.
+            enum:
+            - agent
+            type: string
+        required:
+        - type
+      title: GraphOperation (AgentGroup-Member)
+      type: object
+    GraphOperation-AgentGroup:
+      allOf:
+      - $ref: '#/components/schemas/GraphOperation'
+      - properties:
+          type:
+            description: Targets which an "agent_group" can be associated to. The only supported value is `application`.
+            enum:
+            - application
+            type: string
+        required:
+        - type
+      title: GraphOperation (AgentGroup)
+      type: object
+  parameters:
+    trait_multiTenantRequestHeaders_x-org-id:
+      description: Organization identifier that can be obtained from console settings.
+      in: header
+      name: x-org-id
+      schema:
+        type: string
+    trait_filter_filter:
+      description: 'A filter to apply to the query.
+
+
+        **Filter structure**: `<field>:<operator>:<value>`.
+
+
+        **field** = Populate with a valid field from an endpoint response.
+
+
+        **operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.
+
+        _Note: v1 operators differ from v2 operators._
+
+
+        **value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.
+
+
+        **EX:** `GET /api/v2/groups?filter=name:eq:Test+Group`'
+      in: query
+      name: filter
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_skip_skip:
+      description: The offset into the records to return.
+      in: query
+      name: skip
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    trait_sort_sort:
+      description: 'The comma separated fields used to sort the collection.
+
+        Default sort is ascending, prefix with `-` to sort descending.
+
+        '
+      in: query
+      name: sort
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_graphTargetsAgentGroup_targets:
+      name: targets
+      description: Targets which an "agent_group" can be associated to. The only supported value is `application`.
+      in: query
+      required: true
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          enum:
+          - application
+          type: string
+    trait_limit_limit:
+      description: The number of records to return at once. Limited to 100.
+      in: query
+      name: limit
+      schema:
+        type: integer
+        default: 10
+    trait_fields_fields:
+      description: 'The comma separated fields included in the returned records.
+
+        If omitted, the default list of fields will be returned.
+
+        '
+      in: query
+      name: fields
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+  requestBodies:
+    AgentGroupData:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AgentGroupData'
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

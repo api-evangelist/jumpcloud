@@ -1,0 +1,2527 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Mdm API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: mdm
+paths:
+  /applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lostmode:
+    post:
+      summary: Lost Mode
+      description: This endpoint allows you to control the lost mode of a device
+      operationId: Devices_LostMode
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.apple_mdm.CommandResponse'
+        '204':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: deviceObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                disableLostMode:
+                  $ref: '#/components/schemas/jumpcloud.apple_mdm.DisableLostMode'
+                enableLostMode:
+                  $ref: '#/components/schemas/jumpcloud.apple_mdm.EnableLostMode'
+        required: true
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lostmode \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"disableLostMode\":{},\"enableLostMode\":{\"footnote\":\"string\",\"message\":\"string\",\"phoneNumber\":\"string\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lostmode\"\n\npayload = {\n    \"disableLostMode\": {},\n    \"enableLostMode\": {\n        \"footnote\": \"string\",\n        \"message\": \"string\",\n        \"phoneNumber\": \"string\"\n    }\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lostmode'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"disableLostMode":{},"enableLostMode":{"footnote":"string","message":"string","phoneNumber":"string"}}'''
+  /applemdms/{organizationObjectId}/account-driven-service-discovery:
+    get:
+      summary: ADUE Configuration
+      description: This endpoint provides Redirect URL for Account Driven Enrollment Configuration
+      operationId: EnrollmentProfiles_GetAdueRedirect
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.apple_mdm.EnrollmentProfilesGetRedirectResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: organizationObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - mdm
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{organizationObjectId}/account-driven-service-discovery"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/{organizationObjectId}/account-driven-service-discovery"
+
+
+          response = requests.request("GET", url)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{organizationObjectId}/account-driven-service-discovery'' -Method GET '
+  /applemdms/{organizationObjectId}/account-driven-service-discovery/config:
+    get:
+      summary: ADUE Configuration
+      description: This endpoint provides JSON Configuration for Account Driven Enrollment Configuration
+      operationId: EnrollmentProfiles_GetAdueConfig
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.apple_mdm.EnrollmentProfilesGetAdueConfigResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: organizationObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - mdm
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{organizationObjectId}/account-driven-service-discovery/config"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/{organizationObjectId}/account-driven-service-discovery/config"
+
+
+          response = requests.request("GET", url)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{organizationObjectId}/account-driven-service-discovery/config'' -Method GET '
+  /applemdms/{deviceManagerObjectId}/abm_devices:
+    get:
+      summary: ABM Devices List
+      description: 'This endpoint lists the abm devices for the given device manager.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/v2/applemdms/{device_manager_object_id}/abm_devices \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}''
+
+        ```
+
+
+        Note: The `limit` maximum is 100 Abm device Items in a single response.'
+      operationId: DeviceManagers_ListABMDevices
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: limit
+        description: 'The number of resources to return at once.
+
+          If the number of resources returned is less than `limit` there are no more resources to fetch.
+
+          If the number of resources returned is equal to limit there may be more resources to fetch. Increment `skip` by `limit` to get the next set of resources.'
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: sort
+        description: 'An optional comma separated field names used to sort the collection.
+
+          Default sort is ascending, prefix with `-` to sort descending.'
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      - name: filter
+        description: "A filter to apply to the query.\n\n\t**Filter structure**: `<field>:<operator>:<value>`.\n\n\t**field** = Populate with a valid field from an endpoint response.\n\n\t**operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.\n\n\t**value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.\n\n\t**Example** `GET /api/v2/groups?filter=name:eq:Test+Group`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/abm_devices?skip=SOME_STRING_VALUE&limit=SOME_STRING_VALUE&sort=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/abm_devices"
+
+
+          querystring = {"skip":"SOME_STRING_VALUE","limit":"SOME_STRING_VALUE","sort":"SOME_ARRAY_VALUE","filter":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/abm_devices?skip=SOME_STRING_VALUE&limit=SOME_STRING_VALUE&sort=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /applemdms/{deviceObjectId}/background_tasks:
+    get:
+      summary: Background Tasks List
+      description: This endpoint lists the background tasks for the given device.
+      operationId: BackgroundTasks_List
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: queryParameters.limit
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: queryParameters.skip
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: queryParameters.fields
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applemdms/{deviceObjectId}/background_tasks?queryParameters.limit=SOME_STRING_VALUE&queryParameters.skip=SOME_STRING_VALUE&queryParameters.fields=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/{deviceObjectId}/background_tasks"
+
+
+          querystring = {"queryParameters.limit":"SOME_STRING_VALUE","queryParameters.skip":"SOME_STRING_VALUE","queryParameters.fields":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceObjectId}/background_tasks?queryParameters.limit=SOME_STRING_VALUE&queryParameters.skip=SOME_STRING_VALUE&queryParameters.fields=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /applemdms/{deviceManagerObjectId}/service-discovery-url:
+    post:
+      summary: ADUE
+      description: This endpoint updates the service discovery url for the mdm server, This will be used in ADUE
+      operationId: EnrollmentProfiles_UpdateServiceDiscoveryURL
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      requestBody:
+        $ref: '#/components/requestBodies/EnrollmentProfiles_UpdateServiceDiscoveryURLBody'
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/service-discovery-url \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/service-discovery-url\"\n\npayload = {}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/service-discovery-url'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{}'''
+    delete:
+      summary: ADUE
+      description: This endpoint deletes the service discovery url for the mdm server, This will be used in ADUE
+      operationId: EnrollmentProfiles_DeleteServiceDiscoveryURL
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/service-discovery-url \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/service-discovery-url"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/service-discovery-url'' -Method DELETE -Headers $headers'
+  /applemdms/{deviceManagerObjectId}/validate-service-discovery-url:
+    get:
+      summary: ADUE
+      description: This endpoint validates the service discovery url for the mdm server, This will be used in ADUE
+      operationId: EnrollmentProfiles_ValidateServiceDiscoveryURL
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/validate-service-discovery-url \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/validate-service-discovery-url"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/validate-service-discovery-url'' -Method GET -Headers $headers'
+  /applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/getrecoverylockconfig:
+    get:
+      summary: Get Recovery Lock Configuration
+      description: This endpoint retrieves the current Recovery Lock configuration settings for a specified device.
+      operationId: Devices_GetRecoveryLockConfig
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: deviceObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/getrecoverylockconfig?organizationObjectId=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/getrecoverylockconfig"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/getrecoverylockconfig?organizationObjectId=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+  /applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/getrecoverylockpassword:
+    get:
+      summary: Get Recovery Lock Password
+      description: This endpoint retrieves the plaintext Recovery Lock password for a specified device.
+      operationId: Devices_GetRecoveryLockPassword
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: deviceObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/getrecoverylockpassword?organizationObjectId=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/getrecoverylockpassword"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/getrecoverylockpassword?organizationObjectId=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+  /applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockpin:
+    get:
+      summary: Get Device Lock PIN
+      description: This endpoint retrieves the decrypted device lock PIN when the device is locked.
+      operationId: Devices_GetDeviceLockPin
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: deviceObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockpin?organizationObjectId=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockpin"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockpin?organizationObjectId=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+  /applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockstate:
+    get:
+      summary: Get Device Lock State
+      description: This endpoint retrieves the derived device lock state for a specified macOS device.
+      operationId: Devices_GetDeviceLockState
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: deviceObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockstate?organizationObjectId=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockstate"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockstate?organizationObjectId=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+  /applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockwithgeneratedpin:
+    post:
+      summary: Device Lock With Generated Pin
+      description: This endpoint locks a macOS device with an auto-generated PIN and optionally displays a message and phone number on the lock screen.
+      operationId: Devices_DeviceLockWithGeneratedPin
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.apple_mdm.CommandResponse'
+        '204':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: deviceObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                organizationObjectId:
+                  type: string
+                  format: byte
+                phoneNumber:
+                  type: string
+        required: true
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockwithgeneratedpin \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"message\":\"string\",\"organizationObjectId\":\"string\",\"phoneNumber\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockwithgeneratedpin\"\n\npayload = {\n    \"message\": \"string\",\n    \"organizationObjectId\": \"string\",\n    \"phoneNumber\": \"string\"\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/devices/{deviceObjectId}/lockwithgeneratedpin'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"message":"string","organizationObjectId":"string","phoneNumber":"string"}'''
+  /applemdms/{deviceManagerObjectId}/ade_tokens:
+    post:
+      summary: Create ADE Token
+      description: 'Upload an encrypted Apple Business Manager server token for the given device manager.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/v2/applemdms/{device_manager_object_id}/ade_tokens \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}'' \
+
+        -d ''{"encrypted_server_token":"..."}''
+
+        ```'
+      operationId: ADETokens_CreateADEToken
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: deviceManagerObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      requestBody:
+        $ref: '#/components/requestBodies/ADETokens_CreateADETokenBody'
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/ade_tokens \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"encryptedServerToken\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/ade_tokens\"\n\npayload = {\"encryptedServerToken\": \"string\"}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{deviceManagerObjectId}/ade_tokens'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"encryptedServerToken":"string"}'''
+  /applemdms/ade_tokens:
+    get:
+      summary: List ADE Tokens
+      description: 'List ADE tokens visible to the calling organization(s).
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/v2/applemdms/ade_tokens \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}''
+
+        ```'
+      operationId: ADETokens_ListADETokens
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: limit
+        description: 'The number of resources to return at once.
+
+          If the number of resources returned is less than `limit` there are no more resources to fetch.
+
+          If the number of resources returned is equal to limit there may be more resources to fetch. Increment `skip` by `limit` to get the next set of resources.'
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: sort
+        description: 'An optional comma separated field names used to sort the collection.
+
+          Default sort is ascending, prefix with `-` to sort descending.'
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      - name: filter
+        description: "A filter to apply to the query.\n\n\t**Filter structure**: `<field>:<operator>:<value>`.\n\n\t**field** = Populate with a valid field from an endpoint response.\n\n\t**operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.\n\n\t**value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.\n\n\t**Example** `GET /api/v2/groups?filter=name:eq:Test+Group`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applemdms/ade_tokens?skip=SOME_STRING_VALUE&limit=SOME_STRING_VALUE&sort=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/ade_tokens"
+
+
+          querystring = {"skip":"SOME_STRING_VALUE","limit":"SOME_STRING_VALUE","sort":"SOME_ARRAY_VALUE","filter":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/ade_tokens?skip=SOME_STRING_VALUE&limit=SOME_STRING_VALUE&sort=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /applemdms/ade_tokens/{objectId}:
+    get:
+      summary: Get ADE Token
+      description: 'Get metadata for a single ADE token.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/v2/applemdms/ade_tokens/{object_id} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}''
+
+        ```'
+      operationId: ADETokens_GetADEToken
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: objectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{objectId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{objectId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{objectId}'' -Method GET -Headers $headers'
+    patch:
+      summary: Update ADE Token
+      description: 'Renew or update an encrypted Apple Business Manager server token for an existing ADE token.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X PATCH https://console.jumpcloud.com/v2/applemdms/ade_tokens/{object_id} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}'' \
+
+        -d ''{"encrypted_server_token":"..."}''
+
+        ```'
+      operationId: ADETokens_UpdateADEToken
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: objectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      requestBody:
+        $ref: '#/components/requestBodies/ADETokens_CreateADETokenBody'
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PATCH \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{objectId} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"encryptedServerToken\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{objectId}\"\n\npayload = {\"encryptedServerToken\": \"string\"}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PATCH\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{objectId}'' -Method PATCH -Headers $headers -ContentType ''application/json'' -Body ''{"encryptedServerToken":"string"}'''
+  /applemdms/ade_tokens/{adeTokenObjectId}/ade_settings:
+    get:
+      summary: List ADE Settings
+      description: 'List ADE settings for an ADE token.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/v2/applemdms/ade_tokens/{ade_token_object_id}/ade_settings \
+
+        -H ''Accept: application/json'' \
+
+        -H ''x-api-key:{API_KEY}''
+
+        ```'
+      operationId: ADESettings_ListADESettings
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: adeTokenObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{adeTokenObjectId}/ade_settings \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{adeTokenObjectId}/ade_settings"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{adeTokenObjectId}/ade_settings'' -Method GET -Headers $headers'
+  /applemdms/ade_tokens/{adeTokenObjectId}/ade_settings/{osFamily}:
+    get:
+      summary: Get ADE Settings
+      description: 'Get ADE settings for an ADE token and OS family.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/v2/applemdms/ade_tokens/{ade_token_object_id}/ade_settings/DARWIN \
+
+        -H ''Accept: application/json'' \
+
+        -H ''x-api-key:{API_KEY}''
+
+        ```'
+      operationId: ADESettings_GetADESetting
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: adeTokenObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: osFamily
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - UNKNOWN
+          - DARWIN
+          - IOS
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{adeTokenObjectId}/ade_settings/{osFamily} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{adeTokenObjectId}/ade_settings/{osFamily}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{adeTokenObjectId}/ade_settings/{osFamily}'' -Method GET -Headers $headers'
+    patch:
+      summary: Patch ADE Settings
+      description: 'Create or update ADE settings for an ADE token and OS family. patch_mask is required; only fields listed in patch_mask.fields are updated. Include setup_options or default_device_group_object_ids in fields to clear them.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X PATCH https://console.jumpcloud.com/v2/applemdms/ade_tokens/{ade_token_object_id}/ade_settings/DARWIN \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}'' \
+
+        -d ''{"enableZeroTouchEnrollment":true,"welcomeScreen":{"title":"Welcome","paragraph":"Set up your device","button":"Continue"},"patchMask":{"fields":["enable_zero_touch_enrollment","welcome_screen.title","welcome_screen.paragraph","welcome_screen.button"]}}''
+
+        ```'
+      operationId: ADESettings_PatchADESetting
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: adeTokenObjectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      - name: osFamily
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - UNKNOWN
+          - DARWIN
+          - IOS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                defaultDeviceGroupObjectIds:
+                  type: array
+                  items:
+                    type: string
+                    format: byte
+                enableZeroTouchEnrollment:
+                  type: boolean
+                patchMask:
+                  $ref: '#/components/schemas/jumpcloud.apple_mdm.ADESettingPatchMask'
+                setupOptions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/jumpcloud.apple_mdm.SetupAssistantOption'
+                welcomeScreen:
+                  $ref: '#/components/schemas/jumpcloud.apple_mdm.WelcomeScreen'
+        required: true
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PATCH \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{adeTokenObjectId}/ade_settings/{osFamily} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"defaultDeviceGroupObjectIds\":[\"string\"],\"enableZeroTouchEnrollment\":true,\"patchMask\":{\"fields\":[\"string\"]},\"setupOptions\":[\"UNKNOWN\"],\"welcomeScreen\":{\"button\":\"string\",\"paragraph\":\"string\",\"title\":\"string\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{adeTokenObjectId}/ade_settings/{osFamily}\"\n\npayload = {\n    \"defaultDeviceGroupObjectIds\": [\"string\"],\n    \"enableZeroTouchEnrollment\": True,\n    \"patchMask\": {\"fields\": [\"string\"]},\n    \"setupOptions\": [\"UNKNOWN\"],\n    \"welcomeScreen\": {\n        \"button\": \"string\",\n        \"paragraph\": \"string\",\n        \"title\": \"string\"\n    }\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PATCH\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{adeTokenObjectId}/ade_settings/{osFamily}'' -Method PATCH -Headers $headers -ContentType ''application/json'' -Body ''{"defaultDeviceGroupObjectIds":["string"],"enableZeroTouchEnrollment":true,"patchMask":{"fields":["string"]},"setupOptions":["UNKNOWN"],"welcomeScreen":{"button":"string","paragraph":"string","title":"string"}}'''
+  /applemdms/ade_token_org_names:
+    get:
+      summary: List ADE Token Org Names
+      description: 'List unique ADE token org names visible to the calling organization(s).
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/v2/applemdms/ade_token_org_names \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}''
+
+        ```'
+      operationId: ADETokens_ListADETokenOrgNames
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/ade_token_org_names \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/ade_token_org_names"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/ade_token_org_names'' -Method GET -Headers $headers'
+  /applemdms/abm_devices:
+    get:
+      summary: List ABM Devices
+      description: 'List ABM devices visible to the calling organization(s).
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/v2/applemdms/abm_devices \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}''
+
+        ```'
+      operationId: ABMDevices_ListABMDevices
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: limit
+        description: 'The number of resources to return at once.
+
+          If the number of resources returned is less than `limit` there are no more resources to fetch.
+
+          If the number of resources returned is equal to limit there may be more resources to fetch. Increment `skip` by `limit` to get the next set of resources.'
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: sort
+        description: 'An optional comma separated field names used to sort the collection.
+
+          Default sort is ascending, prefix with `-` to sort descending.'
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      - name: filter
+        description: "A filter to apply to the query.\n\n\t**Filter structure**: `<field>:<operator>:<value>`.\n\n\t**field** = Populate with a valid field from an endpoint response.\n\n\t**operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.\n\n\t**value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.\n\n\t**Example** `GET /api/v2/groups?filter=name:eq:Test+Group`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applemdms/abm_devices?skip=SOME_STRING_VALUE&limit=SOME_STRING_VALUE&sort=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/abm_devices"
+
+
+          querystring = {"skip":"SOME_STRING_VALUE","limit":"SOME_STRING_VALUE","sort":"SOME_ARRAY_VALUE","filter":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/abm_devices?skip=SOME_STRING_VALUE&limit=SOME_STRING_VALUE&sort=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /applemdms/ade_tokens/{objectId}/refresh_abm_devices:
+    post:
+      summary: Refresh ABM Devices for ADE Token
+      description: 'Sync Apple Business Manager devices for a single ADE server token. Uses the token''s ABM sync cursor and only affects devices associated with this token.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/v2/applemdms/ade_tokens/{object_id}/refresh_abm_devices \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      operationId: ADETokens_RefreshABMDevices
+      responses:
+        '200':
+          description: ABM sync completed for the ADE token.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '412':
+          description: Precondition failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: objectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      requestBody:
+        $ref: '#/components/requestBodies/EnrollmentProfiles_UpdateServiceDiscoveryURLBody'
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{objectId}/refresh_abm_devices \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{objectId}/refresh_abm_devices\"\n\npayload = {}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/ade_tokens/{objectId}/refresh_abm_devices'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{}'''
+  /applemdms/ade_tokens_stats:
+    get:
+      summary: Get ADE Tokens Stats
+      description: 'Get aggregate counts of ADE tokens by expiry status for the calling organization(s).
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/v2/applemdms/ade_tokens_stats \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}''
+
+        ```'
+      operationId: ADETokens_GetADETokensStats
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+      - mdm
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/ade_tokens_stats \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/applemdms/ade_tokens_stats"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/ade_tokens_stats'' -Method GET -Headers $headers'
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      x-examples: {}
+      description: ''
+      properties:
+        code:
+          format: int32
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        status:
+          type: string
+          description: HTTP status description
+    jumpcloud.apple_mdm.EnableLostMode:
+      type: object
+      properties:
+        footnote:
+          type: string
+        message:
+          type: string
+        phoneNumber:
+          type: string
+    jumpcloud.apple_mdm.CommandResponse:
+      type: object
+    jumpcloud.apple_mdm.DisableLostMode:
+      type: object
+    jumpcloud.apple_mdm.SetupAssistantOption:
+      type: string
+      enum:
+      - UNKNOWN
+      - ACCESSIBILITY_SETUP
+      - ANALYTICS
+      - APPEARANCE_SETUP
+      - APPLE_ID_SIGN_IN
+      - APPLE_PAY_SETUP
+      - BACKUP_RESTORE
+      - DISPLAY_TONE
+      - FILEVAULT
+      - ICLOUD_ANALYTICS
+      - ICLOUD_DOCUMENTS_DESKTOP_SETUP
+      - LOCATION_SERVICES_SETUP
+      - PRIVACY_PANE
+      - SCREEN_TIME
+      - SIRI_SETUP
+      - TERMS_AND_CONDITIONS
+      - TOUCH_ID_SETUP
+      - APP_STORE
+      - DISPLAY_ZOOM
+      - DEVICE_TO_DEVICE_MIGRATION
+      - HOME_BUTTON
+      - IMESSAGE_AND_FACETIME
+      - MESSAGING_ACTIVATION_USING_PHONE_NUMBER
+      - MOVE_FROM_ANDROID
+      - PASSCODE
+      - RESTORE_COMPLETE
+      - SET_UP_CELLULAR
+      - SOFTWARE_UPDATE
+      - UPDATE_COMPLETE
+      - UNLOCK_WITH_WATCH
+      - WATCH_MIGRATION
+      - WELCOME
+      - ACTION_BUTTON
+      - ENABLE_LOCKDOWN_MODE
+      - INTELLIGENCE
+      - SAFETY
+      - TERMS_OF_ADDRESS
+      - WALLPAPER
+      - CAMERA_BUTTON
+      - ADDITIONAL_PRIVACY_SETTINGS
+      - MULTITASKING
+      - OS_SHOWCASE
+      - WEB_CONTENT_FILTERING
+      - SAFETY_AND_HANDLING
+      - LIQUID_GLASS
+      default: UNKNOWN
+    jumpcloud.apple_mdm.WelcomeScreen:
+      type: object
+      properties:
+        button:
+          type: string
+        paragraph:
+          type: string
+        title:
+          type: string
+    jumpcloud.apple_mdm.ADESettingPatchMask:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            type: string
+      description: 'ADESettingPatchMask selects which PatchADESettingRequest fields to apply.
+
+        Required on PatchADESettingRequest. Only fields listed in fields are updated
+
+        (include setup_options or default_device_group_object_ids in fields to clear them).'
+    jumpcloud.apple_mdm.EnrollmentProfilesGetAdueConfigResponse:
+      type: object
+      properties:
+        jsonConfig:
+          type: string
+    jumpcloud.apple_mdm.EnrollmentProfilesGetRedirectResponse:
+      type: object
+      properties:
+        redirectUrl:
+          type: string
+  requestBodies:
+    EnrollmentProfiles_UpdateServiceDiscoveryURLBody:
+      content:
+        application/json:
+          schema:
+            type: object
+      required: true
+    ADETokens_CreateADETokenBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              encryptedServerToken:
+                type: string
+      required: true
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

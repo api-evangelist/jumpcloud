@@ -1,0 +1,3390 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Reports API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Reports
+paths:
+  /reports/custom:
+    get:
+      summary: List Custom Reports
+      description: 'list Custom Reports.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/reports/custom \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_ListReportViews
+      responses:
+        '200':
+          description: Success listing Custom Reports.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ListReportViewsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: limit
+        description: The number of records to return at once. Limited to 100.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '100'
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '0'
+      - name: sort
+        description: Use space separated sort parameters to sort the collection. Default sort is ascending. Prefix with - to sort descending.
+        in: query
+        required: false
+        schema:
+          type: string
+        allowReserved: true
+      - name: fields
+        description: The fields on the items listed to return.
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter
+        description: "A filter to apply to the query.\n\n\t**Filter structure**: `<field>:<operator>:<value>`.\n\n\t**field** = Populate with a valid field from an endpoint response.\n\n\t**operator** =  Supported operators are: eq, ne, gt, ge, lt, le, search, in.\n\n\t**value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.\n\n\t**Example** `GET /api/v2/groups?filter=name:eq:Test+Group`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/reports/custom?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/custom"
+
+
+          querystring = {"limit":"SOME_STRING_VALUE","skip":"SOME_STRING_VALUE","sort":"SOME_STRING_VALUE","fields":"SOME_ARRAY_VALUE","filter":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/custom?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      summary: Create a Custom Report
+      description: 'Create a Custom report.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/reports/custom \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{ {Report_Parameters} }'' \
+
+        ```'
+      operationId: Reports_CreateReportView
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ReportView'
+        '201':
+          description: Success creating a Custom Report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ReportView'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.insights.CreateReportViewRequest'
+        required: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/reports/custom \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"reportView\":{\"configuration\":{\"columnSettings\":{\"fixed\":[\"string\"]}},\"description\":\"string\",\"displayName\":\"string\",\"id\":\"string\",\"resources\":[\"string\"],\"searchRequest\":{\"aggregations\":[{\"field\":[\"string\"],\"function\":\"function_unknown\",\"name\":\"string\"}],\"cacheToken\":\"string\",\"fields\":{\"exclude\":[\"string\"],\"include\":[\"string\"]},\"filters\":[{\"field\":\"string\",\"filters\":[{}],\"operation\":\"operation_unknown\",\"query\":{},\"unit\":\"string\",\"value\":null}],\"limit\":0,\"metadata\":{\"context\":[{\"key\":\"string\",\"value\":\"string\"}],\"searchPurpose\":\"unspecified\",\"source\":\"string\"},\"pagination\":{\"offset\":0,\"pageSize\":0},\"requestCache\":true,\"sort\":[{\"field\":\"string\",\"order\":\"asc\"}]},\"updatedBySource\":\"unspecified\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/reports/custom\"\n\npayload = {\"reportView\": {\n        \"configuration\": {\"columnSettings\": {\"fixed\": [\"string\"]}},\n        \"description\": \"string\",\n        \"displayName\": \"string\",\n        \"id\": \"string\",\n        \"resources\": [\"string\"],\n        \"searchRequest\": {\n            \"aggregations\": [\n                {\n                    \"field\": [\"string\"],\n                    \"function\": \"function_unknown\",\n                    \"name\": \"string\"\n                }\n            ],\n            \"cacheToken\": \"string\",\n            \"fields\": {\n                \"exclude\": [\"string\"],\n                \"include\": [\"string\"]\n            },\n            \"filters\": [\n                {\n                    \"field\": \"string\",\n                    \"filters\": [{}],\n                    \"operation\": \"operation_unknown\",\n                    \"query\": {},\n                    \"unit\": \"string\",\n                    \"value\": None\n                }\n            ],\n            \"limit\": 0,\n            \"metadata\": {\n                \"context\": [\n                    {\n                        \"key\": \"string\",\n                        \"value\": \"string\"\n                    }\n                ],\n                \"searchPurpose\": \"unspecified\",\n                \"source\": \"string\"\n            },\n            \"pagination\": {\n                \"offset\": 0,\n                \"pageSize\": 0\n            },\n            \"requestCache\": True,\n            \"sort\": [\n                {\n                    \"field\": \"string\",\n                    \"order\": \"asc\"\n                }\n            ]\n        },\n        \"updatedBySource\": \"unspecified\"\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/custom'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"reportView":{"configuration":{"columnSettings":{"fixed":["string"]}},"description":"string","displayName":"string","id":"string","resources":["string"],"searchRequest":{"aggregations":[{"field":["string"],"function":"function_unknown","name":"string"}],"cacheToken":"string","fields":{"exclude":["string"],"include":["string"]},"filters":[{"field":"string","filters":[{}],"operation":"operation_unknown","query":{},"unit":"string","value":null}],"limit":0,"metadata":{"context":[{"key":"string","value":"string"}],"searchPurpose":"unspecified","source":"string"},"pagination":{"offset":0,"pageSize":0},"requestCache":true,"sort":[{"field":"string","order":"asc"}]},"updatedBySource":"unspecified"}}'''
+  /reports/custom/{objectId}:
+    get:
+      summary: Get a Custom Report
+      description: 'Get a Custom Report.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/reports/custom/{object_id} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_GetReportView
+      responses:
+        '200':
+          description: Success getting a Custom Report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ReportViewResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: objectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/reports/custom/{objectId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/custom/{objectId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/custom/{objectId}'' -Method GET -Headers $headers'
+    put:
+      summary: Update Custom Report
+      description: 'Update an existing Custom Report.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/reports/custom/{object_id} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{ {Report_Parameters} }'' \
+
+        ```'
+      operationId: Reports_UpdateReportView
+      responses:
+        '200':
+          description: Success updating a Custom Report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ReportView'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: objectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reportView:
+                  $ref: '#/components/schemas/jumpcloud.insights.ReportView'
+        required: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/reports/custom/{objectId} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"reportView\":{\"configuration\":{\"columnSettings\":{\"fixed\":[\"string\"]}},\"description\":\"string\",\"displayName\":\"string\",\"id\":\"string\",\"resources\":[\"string\"],\"searchRequest\":{\"aggregations\":[{\"field\":[\"string\"],\"function\":\"function_unknown\",\"name\":\"string\"}],\"cacheToken\":\"string\",\"fields\":{\"exclude\":[\"string\"],\"include\":[\"string\"]},\"filters\":[{\"field\":\"string\",\"filters\":[{}],\"operation\":\"operation_unknown\",\"query\":{},\"unit\":\"string\",\"value\":null}],\"limit\":0,\"metadata\":{\"context\":[{\"key\":\"string\",\"value\":\"string\"}],\"searchPurpose\":\"unspecified\",\"source\":\"string\"},\"pagination\":{\"offset\":0,\"pageSize\":0},\"requestCache\":true,\"sort\":[{\"field\":\"string\",\"order\":\"asc\"}]},\"updatedBySource\":\"unspecified\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/reports/custom/{objectId}\"\n\npayload = {\"reportView\": {\n        \"configuration\": {\"columnSettings\": {\"fixed\": [\"string\"]}},\n        \"description\": \"string\",\n        \"displayName\": \"string\",\n        \"id\": \"string\",\n        \"resources\": [\"string\"],\n        \"searchRequest\": {\n            \"aggregations\": [\n                {\n                    \"field\": [\"string\"],\n                    \"function\": \"function_unknown\",\n                    \"name\": \"string\"\n                }\n            ],\n            \"cacheToken\": \"string\",\n            \"fields\": {\n                \"exclude\": [\"string\"],\n                \"include\": [\"string\"]\n            },\n            \"filters\": [\n                {\n                    \"field\": \"string\",\n                    \"filters\": [{}],\n                    \"operation\": \"operation_unknown\",\n                    \"query\": {},\n                    \"unit\": \"string\",\n                    \"value\": None\n                }\n            ],\n            \"limit\": 0,\n            \"metadata\": {\n                \"context\": [\n                    {\n                        \"key\": \"string\",\n                        \"value\": \"string\"\n                    }\n                ],\n                \"searchPurpose\": \"unspecified\",\n                \"source\": \"string\"\n            },\n            \"pagination\": {\n                \"offset\": 0,\n                \"pageSize\": 0\n            },\n            \"requestCache\": True,\n            \"sort\": [\n                {\n                    \"field\": \"string\",\n                    \"order\": \"asc\"\n                }\n            ]\n        },\n        \"updatedBySource\": \"unspecified\"\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/custom/{objectId}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"reportView":{"configuration":{"columnSettings":{"fixed":["string"]}},"description":"string","displayName":"string","id":"string","resources":["string"],"searchRequest":{"aggregations":[{"field":["string"],"function":"function_unknown","name":"string"}],"cacheToken":"string","fields":{"exclude":["string"],"include":["string"]},"filters":[{"field":"string","filters":[{}],"operation":"operation_unknown","query":{},"unit":"string","value":null}],"limit":0,"metadata":{"context":[{"key":"string","value":"string"}],"searchPurpose":"unspecified","source":"string"},"pagination":{"offset":0,"pageSize":0},"requestCache":true,"sort":[{"field":"string","order":"asc"}]},"updatedBySource":"unspecified"}}'''
+    delete:
+      summary: Delete a Custom report
+      description: 'Delete an existing Custom Report.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X DELETE https://console.jumpcloud.com/api/v2/reports/custom/{report_object_id} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_DeleteReportView
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '204':
+          description: Success deleting a Custom Report.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: objectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/reports/custom/{objectId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/custom/{objectId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/custom/{objectId}'' -Method DELETE -Headers $headers'
+  /reports/jumpcloud:
+    get:
+      summary: List Jumpcloud Reports
+      description: 'List Jumpcloud Reports.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/reports/jumpcloud \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_ListReportTemplates
+      responses:
+        '200':
+          description: Success listing Jumpcloud Reports.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ListReportTemplatesResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: limit
+        description: The number of records to return at once. Limited to 100.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '100'
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '0'
+      - name: sort
+        description: Use space separated sort parameters to sort the collection. Default sort is ascending. Prefix with - to sort descending.
+        in: query
+        required: false
+        schema:
+          type: string
+        allowReserved: true
+      - name: fields
+        description: The fields on the items listed to return.
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter
+        description: "A filter to apply to the query.\n\n\t**Filter structure**: `<field>:<operator>:<value>`.\n\n\t**field** = Populate with a valid field from an endpoint response.\n\n\t**operator** =  Supported operators are: eq, ne, gt, ge, lt, le, search, in.\n\n\t**value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.\n\n\t**Example** `GET /api/v2/groups?filter=name:eq:Test+Group`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/reports/jumpcloud?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/jumpcloud"
+
+
+          querystring = {"limit":"SOME_STRING_VALUE","skip":"SOME_STRING_VALUE","sort":"SOME_STRING_VALUE","fields":"SOME_ARRAY_VALUE","filter":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/jumpcloud?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /reports/jumpcloud/{objectId}:
+    get:
+      summary: Get a Jumpcloud Report
+      description: 'Get a Jumpcloud Report.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/reports/jumpcloud/{object_id} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key:{API_KEY}'' \
+
+        ```'
+      operationId: Reports_GetReportTemplate
+      responses:
+        '200':
+          description: Success getting a Jumpcloud Report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ReportTemplateResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: objectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/reports/jumpcloud/{objectId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/jumpcloud/{objectId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/jumpcloud/{objectId}'' -Method GET -Headers $headers'
+  /reports/export:
+    post:
+      summary: Export a report
+      description: 'Export a report.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/reports/export \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json \
+
+        -d ''{ {Export_Parameters} }'' \
+
+        ```'
+      operationId: Reports_ExportReport
+      responses:
+        '200':
+          description: Success exporting the report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ExportReportResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.insights.ExportReportRequest'
+        required: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/reports/export \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"exportType\":\"csv\",\"notifyByEmail\":true,\"reportName\":\"string\",\"searchRequest\":{\"aggregations\":[{\"field\":[\"string\"],\"function\":\"function_unknown\",\"name\":\"string\"}],\"cacheToken\":\"string\",\"fields\":{\"exclude\":[\"string\"],\"include\":[\"string\"]},\"filters\":[{\"field\":\"string\",\"filters\":[{}],\"operation\":\"operation_unknown\",\"query\":{},\"unit\":\"string\",\"value\":null}],\"limit\":0,\"metadata\":{\"context\":[{\"key\":\"string\",\"value\":\"string\"}],\"searchPurpose\":\"unspecified\",\"source\":\"string\"},\"pagination\":{\"offset\":0,\"pageSize\":0},\"requestCache\":true,\"sort\":[{\"field\":\"string\",\"order\":\"asc\"}]}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/reports/export\"\n\npayload = {\n    \"exportType\": \"csv\",\n    \"notifyByEmail\": True,\n    \"reportName\": \"string\",\n    \"searchRequest\": {\n        \"aggregations\": [\n            {\n                \"field\": [\"string\"],\n                \"function\": \"function_unknown\",\n                \"name\": \"string\"\n            }\n        ],\n        \"cacheToken\": \"string\",\n        \"fields\": {\n            \"exclude\": [\"string\"],\n            \"include\": [\"string\"]\n        },\n        \"filters\": [\n            {\n                \"field\": \"string\",\n                \"filters\": [{}],\n                \"operation\": \"operation_unknown\",\n                \"query\": {},\n                \"unit\": \"string\",\n                \"value\": None\n            }\n        ],\n        \"limit\": 0,\n        \"metadata\": {\n            \"context\": [\n                {\n                    \"key\": \"string\",\n                    \"value\": \"string\"\n                }\n            ],\n            \"searchPurpose\": \"unspecified\",\n            \"source\": \"string\"\n        },\n        \"pagination\": {\n            \"offset\": 0,\n            \"pageSize\": 0\n        },\n        \"requestCache\": True,\n        \"sort\": [\n            {\n                \"field\": \"string\",\n                \"order\": \"asc\"\n            }\n        ]\n    }\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/export'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"exportType":"csv","notifyByEmail":true,"reportName":"string","searchRequest":{"aggregations":[{"field":["string"],"function":"function_unknown","name":"string"}],"cacheToken":"string","fields":{"exclude":["string"],"include":["string"]},"filters":[{"field":"string","filters":[{}],"operation":"operation_unknown","query":{},"unit":"string","value":null}],"limit":0,"metadata":{"context":[{"key":"string","value":"string"}],"searchPurpose":"unspecified","source":"string"},"pagination":{"offset":0,"pageSize":0},"requestCache":true,"sort":[{"field":"string","order":"asc"}]}}'''
+  /reports/scheduled:
+    get:
+      summary: List Scheduled Reports
+      description: 'List Scheduled Reports.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/reports/scheduled \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_ListScheduledReports
+      responses:
+        '200':
+          description: Success listing Scheduled Reports.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ListScheduledReportsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: limit
+        description: The number of records to return at once. Limited to 100.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '100'
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '0'
+      - name: sort
+        description: Use space separated sort parameters to sort the collection. Default sort is ascending. Prefix with - to sort descending.
+        in: query
+        required: false
+        schema:
+          type: string
+        allowReserved: true
+      - name: fields
+        description: The fields on the items listed to return.
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter
+        description: "A filter to apply to the query.\n\n\t**Filter structure**: `<field>:<operator>:<value>`.\n\n\t**field** = Use camelCase only; allowed values: displayName, description, scheduleFrequency, isActive, createdAt, updatedAt. Do not use snake_case (e.g. display_name is invalid).\n\n\t**operator** = Supported operators: eq, ne, gt, ge, lt, le, search, in.\n\n\t**value** = Value to search for (case sensitive; supports wild cards).\n\n\t**Example** `GET /api/v2/reports/scheduled?filter=displayName:eq:Daily+Report`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/reports/scheduled?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/scheduled"
+
+
+          querystring = {"limit":"SOME_STRING_VALUE","skip":"SOME_STRING_VALUE","sort":"SOME_STRING_VALUE","fields":"SOME_ARRAY_VALUE","filter":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/scheduled?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      summary: Create a Scheduled Report
+      description: 'Create a Scheduled Report.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/reports/scheduled \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{ {Scheduled_Report_Parameters} }'' \
+
+        ```'
+      operationId: Reports_CreateScheduledReport
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ScheduledReport'
+        '201':
+          description: Success creating a Scheduled Report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ScheduledReport'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.insights.CreateScheduledReportRequest'
+        required: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/reports/scheduled \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"scheduledReport\":{\"days\":[\"string\"],\"description\":\"string\",\"displayName\":\"string\",\"endDate\":\"2019-08-24T14:15:22Z\",\"exportType\":\"string\",\"id\":\"string\",\"isActive\":true,\"recipients\":[{\"channelType\":\"string\",\"value\":[\"string\"]}],\"reportId\":\"string\",\"reportType\":\"string\",\"scheduleFrequency\":\"string\",\"scheduleTime\":\"string\",\"startDate\":\"2019-08-24T14:15:22Z\",\"timeZone\":\"string\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/reports/scheduled\"\n\npayload = {\"scheduledReport\": {\n        \"days\": [\"string\"],\n        \"description\": \"string\",\n        \"displayName\": \"string\",\n        \"endDate\": \"2019-08-24T14:15:22Z\",\n        \"exportType\": \"string\",\n        \"id\": \"string\",\n        \"isActive\": True,\n        \"recipients\": [\n            {\n                \"channelType\": \"string\",\n                \"value\": [\"string\"]\n            }\n        ],\n        \"reportId\": \"string\",\n        \"reportType\": \"string\",\n        \"scheduleFrequency\": \"string\",\n        \"scheduleTime\": \"string\",\n        \"startDate\": \"2019-08-24T14:15:22Z\",\n        \"timeZone\": \"string\"\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/scheduled'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"scheduledReport":{"days":["string"],"description":"string","displayName":"string","endDate":"2019-08-24T14:15:22Z","exportType":"string","id":"string","isActive":true,"recipients":[{"channelType":"string","value":["string"]}],"reportId":"string","reportType":"string","scheduleFrequency":"string","scheduleTime":"string","startDate":"2019-08-24T14:15:22Z","timeZone":"string"}}'''
+  /reports/scheduled/{objectId}:
+    get:
+      summary: Get a Scheduled Report
+      description: 'Get a Scheduled Report.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/reports/scheduled/{id} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_GetScheduledReport
+      responses:
+        '200':
+          description: Success getting a Scheduled Report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ScheduledReportResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: objectId
+        description: object_id path param (scheduled_reports.id, UUID); name allows gateway to bind path
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}'' -Method GET -Headers $headers'
+    put:
+      summary: Update a Scheduled Report
+      description: 'Update a Scheduled Report.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X PUT https://console.jumpcloud.com/api/v2/reports/scheduled/{id} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{ {Scheduled_Report_Parameters} }'' \
+
+        ```'
+      operationId: Reports_UpdateScheduledReport
+      responses:
+        '200':
+          description: Success updating a Scheduled Report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ScheduledReportResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema: {}
+      parameters:
+      - name: objectId
+        description: object_id path param (scheduled_reports.id, UUID)
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scheduledReport:
+                  $ref: '#/components/schemas/jumpcloud.insights.ScheduledReport'
+              required:
+              - scheduledReport
+        required: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"scheduledReport\":{\"days\":[\"string\"],\"description\":\"string\",\"displayName\":\"string\",\"endDate\":\"2019-08-24T14:15:22Z\",\"exportType\":\"string\",\"id\":\"string\",\"isActive\":true,\"recipients\":[{\"channelType\":\"string\",\"value\":[\"string\"]}],\"reportId\":\"string\",\"reportType\":\"string\",\"scheduleFrequency\":\"string\",\"scheduleTime\":\"string\",\"startDate\":\"2019-08-24T14:15:22Z\",\"timeZone\":\"string\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}\"\n\npayload = {\"scheduledReport\": {\n        \"days\": [\"string\"],\n        \"description\": \"string\",\n        \"displayName\": \"string\",\n        \"endDate\": \"2019-08-24T14:15:22Z\",\n        \"exportType\": \"string\",\n        \"id\": \"string\",\n        \"isActive\": True,\n        \"recipients\": [\n            {\n                \"channelType\": \"string\",\n                \"value\": [\"string\"]\n            }\n        ],\n        \"reportId\": \"string\",\n        \"reportType\": \"string\",\n        \"scheduleFrequency\": \"string\",\n        \"scheduleTime\": \"string\",\n        \"startDate\": \"2019-08-24T14:15:22Z\",\n        \"timeZone\": \"string\"\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"scheduledReport":{"days":["string"],"description":"string","displayName":"string","endDate":"2019-08-24T14:15:22Z","exportType":"string","id":"string","isActive":true,"recipients":[{"channelType":"string","value":["string"]}],"reportId":"string","reportType":"string","scheduleFrequency":"string","scheduleTime":"string","startDate":"2019-08-24T14:15:22Z","timeZone":"string"}}'''
+    delete:
+      summary: Delete a Scheduled Report
+      description: 'Delete a Scheduled Report.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X DELETE https://console.jumpcloud.com/api/v2/reports/scheduled/{id} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_DeleteScheduledReport
+      responses:
+        '200':
+          description: Success deleting a Scheduled Report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.DeleteScheduledReportResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema: {}
+      parameters:
+      - name: objectId
+        description: object_id path param (scheduled_reports.id, UUID)
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}'' -Method DELETE -Headers $headers'
+  /reports/scheduled/{objectId}/runs:
+    get:
+      summary: List Scheduled Report Runs by Report
+      description: 'List Scheduled Report Runs for a specific scheduled report (all statuses: IN_PROGRESS, SUCCESS, FAILED).
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/reports/scheduled/{id}/runs \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_ListScheduledReportRunsByReport
+      responses:
+        '200':
+          description: Success listing Scheduled Report Runs for a report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ListScheduledReportRunsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema: {}
+      parameters:
+      - name: objectId
+        description: object_id path param (scheduled_reports.id, UUID)
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: limit
+        description: The number of records to return at once. Limited to 100.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '100'
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '0'
+      - name: sort
+        description: Use space separated sort parameters to sort the collection. Default sort is ascending. Prefix with - to sort descending.
+        in: query
+        required: false
+        schema:
+          type: string
+        allowReserved: true
+      - name: filter
+        description: "A filter to apply to the query.\n\n\t**Filter structure**: `<field>:<operator>:<value>`.\n\n\t**field** = Populate with a valid field from an endpoint response.\n\n\t**operator** =  Supported operators are: eq, ne, gt, ge, lt, le, search, in.\n\n\t**value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.\n\n\t**Example** `GET /api/v2/reports/scheduled/{id}/runs?filter=status:eq:SUCCESS`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      - name: startDate
+        description: Inclusive start of completed_at range for history filtering (RFC3339).
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: endDate
+        description: Inclusive end of completed_at range for history filtering (RFC3339).
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}/runs?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&filter=SOME_ARRAY_VALUE&startDate=SOME_STRING_VALUE&endDate=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}/runs"
+
+
+          querystring = {"limit":"SOME_STRING_VALUE","skip":"SOME_STRING_VALUE","sort":"SOME_STRING_VALUE","filter":"SOME_ARRAY_VALUE","startDate":"SOME_STRING_VALUE","endDate":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}/runs?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&filter=SOME_ARRAY_VALUE&startDate=SOME_STRING_VALUE&endDate=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+  /reports/scheduled/{objectId}/trigger:
+    post:
+      summary: Trigger a Scheduled Report (Run Now)
+      description: 'Manually trigger a Scheduled Report execution (Run Now).
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/reports/scheduled/{id}/trigger \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_TriggerScheduledReport
+      responses:
+        '200':
+          description: Success triggering a Scheduled Report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.TriggerScheduledReportResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema: {}
+      parameters:
+      - name: objectId
+        description: object_id path param (scheduled_reports.id, UUID)
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}/trigger \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}/trigger"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("POST", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/scheduled/{objectId}/trigger'' -Method POST -Headers $headers'
+  /reports/scheduled/runs:
+    get:
+      summary: List all Scheduled Report Runs
+      description: 'List Scheduled Report Runs for an organization (all statuses: IN_PROGRESS, SUCCESS, FAILED).
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/reports/scheduled/runs \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_ListScheduledReportRuns
+      responses:
+        '200':
+          description: Success listing Scheduled Report Runs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ListScheduledReportRunsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema: {}
+      parameters:
+      - name: limit
+        description: The number of records to return at once. Limited to 100.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '100'
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '0'
+      - name: sort
+        description: Use space separated sort parameters to sort the collection. Default sort is ascending. Prefix with - to sort descending.
+        in: query
+        required: false
+        schema:
+          type: string
+        allowReserved: true
+      - name: filter
+        description: "A filter to apply to the query.\n\n\t**Filter structure**: `<field>:<operator>:<value>`.\n\n\t**field** = Populate with a valid field from an endpoint response.\n\n\t**operator** =  Supported operators are: eq, ne, gt, ge, lt, le, search, in.\n\n\t**value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.\n\n\t**Example** `GET /api/v2/reports/scheduled/runs?filter=status:eq:SUCCESS`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      - name: startDate
+        description: Inclusive start of completed_at range for history filtering (RFC3339).
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: endDate
+        description: Inclusive end of completed_at range for history filtering (RFC3339).
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/reports/scheduled/runs?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&filter=SOME_ARRAY_VALUE&startDate=SOME_STRING_VALUE&endDate=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/scheduled/runs"
+
+
+          querystring = {"limit":"SOME_STRING_VALUE","skip":"SOME_STRING_VALUE","sort":"SOME_STRING_VALUE","filter":"SOME_ARRAY_VALUE","startDate":"SOME_STRING_VALUE","endDate":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/scheduled/runs?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&filter=SOME_ARRAY_VALUE&startDate=SOME_STRING_VALUE&endDate=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+    post:
+      summary: Create a Scheduled Report Run
+      description: 'Create a new Scheduled Report Run.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/reports/scheduled/runs \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{"scheduled_report_run": {...}}''
+
+        ```'
+      operationId: Reports_CreateScheduledReportRun
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ScheduledReportRun'
+        '201':
+          description: Success creating a Scheduled Report Run.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ScheduledReportRun'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.insights.CreateScheduledReportRunRequest'
+        required: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/reports/scheduled/runs \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"scheduledReportRun\":{\"id\":\"string\",\"status\":\"string\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/reports/scheduled/runs\"\n\npayload = {\"scheduledReportRun\": {\n        \"id\": \"string\",\n        \"status\": \"string\"\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/scheduled/runs'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"scheduledReportRun":{"id":"string","status":"string"}}'''
+  /reports/scheduled/runs/{objectId}:
+    get:
+      summary: Get a Scheduled Report Run
+      description: 'Get a Scheduled Report Run by ID.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/reports/scheduled/runs/{object_id} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: Reports_GetScheduledReportRun
+      responses:
+        '200':
+          description: Success retrieving a Scheduled Report Run.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ScheduledReportRun'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: objectId
+        description: object_id is the run ID (scheduled_report_runs.id, e.g. Temporal workflow execution ID or UUID), bound from path
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/reports/scheduled/runs/{objectId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/scheduled/runs/{objectId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/scheduled/runs/{objectId}'' -Method GET -Headers $headers'
+  /reports/custom-reports:
+    get:
+      summary: List Custom Report Builder reports
+      description: List Custom Report Builder reports.
+      operationId: Reports_ListCustomReports
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ListCustomReportsResponse'
+      parameters:
+      - name: limit
+        description: The number of records to return at once. Limited to 100.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '100'
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '0'
+      - name: sort
+        description: Use space separated sort parameters to sort the collection. Default sort is ascending. Prefix with - to sort descending.
+        in: query
+        required: false
+        schema:
+          type: string
+        allowReserved: true
+      - name: fields
+        description: The fields on the items listed to return.
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter
+        description: "A filter to apply to the query.\n\n\t**Filter structure**: `<field>:<operator>:<value>`.\n\n\t**field** = Populate with a valid field from an endpoint response.\n\n\t**operator** =  Supported operators are: eq, ne, gt, ge, lt, le, search, in.\n\n\t**value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.\n\n\t**Example** `GET /api/v2/groups?filter=name:eq:Test+Group`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/reports/custom-reports?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/custom-reports"
+
+
+          querystring = {"limit":"SOME_STRING_VALUE","skip":"SOME_STRING_VALUE","sort":"SOME_STRING_VALUE","fields":"SOME_ARRAY_VALUE","filter":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/custom-reports?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      summary: Create a Custom Report Builder report
+      description: Create a Custom Report Builder report.
+      operationId: Reports_CreateCustomReport
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.CustomReport'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.insights.CreateCustomReportRequest'
+        required: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/reports/custom-reports \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"customReport\":{\"columns\":[\"string\"],\"description\":\"string\",\"displayName\":\"string\",\"filters\":[{\"field\":\"string\",\"operation\":\"string\",\"value\":\"string\"}],\"id\":\"string\",\"primaryObject\":\"string\",\"searchRequest\":{\"aggregations\":[{\"field\":[\"string\"],\"function\":\"function_unknown\",\"name\":\"string\"}],\"cacheToken\":\"string\",\"fields\":{\"exclude\":[\"string\"],\"include\":[\"string\"]},\"filters\":[{\"field\":\"string\",\"filters\":[{}],\"operation\":\"operation_unknown\",\"query\":{},\"unit\":\"string\",\"value\":null}],\"limit\":0,\"metadata\":{\"context\":[{\"key\":\"string\",\"value\":\"string\"}],\"searchPurpose\":\"unspecified\",\"source\":\"string\"},\"pagination\":{\"offset\":0,\"pageSize\":0},\"requestCache\":true,\"sort\":[{\"field\":\"string\",\"order\":\"asc\"}]},\"secondaryObjects\":[\"string\"]}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/reports/custom-reports\"\n\npayload = {\"customReport\": {\n        \"columns\": [\"string\"],\n        \"description\": \"string\",\n        \"displayName\": \"string\",\n        \"filters\": [\n            {\n                \"field\": \"string\",\n                \"operation\": \"string\",\n                \"value\": \"string\"\n            }\n        ],\n        \"id\": \"string\",\n        \"primaryObject\": \"string\",\n        \"searchRequest\": {\n            \"aggregations\": [\n                {\n                    \"field\": [\"string\"],\n                    \"function\": \"function_unknown\",\n                    \"name\": \"string\"\n                }\n            ],\n            \"cacheToken\": \"string\",\n            \"fields\": {\n                \"exclude\": [\"string\"],\n                \"include\": [\"string\"]\n            },\n            \"filters\": [\n                {\n                    \"field\": \"string\",\n                    \"filters\": [{}],\n                    \"operation\": \"operation_unknown\",\n                    \"query\": {},\n                    \"unit\": \"string\",\n                    \"value\": None\n                }\n            ],\n            \"limit\": 0,\n            \"metadata\": {\n                \"context\": [\n                    {\n                        \"key\": \"string\",\n                        \"value\": \"string\"\n                    }\n                ],\n                \"searchPurpose\": \"unspecified\",\n                \"source\": \"string\"\n            },\n            \"pagination\": {\n                \"offset\": 0,\n                \"pageSize\": 0\n            },\n            \"requestCache\": True,\n            \"sort\": [\n                {\n                    \"field\": \"string\",\n                    \"order\": \"asc\"\n                }\n            ]\n        },\n        \"secondaryObjects\": [\"string\"]\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/custom-reports'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"customReport":{"columns":["string"],"description":"string","displayName":"string","filters":[{"field":"string","operation":"string","value":"string"}],"id":"string","primaryObject":"string","searchRequest":{"aggregations":[{"field":["string"],"function":"function_unknown","name":"string"}],"cacheToken":"string","fields":{"exclude":["string"],"include":["string"]},"filters":[{"field":"string","filters":[{}],"operation":"operation_unknown","query":{},"unit":"string","value":null}],"limit":0,"metadata":{"context":[{"key":"string","value":"string"}],"searchPurpose":"unspecified","source":"string"},"pagination":{"offset":0,"pageSize":0},"requestCache":true,"sort":[{"field":"string","order":"asc"}]},"secondaryObjects":["string"]}}'''
+  /reports/custom-reports/{customReportId}:
+    get:
+      summary: Get a Custom Report Builder report
+      description: Get a Custom Report Builder report.
+      operationId: Reports_GetCustomReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.CustomReportResponse'
+      parameters:
+      - name: customReportId
+        description: Path param (custom_reports.id, UUID). Named custom_report_id so gateways do not conflate with org object_id.
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/reports/custom-reports/{customReportId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/custom-reports/{customReportId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/custom-reports/{customReportId}'' -Method GET -Headers $headers'
+    put:
+      summary: Update a Custom Report Builder report
+      description: Update a Custom Report Builder report.
+      operationId: Reports_UpdateCustomReport
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.CustomReportResponse'
+      parameters:
+      - name: customReportId
+        description: Path param (custom_reports.id, UUID). Named custom_report_id so gateways do not conflate with org object_id.
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customReport:
+                  $ref: '#/components/schemas/jumpcloud.insights.CustomReport'
+        required: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/reports/custom-reports/{customReportId} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"customReport\":{\"columns\":[\"string\"],\"description\":\"string\",\"displayName\":\"string\",\"filters\":[{\"field\":\"string\",\"operation\":\"string\",\"value\":\"string\"}],\"id\":\"string\",\"primaryObject\":\"string\",\"searchRequest\":{\"aggregations\":[{\"field\":[\"string\"],\"function\":\"function_unknown\",\"name\":\"string\"}],\"cacheToken\":\"string\",\"fields\":{\"exclude\":[\"string\"],\"include\":[\"string\"]},\"filters\":[{\"field\":\"string\",\"filters\":[{}],\"operation\":\"operation_unknown\",\"query\":{},\"unit\":\"string\",\"value\":null}],\"limit\":0,\"metadata\":{\"context\":[{\"key\":\"string\",\"value\":\"string\"}],\"searchPurpose\":\"unspecified\",\"source\":\"string\"},\"pagination\":{\"offset\":0,\"pageSize\":0},\"requestCache\":true,\"sort\":[{\"field\":\"string\",\"order\":\"asc\"}]},\"secondaryObjects\":[\"string\"]}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/reports/custom-reports/{customReportId}\"\n\npayload = {\"customReport\": {\n        \"columns\": [\"string\"],\n        \"description\": \"string\",\n        \"displayName\": \"string\",\n        \"filters\": [\n            {\n                \"field\": \"string\",\n                \"operation\": \"string\",\n                \"value\": \"string\"\n            }\n        ],\n        \"id\": \"string\",\n        \"primaryObject\": \"string\",\n        \"searchRequest\": {\n            \"aggregations\": [\n                {\n                    \"field\": [\"string\"],\n                    \"function\": \"function_unknown\",\n                    \"name\": \"string\"\n                }\n            ],\n            \"cacheToken\": \"string\",\n            \"fields\": {\n                \"exclude\": [\"string\"],\n                \"include\": [\"string\"]\n            },\n            \"filters\": [\n                {\n                    \"field\": \"string\",\n                    \"filters\": [{}],\n                    \"operation\": \"operation_unknown\",\n                    \"query\": {},\n                    \"unit\": \"string\",\n                    \"value\": None\n                }\n            ],\n            \"limit\": 0,\n            \"metadata\": {\n                \"context\": [\n                    {\n                        \"key\": \"string\",\n                        \"value\": \"string\"\n                    }\n                ],\n                \"searchPurpose\": \"unspecified\",\n                \"source\": \"string\"\n            },\n            \"pagination\": {\n                \"offset\": 0,\n                \"pageSize\": 0\n            },\n            \"requestCache\": True,\n            \"sort\": [\n                {\n                    \"field\": \"string\",\n                    \"order\": \"asc\"\n                }\n            ]\n        },\n        \"secondaryObjects\": [\"string\"]\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/custom-reports/{customReportId}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"customReport":{"columns":["string"],"description":"string","displayName":"string","filters":[{"field":"string","operation":"string","value":"string"}],"id":"string","primaryObject":"string","searchRequest":{"aggregations":[{"field":["string"],"function":"function_unknown","name":"string"}],"cacheToken":"string","fields":{"exclude":["string"],"include":["string"]},"filters":[{"field":"string","filters":[{}],"operation":"operation_unknown","query":{},"unit":"string","value":null}],"limit":0,"metadata":{"context":[{"key":"string","value":"string"}],"searchPurpose":"unspecified","source":"string"},"pagination":{"offset":0,"pageSize":0},"requestCache":true,"sort":[{"field":"string","order":"asc"}]},"secondaryObjects":["string"]}}'''
+    delete:
+      summary: Delete a Custom Report Builder report
+      description: Delete a Custom Report Builder report.
+      operationId: Reports_DeleteCustomReport
+      responses:
+        '200':
+          description: Success deleting a Custom Report Builder report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.DeleteCustomReportResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema: {}
+      parameters:
+      - name: customReportId
+        description: Path param (custom_reports.id, UUID). Named custom_report_id so gateways do not conflate with org object_id.
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/reports/custom-reports/{customReportId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/custom-reports/{customReportId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/custom-reports/{customReportId}'' -Method DELETE -Headers $headers'
+  /reports/saved-reports:
+    get:
+      summary: List saved reports
+      description: List saved report views and custom reports in one collection.
+      operationId: Reports_ListSavedReports
+      responses:
+        '200':
+          description: Success listing saved reports.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.ListSavedReportsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: limit
+        description: The number of records to return at once. Limited to 100.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '100'
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '0'
+      - name: sort
+        description: Use space separated sort parameters to sort the collection. Default sort is ascending. Prefix with - to sort descending.
+        in: query
+        required: false
+        schema:
+          type: string
+        allowReserved: true
+      - name: fields
+        description: The fields on the items listed to return.
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter
+        description: "A filter to apply to the query.\n\n\t**Filter structure**: `<field>:<operator>:<value>`.\n\n\t**field** = Populate with a valid field from an endpoint response.\n\n\t**operator** =  Supported operators are: eq, ne, gt, ge, lt, le, search, in.\n\n\t**value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.\n\n\t**Example** `GET /api/v2/groups?filter=name:eq:Test+Group`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/reports/saved-reports?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/saved-reports"
+
+
+          querystring = {"limit":"SOME_STRING_VALUE","skip":"SOME_STRING_VALUE","sort":"SOME_STRING_VALUE","fields":"SOME_ARRAY_VALUE","filter":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/saved-reports?limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /reports/saved-reports/{id}:
+    get:
+      summary: Get a saved report
+      description: Get a saved report view or custom report by id and report_type.
+      operationId: Reports_GetSavedReport
+      responses:
+        '200':
+          description: Success getting a saved report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.insights.SavedReportResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: reportType
+        description: report_view or custom_report
+        in: query
+        required: true
+        schema:
+          type: string
+      tags:
+      - Reports
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - reports
+      - reports.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/reports/saved-reports/{id}?reportType=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/reports/saved-reports/{id}"
+
+
+          querystring = {"reportType":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/reports/saved-reports/{id}?reportType=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      x-examples: {}
+      description: ''
+      properties:
+        code:
+          format: int32
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        status:
+          type: string
+          description: HTTP status description
+    jumpcloud.search.SearchRequestFilter.Operation:
+      type: string
+      enum:
+      - operation_unknown
+      - and
+      - or
+      - equals
+      - not_equals
+      - greater_than
+      - less_than
+      - starts_with
+      - ends_with
+      - contains
+      - not_contains
+      - in
+      - not_in
+      - greater_than_or_equals
+      - less_than_or_equals
+      - is_null
+      - is_empty
+      - equals_case_sensitive
+      - not_equals_case_sensitive
+      - starts_with_case_sensitive
+      - ends_with_case_sensitive
+      - contains_case_sensitive
+      - not_contains_case_sensitive
+      - in_case_sensitive
+      - not_in_case_sensitive
+      - member_of
+      - not_member_of
+      - not_contains_with_null
+      - not_contains_case_sensitive_with_null
+      - not_in_with_null
+      - not_in_case_sensitive_with_null
+      - not_starts_with
+      - not_ends_with
+      default: operation_unknown
+      description: "Filter operation to be applied:\nand - Provides logical 'and' groupings of all elements provided in the `filters` array (all sub-filter criteria\n   must be satisfied).\nor - Provides logical 'or' groupings of all elements provided in the `filters` array (any sub-filter criteria can\n   be satisfied).\nequals - Compares `field` with `value` for a // match.  Case insensitive.\nnot_equals - Compares `field` with `value` for an exact non-match.  Case insensitive.\ngreater_than - Checks if `field` is greater numerically than static `value` (non-inclusive).  Works for numbers and\n   datetime types.\nless_than - Checks if `field` is less than static `value` (non-inclusive).  Works for numbers and datetime types.\nstarts_with - Checks if `field` starts with static `value`.  Case insensitive.  Only works for string types.\nends_with - Checks if `field` ends with static `value`.  Case insensitive.  Only works for string types.\nnot_starts_with - Checks if `field` does not start with static `value`.  Case insensitive.  Only works for string types.\nnot_ends_with - Checks if `field` does not end with static `value`.  Case insensitive.  Only works for string types.\ncontains - Checks if `field` has the static `value` as its substring. Case insensitive. Only works for string types.\nnot_contains - Checks if `field` does not have the static `value` as its substring. Case insensitive. Only works for string types.\nin - Checks if `field` is in the static `value` array. Works with strings (case insensitive), numbers, and datetime types.\nnot_in - Checks if `field` is not in the static `value` array. Works with strings (case insensitive), numbers, and datetime types.\ngreater_than_or_equals - Checks if `field` is greater than or equal to static `value`.  Works for numbers and datetime types.\nless_than_or_equals - Checks if `field` is less than or equal to static `value`.  Works for numbers and datetime types.\nis_null - Checks if `field` is null. Works for all field types. Requires boolean value (true for null, false for not null).\nis_empty - Checks if `field` is null or empty string. Works only for string field types. Requires boolean value (true for empty, false for not empty).\nequals_case_sensitive - Compares `field` with `value` for an exact match.  Case sensitive.  Only works for string types.\nnot_equals_case_sensitive - Compares `field` with `value` for an exact non-match.  Case sensitive.  Only works for string types.\nstarts_with_case_sensitive - Checks if `field` starts with static `value`.  Case sensitive.  Only works for string types.\nends_with_case_sensitive - Checks if `field` ends with static `value`.  Case sensitive.  Only works for string types.\ncontains_case_sensitive - Checks if `field` has the static `value` as its substring. Case sensitive. Only works for string types.\nnot_contains_case_sensitive - Checks if `field` does not have the static `value` as its substring. Case sensitive. Only works for string types.\nin_case_sensitive - Checks if `field` is in the static `value` array. Works with strings (case sensitive), numbers, and datetime types.\nnot_in_case_sensitive - Checks if `field` is not in the static `value` array. Works with strings (case sensitive), numbers, and datetime types.\nnot_contains_with_null - Like not_contains but also matches rows where `field` IS NULL (v1 search API compatibility).\nnot_contains_case_sensitive_with_null - Like not_contains_case_sensitive but also matches rows where `field` IS NULL (v1 search API compatibility).\nnot_in_with_null - Like not_in but also matches rows where `field` IS NULL (v1 search API compatibility).\nnot_in_case_sensitive_with_null - Like not_in_case_sensitive but also matches rows where `field` IS NULL (v1 search API compatibility).\nmember_of - Array column overlaps with the given list. Only for array-typed fields. Value must be list_value.\nnot_member_of - Array column does not overlap with the given list. Only for array-typed fields. Value must be list_value."
+    jumpcloud.insights.CustomReport:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          type: string
+          readOnly: true
+        description:
+          type: string
+        displayName:
+          type: string
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.insights.CustomReportFilter'
+        id:
+          type: string
+        primaryObject:
+          type: string
+        searchRequest:
+          $ref: '#/components/schemas/jumpcloud.search.SearchRequest'
+        secondaryObjects:
+          type: array
+          items:
+            type: string
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedBy:
+          type: string
+          readOnly: true
+      required:
+      - displayName
+      - searchRequest
+      - primaryObject
+    jumpcloud.insights.CreateScheduledReportRequest:
+      type: object
+      properties:
+        scheduledReport:
+          $ref: '#/components/schemas/jumpcloud.insights.ScheduledReport'
+      required:
+      - scheduledReport
+    jumpcloud.search.SearchRequestSort:
+      type: object
+      properties:
+        field:
+          type: string
+          description: 'This is a field on an object.  It should always be in the form of
+
+            <objectName>.<fieldName>  This will be case insensitive, and will be cast to
+
+            lowercase always.'
+        order:
+          $ref: '#/components/schemas/jumpcloud.search.SearchRequestSort.Order'
+    jumpcloud.insights.ListSavedReportsResponse:
+      type: object
+      properties:
+        savedReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.insights.SavedReport'
+        totalCount:
+          type: integer
+          format: int64
+    jumpcloud.insights.CreateScheduledReportRunRequest:
+      type: object
+      properties:
+        scheduledReportRun:
+          $ref: '#/components/schemas/jumpcloud.insights.ScheduledReportRun'
+      required:
+      - scheduledReportRun
+    jumpcloud.insights.ExportReportResponse:
+      type: object
+      properties:
+        downloadUrl:
+          type: string
+        status:
+          $ref: '#/components/schemas/jumpcloud.insights.ExportStatus'
+    jumpcloud.insights.CustomReportFilter:
+      type: object
+      properties:
+        field:
+          type: string
+        operation:
+          type: string
+        value:
+          type: string
+      description: 'CustomReportFilter is one filter clause persisted with a custom report (JSON array in Postgres).
+
+        JSON uses camelCase: field, operation, value. Legacy stored rows may use "operator" instead of "operation"; readers accept both.'
+    jumpcloud.insights.CreateReportViewRequest:
+      type: object
+      properties:
+        reportView:
+          $ref: '#/components/schemas/jumpcloud.insights.ReportView'
+    jumpcloud.insights.DeleteScheduledReportResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message (e.g. "Scheduled report deleted successfully")
+    jumpcloud.insights.CreateCustomReportRequest:
+      type: object
+      properties:
+        customReport:
+          $ref: '#/components/schemas/jumpcloud.insights.CustomReport'
+    jumpcloud.search.SearchPurpose:
+      type: string
+      enum:
+      - unspecified
+      - reporting
+      - health_monitoring
+      - alerting
+      - audit
+      - troubleshooting
+      - user_initiated
+      - scheduled
+      - export
+      - analytics
+      - automation
+      - data_validation
+      default: unspecified
+      title: Define SearchPurpose enum for more structured categorization
+    jumpcloud.insights.ReportTemplate:
+      type: object
+      properties:
+        configuration:
+          $ref: '#/components/schemas/jumpcloud.insights.Configuration'
+        description:
+          type: string
+        displayName:
+          type: string
+        id:
+          type: string
+          format: byte
+        resources:
+          type: array
+          items:
+            type: string
+            readOnly: true
+        searchRequest:
+          $ref: '#/components/schemas/jumpcloud.search.SearchRequest'
+    jumpcloud.insights.Source:
+      type: string
+      enum:
+      - unspecified
+      - api
+      - ui
+      - ai
+      default: unspecified
+      title: Indicates if the report was updated through the API or UI
+    jumpcloud.search.MetadataContextEntry:
+      type: object
+      properties:
+        key:
+          type: string
+          title: The context key
+        value:
+          type: string
+          title: The context value
+          x-skip-validation: true
+      description: MetadataContextEntry represents a single key-value pair for additional metadata context.
+    ErrorDetails:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          details:
+            description: 'Describes a list of objects with more detailed information of the given error. Each detail schema is according to one of the messages defined in Google''s API: https://github.com/googleapis/googleapis/blob/master/google/rpc/error_details.proto'
+            type: array
+            items:
+              type: object
+              additionalProperties: true
+              description: Object according to Google's API.
+    jumpcloud.insights.ListReportViewsResponse:
+      type: object
+      properties:
+        reportViews:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.insights.ReportView'
+        totalCount:
+          type: integer
+          format: int64
+    jumpcloud.insights.SavedReportResponse:
+      type: object
+      properties:
+        savedReport:
+          $ref: '#/components/schemas/jumpcloud.insights.SavedReport'
+    jumpcloud.insights.ScheduledReportResponse:
+      type: object
+      properties:
+        scheduledReport:
+          $ref: '#/components/schemas/jumpcloud.insights.ScheduledReport'
+    jumpcloud.insights.ListScheduledReportRunsResponse:
+      type: object
+      properties:
+        runs:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.insights.ScheduledReportRun'
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of runs matching the list filters (before limit/skip pagination).
+          readOnly: true
+    jumpcloud.search.Function:
+      type: string
+      enum:
+      - function_unknown
+      - count
+      - avg
+      - max
+      - min
+      - sum
+      - count_unique
+      default: function_unknown
+    jumpcloud.search.SearchRequestFields:
+      type: object
+      properties:
+        exclude:
+          type: array
+          items:
+            type: string
+        include:
+          type: array
+          items:
+            type: string
+    jumpcloud.insights.ListCustomReportsResponse:
+      type: object
+      properties:
+        customReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.insights.CustomReport'
+        totalCount:
+          type: integer
+          format: int64
+    jumpcloud.insights.ListReportTemplatesResponse:
+      type: object
+      properties:
+        reportTemplates:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.insights.ReportTemplate'
+        totalCount:
+          type: integer
+          format: int64
+    jumpcloud.search.SearchRequestAggregation:
+      type: object
+      properties:
+        field:
+          type: array
+          items:
+            type: string
+          description: 'This is a field on an object.  It should always be in the form of <objectName>.<fieldName>  This will be case
+
+            insensitive, and will be cast to lowercase always.'
+        function:
+          $ref: '#/components/schemas/jumpcloud.search.Function'
+        name:
+          type: string
+    jumpcloud.insights.ReportTemplateResponse:
+      type: object
+      properties:
+        reportTemplate:
+          $ref: '#/components/schemas/jumpcloud.insights.ReportTemplate'
+    jumpcloud.search.SearchRequestMetadata:
+      type: object
+      properties:
+        context:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.search.MetadataContextEntry'
+          title: 'Additional context about the request (use for any extra metadata)
+
+            This can contain information such as report type and other contextual values'
+        searchPurpose:
+          anyOf:
+          - $ref: '#/components/schemas/jumpcloud.search.SearchPurpose'
+          - type: 'null'
+        source:
+          type:
+          - string
+          - 'null'
+          title: Source of the request (e.g., "insights-api", "monitoring", "alerts")
+      description: 'Metadata about the search request including source information
+
+        and some other metadata about the calling service.'
+    jumpcloud.insights.ColumnSettings:
+      type: object
+      properties:
+        fixed:
+          type: array
+          items:
+            type: string
+          title: Specifies the fixed columns used in report-preview
+    jumpcloud.insights.ReportView:
+      type: object
+      properties:
+        configuration:
+          $ref: '#/components/schemas/jumpcloud.insights.Configuration'
+        createdAt:
+          type: string
+          format: date-time
+          title: Specifies the time when this report was created
+          readOnly: true
+        createdBy:
+          type: string
+          title: Specifies the email of the user who created this report
+          readOnly: true
+        description:
+          type: string
+        displayName:
+          type: string
+        id:
+          type: string
+          format: byte
+        resources:
+          type: array
+          items:
+            type: string
+            readOnly: true
+          title: Specifies the list of objects referred by this report
+        searchRequest:
+          $ref: '#/components/schemas/jumpcloud.search.SearchRequest'
+        updatedAt:
+          type: string
+          format: date-time
+          title: Specifies the time when this report was last updated
+          readOnly: true
+        updatedBy:
+          type: string
+          title: Specifies the email of the user who updated this report last
+          readOnly: true
+        updatedBySource:
+          $ref: '#/components/schemas/jumpcloud.insights.Source'
+    jumpcloud.insights.ScheduledReportRun:
+      type: object
+      properties:
+        artifactUrl:
+          type:
+          - string
+          - 'null'
+          description: Presigned download URL when the run succeeded (same link as email/slack notifications). Falls back to a relative API path only when no stored URL exists.
+          readOnly: true
+        completedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        displayName:
+          type:
+          - string
+          - 'null'
+          description: Scheduled report display name (primary label in history UI)
+          readOnly: true
+        fileSize:
+          type:
+          - string
+          - 'null'
+          description: File size in bytes
+          readOnly: true
+        id:
+          type: string
+          title: id is a Temporal workflow execution ID (scheduled_report_runs.id), not a JumpCloud object_id
+        rowCount:
+          type:
+          - string
+          - 'null'
+          description: Emitted as string in JSON (e.g. "123"); omit when not set to avoid validation errors.
+          readOnly: true
+        scheduleFrequency:
+          type:
+          - string
+          - 'null'
+          description: 'Stored and returned as lowercase: daily, weekly, monthly, quarterly'
+          readOnly: true
+        scheduleTime:
+          type:
+          - string
+          - 'null'
+          description: Time of day for the schedule (e.g., "09:00 AM", "14:30")
+          readOnly: true
+        scheduledReportId:
+          type: string
+          title: scheduled_report_id is a UUID (scheduled_reports.id), not a JumpCloud object_id
+          readOnly: true
+        startedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          type: string
+          description: 'Status: IN_PROGRESS, SUCCESS, FAILED'
+        timeZone:
+          type:
+          - string
+          - 'null'
+          description: Timezone for the schedule (e.g., "GMT-2", "America/New_York")
+          readOnly: true
+        timeoutAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Omit when not set to avoid null (validator expects string or absent).
+          readOnly: true
+    jumpcloud.insights.ListScheduledReportsResponse:
+      type: object
+      properties:
+        scheduledReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.insights.ScheduledReport'
+        totalCount:
+          type: integer
+          format: int64
+    jumpcloud.insights.ExportReportRequest:
+      type: object
+      properties:
+        exportType:
+          $ref: '#/components/schemas/jumpcloud.insights.ExportType'
+        notifyByEmail:
+          type: boolean
+        reportName:
+          type: string
+        searchRequest:
+          $ref: '#/components/schemas/jumpcloud.search.SearchRequest'
+    jumpcloud.search.SearchRequestSort.Order:
+      type: string
+      enum:
+      - asc
+      - desc
+      default: asc
+      title: Sort order. Defaults to ascending
+    jumpcloud.search.SearchRequestFilter:
+      type: object
+      properties:
+        field:
+          type:
+          - string
+          - 'null'
+          description: 'This is a field on an object.  It should always be in the form of <objectName>.<fieldName>  This will be case
+
+            insensitive, and will be cast to lowercase always.'
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.search.SearchRequestFilter'
+          description: 'Only allowed when operation is ''and''/''or''.  This allows for logical groupings of sub-filters provided in this
+
+            field''s array.'
+        operation:
+          $ref: '#/components/schemas/jumpcloud.search.SearchRequestFilter.Operation'
+          x-skip-validation: true
+        query:
+          $ref: '#/components/schemas/jumpcloud.search.SearchRequest'
+        unit:
+          type:
+          - string
+          - 'null'
+        value:
+          description: 'Static value to be compared against. For values that will need to be compared as a datetime object, this should be
+
+            provided as an ISO8601 format string with no offset (UTC). This is made optional so that
+
+            the client can omit this field on AND/OR filters.'
+          x-skip-validation: true
+      description: A filter for a search query.
+    jumpcloud.insights.TriggerScheduledReportResponse:
+      type: object
+      properties:
+        runId:
+          type: string
+          description: The Temporal workflow execution ID for the triggered run
+        startedAt:
+          type: string
+          format: date-time
+          description: When the run was started
+    jumpcloud.insights.ReportViewResponse:
+      type: object
+      properties:
+        reportView:
+          $ref: '#/components/schemas/jumpcloud.insights.ReportView'
+    jumpcloud.insights.Configuration:
+      type: object
+      properties:
+        columnSettings:
+          $ref: '#/components/schemas/jumpcloud.insights.ColumnSettings'
+    jumpcloud.search.SearchRequest:
+      type: object
+      properties:
+        aggregations:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.search.SearchRequestAggregation'
+        cacheToken:
+          type:
+          - string
+          - 'null'
+          title: 'Optional: Token for retrieving data from a previously cached result set'
+        fields:
+          $ref: '#/components/schemas/jumpcloud.search.SearchRequestFields'
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.search.SearchRequestFilter'
+        limit:
+          type: integer
+          format: int32
+          description: 'Maximum number of rows (inclusive) to return in the objects.  Note that there is an implicit limit enforced always
+
+            in the external API.'
+        metadata:
+          anyOf:
+          - $ref: '#/components/schemas/jumpcloud.search.SearchRequestMetadata'
+          - type: 'null'
+        pagination:
+          anyOf:
+          - $ref: '#/components/schemas/jumpcloud.search.PaginationParams'
+          - type: 'null'
+        requestCache:
+          type: boolean
+          title: 'Optional: If true, cache the full result set of this query'
+        sort:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.search.SearchRequestSort'
+    jumpcloud.insights.DeleteCustomReportResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message (e.g. "Custom report deleted successfully")
+    jumpcloud.insights.SavedReport:
+      type: object
+      properties:
+        customReport:
+          $ref: '#/components/schemas/jumpcloud.insights.CustomReport'
+        reportType:
+          type: string
+          description: report_view or custom_report
+        reportView:
+          $ref: '#/components/schemas/jumpcloud.insights.ReportView'
+      description: 'SavedReport is a report view (public.report_views) or custom report.
+
+        report_type uses the same lowercase strings as scheduled_reports.report_type (report_view | custom_report).
+
+        oneof uses high field numbers (100/101) to avoid colliding with future SavedReport scalar fields.'
+    jumpcloud.insights.Recipient:
+      type: object
+      properties:
+        channelType:
+          type: string
+          title: 'Stored and returned as lowercase: email, slack, webhook'
+        value:
+          type: array
+          items:
+            type: string
+          description: 'List of values: email addresses (email), slack channel names/IDs (slack), or webhook URLs (webhook)'
+          title: List of values for this channel (e.g. email addresses, slack channels, or webhook URLs)
+      description: 'Recipient represents a notification recipient with channel type and a list of values.
+
+        For email: value is list of email addresses; for slack: list of channel names/IDs; for webhook: list of URLs.'
+      required:
+      - channelType
+      - value
+    jumpcloud.insights.CustomReportResponse:
+      type: object
+      properties:
+        customReport:
+          $ref: '#/components/schemas/jumpcloud.insights.CustomReport'
+    jumpcloud.insights.ExportType:
+      type: string
+      enum:
+      - csv
+      - json
+      default: csv
+    jumpcloud.insights.ExportStatus:
+      type: string
+      enum:
+      - pending
+      - in_progress
+      - completed
+      - failed
+      default: pending
+      title: "- PENDING: Specifies that the export is pending\n - IN_PROGRESS: Specifies that the export is processing and report will be sent to user's email\n - COMPLETED: Specifies that the export is completed and report is available for download\n - FAILED: Specifies that the export failed"
+    jumpcloud.search.PaginationParams:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int32
+          description: 'Zero-based index of the first result to return.
+
+            For example: 0 returns the first page, 100 returns the second page when page_size=100.'
+        pageSize:
+          type: integer
+          format: int32
+          description: 'Number of results to return per page.
+
+            If not specified, uses server default (typically 50-100 items).'
+      description: Parameters for controlling pagination of search results.
+    jumpcloud.insights.ScheduledReport:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        cronExpression:
+          type: string
+          description: Generated cron expression (read-only, computed from schedule_frequency, schedule_time, and time_zone)
+          readOnly: true
+        days:
+          type: array
+          items:
+            type: string
+          description: 'Weekly: e.g. ["MONDAY", "THURSDAY"]. Monthly/quarterly: ["FIRST_DAY"] or ["LAST_DAY"]. Daily: omit or [].'
+        description:
+          type: string
+        displayName:
+          type: string
+        endDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Optional end date for the schedule
+        exportType:
+          type: string
+          title: 'Stored and returned as lowercase: csv, json'
+        id:
+          type: string
+          title: id is a UUID (scheduled_reports.id), not a JumpCloud object_id
+        isActive:
+          type: boolean
+        lastRunAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          readOnly: true
+        lastRunStatus:
+          type: string
+          readOnly: true
+        nextRunAt:
+          type: string
+          format: date-time
+          readOnly: true
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.insights.Recipient'
+          description: List of notification recipients with channel type and recipient details
+        reportId:
+          type:
+          - string
+          - 'null'
+          format: byte
+          description: Report definition ID (report_views.object_id or report_templates.object_id); hex in API. Omitted when not set.
+        reportType:
+          type:
+          - string
+          - 'null'
+          description: report_view or report_template
+        scheduleFrequency:
+          type: string
+          title: 'Stored and returned as lowercase: daily, weekly, monthly, quarterly'
+        scheduleTime:
+          type: string
+          description: Time of day for the schedule (e.g., "09:00 AM", "14:30")
+        startDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Optional start date for the schedule
+        timeZone:
+          type: string
+          description: Timezone for the schedule (e.g., "GMT-2", "America/New_York")
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - displayName
+      - scheduleFrequency
+      - scheduleTime
+      - timeZone
+      - recipients
+      - exportType
+      - isActive
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

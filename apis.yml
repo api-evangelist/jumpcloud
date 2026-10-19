@@ -58,8 +58,9 @@ specificationVersion: '0.23'
 apis:
 - aid: jumpcloud:v1-api
   name: JumpCloud API V1
-  description: REST API for managing core directory resources including users, systems, system users,
-    tags, commands, policies, and SSO applications. Uses API key authentication via the x-api-key header.
+  description: >-
+    REST API for managing core directory resources including users, systems, system users, tags, commands,
+    policies, and SSO applications. Uses API key authentication via the x-api-key header.
   humanURL: https://docs.jumpcloud.com/api/1.0/index.html
   baseURL: https://console.jumpcloud.com/api
   tags:
@@ -79,8 +80,9 @@ apis:
     url: https://docs.jumpcloud.com/api/1.0/index.html
 - aid: jumpcloud:v2-api
   name: JumpCloud API V2
-  description: REST API V2 for managing groups, group memberships, associations, directory insights, system
-    insights, organizations, and modern policies. Uses API key authentication via the x-api-key header.
+  description: >-
+    REST API V2 for managing groups, group memberships, associations, directory insights, system insights,
+    organizations, and modern policies. Uses API key authentication via the x-api-key header.
   humanURL: https://docs.jumpcloud.com/api/2.0/index.html
   baseURL: https://console.jumpcloud.com/api/v2
   tags:
@@ -98,8 +100,9 @@ apis:
     url: https://docs.jumpcloud.com/api/2.0/index.html
 - aid: jumpcloud:system-context-api
   name: JumpCloud System Context API
-  description: API for managed systems to interact with JumpCloud on their own behalf using HTTP Signatures
-    authentication. Used for system-initiated actions such as user provisioning and event reporting.
+  description: >-
+    API for managed systems to interact with JumpCloud on their own behalf using HTTP Signatures authentication.
+    Used for system-initiated actions such as user provisioning and event reporting.
   humanURL: https://docs.jumpcloud.com/api/systemcontext/index.html
   baseURL: https://console.jumpcloud.com/api/systems
   tags:
@@ -111,16 +114,6 @@ apis:
     url: https://docs.jumpcloud.com/api/systemcontext/index.html
   - type: GitHub
     url: https://github.com/TheJumpCloud/SystemContextAPI
-- aid: jumpcloud:jumpcloud-application-templates-api
-  name: JumpCloud Application Templates API
-  description: SSO/SAML application templates available for use.
-  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
-  baseURL: https://console.jumpcloud.com/api
-  tags:
-  - Application Templates
-  properties:
-  - type: OpenAPI
-    url: openapi/jumpcloud-application-templates-api-openapi.yml
 - aid: jumpcloud:jumpcloud-applications-api
   name: JumpCloud Applications API
   description: SSO/SAML applications configured in the organization.
@@ -133,16 +126,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/jumpcloud-applications-api-openapi.yml
-- aid: jumpcloud:jumpcloud-command-results-api
-  name: JumpCloud Command Results API
-  description: Execution results produced by commands run against systems.
-  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
-  baseURL: https://console.jumpcloud.com/api
-  tags:
-  - Command Results
-  properties:
-  - type: OpenAPI
-    url: openapi/jumpcloud-command-results-api-openapi.yml
 - aid: jumpcloud:jumpcloud-commands-api
   name: JumpCloud Commands API
   description: Commands that can be executed across managed systems.
@@ -153,6 +136,871 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/jumpcloud-commands-api-openapi.yml
+- aid: jumpcloud:jumpcloud-access-requests-api
+  name: JumpCloud Access Requests API
+  description: The Access Requests API from JumpCloud — 13 operation(s) for access requests.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Access Requests
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-access-requests-api-openapi.yml
+- aid: jumpcloud:jumpcloud-access-risk-settings-api
+  name: JumpCloud Access Risk Settings API
+  description: The Access Risk Settings API from JumpCloud — 2 operation(s) for access risk settings.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Access Risk Settings
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-access-risk-settings-api-openapi.yml
+- aid: jumpcloud:jumpcloud-active-directory-api
+  name: JumpCloud Active Directory API
+  description: The Active Directory API from JumpCloud — 14 operation(s) for active directory.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Active Directory
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-active-directory-api-openapi.yml
+- aid: jumpcloud:jumpcloud-administrators-api
+  name: JumpCloud Administrators API
+  description: The Administrators API from JumpCloud — 3 operation(s) for administrators.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Administrators
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-administrators-api-openapi.yml
+- aid: jumpcloud:jumpcloud-agent-groups-api
+  name: JumpCloud Agent Groups API
+  description: >-
+    Use the Agent Groups API to create and manage agent groups in your organization. Agent groups organize
+    agents and provide a reusable way to assign applications to multiple agents.
+
+
+    Add or remove agents from a group, manage the group's application assignments, and retrieve the agents
+    and applications assigned to the group. Agents receive access to applications assigned to their groups.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Agent Groups
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-agent-groups-api-openapi.yml
+- aid: jumpcloud:jumpcloud-agents-api
+  name: JumpCloud Agents API
+  description: >-
+    Use the Agents API to register and manage AI agents in your organization.
+
+    An AI agent is a non-human identity with its own owner, credentials, group
+
+    memberships, resource assignments, and lifecycle.
+
+
+    New agents begin in the active state. Suspend an agent to block its access
+
+    to assigned resources, including the JumpCloud AI Gateway. Activate the
+
+    agent to restore access.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Agents
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-agents-api-openapi.yml
+- aid: jumpcloud:jumpcloud-aggregated-policy-stats-api
+  name: JumpCloud Aggregated Policy Stats API
+  description: >-
+    The Aggregated Policy Stats API from JumpCloud — 1 operation(s) for aggregated policy stats.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Aggregated Policy Stats
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-aggregated-policy-stats-api-openapi.yml
+- aid: jumpcloud:jumpcloud-app-catalog-api
+  name: JumpCloud App Catalog API
+  description: The App Catalog API from JumpCloud — 2 operation(s) for app catalog.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - App Catalog
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-app-catalog-api-openapi.yml
+- aid: jumpcloud:jumpcloud-apple-mdm-api
+  name: JumpCloud Apple MDM API
+  description: The Apple MDM API from JumpCloud — 19 operation(s) for apple mdm.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Apple MDM
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-apple-mdm-api-openapi.yml
+- aid: jumpcloud:jumpcloud-assets-api
+  name: JumpCloud Assets API
+  description: Operations related to Assets
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Assets
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-assets-api-openapi.yml
+- aid: jumpcloud:jumpcloud-authentication-policies-api
+  name: JumpCloud Authentication Policies API
+  description: >-
+    The Authentication Policies API from JumpCloud — 5 operation(s) for authentication policies.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Authentication Policies
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-authentication-policies-api-openapi.yml
+- aid: jumpcloud:jumpcloud-bulk-job-requests-api
+  name: JumpCloud Bulk Job Requests API
+  description: The Bulk Job Requests API from JumpCloud — 7 operation(s) for bulk job requests.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Bulk Job Requests
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-bulk-job-requests-api-openapi.yml
+- aid: jumpcloud:jumpcloud-custom-emails-api
+  name: JumpCloud Custom Emails API
+  description: The Custom Emails API from JumpCloud — 3 operation(s) for custom emails.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Custom Emails
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-custom-emails-api-openapi.yml
+- aid: jumpcloud:jumpcloud-directories-api
+  name: JumpCloud Directories API
+  description: The Directories API from JumpCloud — 1 operation(s) for directories.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Directories
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-directories-api-openapi.yml
+- aid: jumpcloud:jumpcloud-directory-insights-api
+  name: JumpCloud Directory Insights API
+  description: The Directory Insights API from JumpCloud — 5 operation(s) for directory insights.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Directory Insights
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-directory-insights-api-openapi.yml
+- aid: jumpcloud:jumpcloud-duo-api
+  name: JumpCloud Duo API
+  description: The Duo API from JumpCloud — 4 operation(s) for duo.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Duo
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-duo-api-openapi.yml
+- aid: jumpcloud:jumpcloud-email-subscriptions-api
+  name: JumpCloud Email Subscriptions API
+  description: The Email Subscriptions API from JumpCloud — 1 operation(s) for email subscriptions.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Email Subscriptions
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-email-subscriptions-api-openapi.yml
+- aid: jumpcloud:jumpcloud-fde-api
+  name: JumpCloud Fde API
+  description: The fde API from JumpCloud — 1 operation(s) for fde.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - fde
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-fde-api-openapi.yml
+- aid: jumpcloud:jumpcloud-featuretrials-api
+  name: JumpCloud Feature Trials API
+  description: The FeatureTrials API from JumpCloud — 1 operation(s) for featuretrials.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - FeatureTrials
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-featuretrials-api-openapi.yml
+- aid: jumpcloud:jumpcloud-g-suite-api
+  name: JumpCloud G Suite API
+  description: The G Suite API from JumpCloud — 14 operation(s) for g suite.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - G Suite
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-g-suite-api-openapi.yml
+- aid: jumpcloud:jumpcloud-g-suite-import-api
+  name: JumpCloud G Suite Import API
+  description: The G Suite Import API from JumpCloud — 2 operation(s) for g suite import.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - G Suite Import
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-g-suite-import-api-openapi.yml
+- aid: jumpcloud:jumpcloud-gcep-api
+  name: JumpCloud GCEP API
+  description: The GCEP API from JumpCloud — 2 operation(s) for gcep.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - GCEP
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-gcep-api-openapi.yml
+- aid: jumpcloud:jumpcloud-google-emm-api
+  name: JumpCloud Google EMM API
+  description: The Google EMM API from JumpCloud — 17 operation(s) for google emm.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Google EMM
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-google-emm-api-openapi.yml
+- aid: jumpcloud:jumpcloud-graph-api
+  name: JumpCloud Graph API
+  description: The Graph API from JumpCloud — 99 operation(s) for graph.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Graph
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-graph-api-openapi.yml
+- aid: jumpcloud:jumpcloud-groups-api
+  name: JumpCloud Groups API
+  description: The Groups API from JumpCloud — 4 operation(s) for groups.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Groups
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-groups-api-openapi.yml
+- aid: jumpcloud:jumpcloud-identity-providers-api
+  name: JumpCloud Identity Providers API
+  description: The Identity Providers API from JumpCloud — 3 operation(s) for identity providers.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Identity Providers
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-identity-providers-api-openapi.yml
+- aid: jumpcloud:jumpcloud-identity-risk-api
+  name: JumpCloud Identity Risk API
+  description: The Identity Risk API from JumpCloud — 10 operation(s) for identity risk.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Identity Risk
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-identity-risk-api-openapi.yml
+- aid: jumpcloud:jumpcloud-image-api
+  name: JumpCloud Image API
+  description: The Image API from JumpCloud — 1 operation(s) for image.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Image
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-image-api-openapi.yml
+- aid: jumpcloud:jumpcloud-ip-lists-api
+  name: JumpCloud IP Lists API
+  description: The IP Lists API from JumpCloud — 2 operation(s) for ip lists.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - IP Lists
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-ip-lists-api-openapi.yml
+- aid: jumpcloud:jumpcloud-ldap-servers-api
+  name: JumpCloud LDAP Servers API
+  description: The LDAP Servers API from JumpCloud — 5 operation(s) for ldap servers.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - LDAP Servers
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-ldap-servers-api-openapi.yml
+- aid: jumpcloud:jumpcloud-logos-api
+  name: JumpCloud Logos API
+  description: The Logos API from JumpCloud — 1 operation(s) for logos.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Logos
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-logos-api-openapi.yml
+- aid: jumpcloud:jumpcloud-managed-service-provider-api
+  name: JumpCloud Managed Service Provider API
+  description: >-
+    The Managed Service Provider API from JumpCloud — 17 operation(s) for managed service provider.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Managed Service Provider
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-managed-service-provider-api-openapi.yml
+- aid: jumpcloud:jumpcloud-mdm-api
+  name: JumpCloud Mdm API
+  description: The mdm API from JumpCloud — 21 operation(s) for mdm.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - mdm
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-mdm-api-openapi.yml
+- aid: jumpcloud:jumpcloud-microsoft-mdm-api
+  name: JumpCloud Microsoft MDM API
+  description: The Microsoft MDM API from JumpCloud — 1 operation(s) for microsoft mdm.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Microsoft MDM
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-microsoft-mdm-api-openapi.yml
+- aid: jumpcloud:jumpcloud-monitoring-and-alerting-api
+  name: JumpCloud Monitoring and Alerting API
+  description: >-
+    The Monitoring and Alerting API from JumpCloud — 14 operation(s) for monitoring and alerting.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Monitoring and Alerting
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-monitoring-and-alerting-api-openapi.yml
+- aid: jumpcloud:jumpcloud-notifications-channels-api
+  name: JumpCloud Notifications Channels API
+  description: >-
+    The Notifications Channels API from JumpCloud — 3 operation(s) for notifications channels.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Notifications Channels
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-notifications-channels-api-openapi.yml
+- aid: jumpcloud:jumpcloud-object-storage-api
+  name: JumpCloud Object Storage API
+  description: The Object Storage API from JumpCloud — 2 operation(s) for object storage.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Object Storage
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-object-storage-api-openapi.yml
+- aid: jumpcloud:jumpcloud-office-365-api
+  name: JumpCloud Office 365 API
+  description: The Office 365 API from JumpCloud — 12 operation(s) for office 365.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Office 365
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-office-365-api-openapi.yml
+- aid: jumpcloud:jumpcloud-office-365-import-api
+  name: JumpCloud Office 365 Import API
+  description: The Office 365 Import API from JumpCloud — 1 operation(s) for office 365 import.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Office 365 Import
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-office-365-import-api-openapi.yml
+- aid: jumpcloud:jumpcloud-organization-feature-settings-api
+  name: JumpCloud Organization Feature Settings API
+  description: >-
+    The Organization Feature Settings API from JumpCloud — 2 operation(s) for organization feature settings.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Organization Feature Settings
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-organization-feature-settings-api-openapi.yml
+- aid: jumpcloud:jumpcloud-organizations-api
+  name: JumpCloud Organizations API
+  description: The Organizations API from JumpCloud — 4 operation(s) for organizations.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Organizations
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-organizations-api-openapi.yml
+- aid: jumpcloud:jumpcloud-password-manager-api
+  name: JumpCloud Password Manager API
+  description: The Password Manager API from JumpCloud — 32 operation(s) for password manager.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Password Manager
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-password-manager-api-openapi.yml
+- aid: jumpcloud:jumpcloud-password-policy-api
+  name: JumpCloud Password Policy API
+  description: The Password Policy API from JumpCloud — 6 operation(s) for password policy.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Password Policy
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-password-policy-api-openapi.yml
+- aid: jumpcloud:jumpcloud-password-vault-api
+  name: JumpCloud Password Vault API
+  description: The Password Vault API from JumpCloud — 59 operation(s) for password vault.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Password Vault
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-password-vault-api-openapi.yml
+- aid: jumpcloud:jumpcloud-passwordmanageritem-api
+  name: JumpCloud Password Manager Item API
+  description: The PasswordManagerItem API from JumpCloud — 3 operation(s) for passwordmanageritem.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - PasswordManagerItem
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-passwordmanageritem-api-openapi.yml
+- aid: jumpcloud:jumpcloud-policies-api
+  name: JumpCloud Policies API
+  description: The Policies API from JumpCloud — 16 operation(s) for policies.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Policies
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-policies-api-openapi.yml
+- aid: jumpcloud:jumpcloud-policy-group-associations-api
+  name: JumpCloud Policy Group Associations API
+  description: >-
+    The Policy Group Associations API from JumpCloud — 5 operation(s) for policy group associations.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Policy Group Associations
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-policy-group-associations-api-openapi.yml
+- aid: jumpcloud:jumpcloud-policy-group-members-membership-api
+  name: JumpCloud Policy Group Members & Membership API
+  description: >-
+    The Policy Group Members & Membership API from JumpCloud — 2 operation(s) for policy group members
+    & membership.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Policy Group Members & Membership
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-policy-group-members-membership-api-openapi.yml
+- aid: jumpcloud:jumpcloud-policy-group-templates-api
+  name: JumpCloud Policy Group Templates API
+  description: >-
+    The Policy Group Templates API from JumpCloud — 5 operation(s) for policy group templates.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Policy Group Templates
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-policy-group-templates-api-openapi.yml
+- aid: jumpcloud:jumpcloud-policy-groups-api
+  name: JumpCloud Policy Groups API
+  description: The Policy Groups API from JumpCloud — 9 operation(s) for policy groups.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Policy Groups
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-policy-groups-api-openapi.yml
+- aid: jumpcloud:jumpcloud-policytemplates-api
+  name: JumpCloud Policytemplates API
+  description: The Policytemplates API from JumpCloud — 2 operation(s) for policytemplates.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Policytemplates
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-policytemplates-api-openapi.yml
+- aid: jumpcloud:jumpcloud-privileged-access-api
+  name: JumpCloud Privileged Access API
+  description: The Privileged Access API from JumpCloud — 21 operation(s) for privileged access.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Privileged Access
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-privileged-access-api-openapi.yml
+- aid: jumpcloud:jumpcloud-providers-api
+  name: JumpCloud Providers API
+  description: The Providers API from JumpCloud — 65 operation(s) for providers.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Providers
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-providers-api-openapi.yml
+- aid: jumpcloud:jumpcloud-push-verification-api
+  name: JumpCloud Push Verification API
+  description: The Push Verification API from JumpCloud — 2 operation(s) for push verification.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Push Verification
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-push-verification-api-openapi.yml
+- aid: jumpcloud:jumpcloud-radius-servers-api
+  name: JumpCloud RADIUS Servers API
+  description: The RADIUS Servers API from JumpCloud — 4 operation(s) for radius servers.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - RADIUS Servers
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-radius-servers-api-openapi.yml
+- aid: jumpcloud:jumpcloud-reports-api
+  name: JumpCloud Reports API
+  description: The Reports API from JumpCloud — 15 operation(s) for reports.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Reports
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-reports-api-openapi.yml
+- aid: jumpcloud:jumpcloud-roles-api
+  name: JumpCloud Roles API
+  description: The Roles API from JumpCloud — 2 operation(s) for roles.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Roles
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-roles-api-openapi.yml
+- aid: jumpcloud:jumpcloud-rules-api
+  name: JumpCloud Rules API
+  description: The Rules API from JumpCloud — 2 operation(s) for rules.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Rules
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-rules-api-openapi.yml
+- aid: jumpcloud:jumpcloud-saas-app-management-api
+  name: JumpCloud SaaS App Management API
+  description: Operations related to SaaS App Management
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - SaaS App Management
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-saas-app-management-api-openapi.yml
+- aid: jumpcloud:jumpcloud-samba-domains-api
+  name: JumpCloud Samba Domains API
+  description: The Samba Domains API from JumpCloud — 2 operation(s) for samba domains.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Samba Domains
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-samba-domains-api-openapi.yml
+- aid: jumpcloud:jumpcloud-sample-data-api
+  name: JumpCloud Sample Data API
+  description: The Sample Data API from JumpCloud — 1 operation(s) for sample data.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Sample Data
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-sample-data-api-openapi.yml
+- aid: jumpcloud:jumpcloud-saved-views-api
+  name: JumpCloud Saved Views API
+  description: The Saved Views API from JumpCloud — 3 operation(s) for saved views.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Saved Views
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-saved-views-api-openapi.yml
+- aid: jumpcloud:jumpcloud-scim-import-api
+  name: JumpCloud SCIM Import API
+  description: The SCIM Import API from JumpCloud — 1 operation(s) for scim import.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - SCIM Import
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-scim-import-api-openapi.yml
+- aid: jumpcloud:jumpcloud-scope-groups-api
+  name: JumpCloud Scope Groups API
+  description: The Scope Groups API from JumpCloud — 1 operation(s) for scope groups.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Scope Groups
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-scope-groups-api-openapi.yml
+- aid: jumpcloud:jumpcloud-service-accounts-api
+  name: JumpCloud Service Accounts API
+  description: The Service Accounts API from JumpCloud — 4 operation(s) for service accounts.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Service Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-service-accounts-api-openapi.yml
+- aid: jumpcloud:jumpcloud-slack-notifications-api
+  name: JumpCloud Slack Notifications API
+  description: The Slack Notifications API from JumpCloud — 1 operation(s) for slack notifications.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Slack Notifications
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-slack-notifications-api-openapi.yml
+- aid: jumpcloud:jumpcloud-software-apps-api
+  name: JumpCloud Software Apps API
+  description: The Software Apps API from JumpCloud — 9 operation(s) for software apps.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Software Apps
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-software-apps-api-openapi.yml
+- aid: jumpcloud:jumpcloud-subscriptions-api
+  name: JumpCloud Subscriptions API
+  description: The Subscriptions API from JumpCloud — 1 operation(s) for subscriptions.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Subscriptions
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-subscriptions-api-openapi.yml
+- aid: jumpcloud:jumpcloud-system-group-associations-api
+  name: JumpCloud System Group Associations API
+  description: >-
+    The System Group Associations API from JumpCloud — 6 operation(s) for system group associations.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - System Group Associations
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-system-group-associations-api-openapi.yml
+- aid: jumpcloud:jumpcloud-system-group-members-membership-api
+  name: JumpCloud System Group Members & Membership API
+  description: >-
+    The System Group Members & Membership API from JumpCloud — 2 operation(s) for system group members
+    & membership.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - System Group Members & Membership
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-system-group-members-membership-api-openapi.yml
+- aid: jumpcloud:jumpcloud-system-groups-api
+  name: JumpCloud System Groups API
+  description: The System Groups API from JumpCloud — 10 operation(s) for system groups.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - System Groups
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-system-groups-api-openapi.yml
+- aid: jumpcloud:jumpcloud-system-insights-api
+  name: JumpCloud System Insights API
+  description: The System Insights API from JumpCloud — 60 operation(s) for system insights.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - System Insights
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-system-insights-api-openapi.yml
+- aid: jumpcloud:jumpcloud-systems-api
+  name: JumpCloud Systems API
+  description: The Systems API from JumpCloud — 13 operation(s) for systems.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Systems
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-systems-api-openapi.yml
+- aid: jumpcloud:jumpcloud-systems-organization-settings-api
+  name: JumpCloud Systems Organization Settings API
+  description: >-
+    The Systems Organization Settings API from JumpCloud — 4 operation(s) for systems organization settings.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Systems Organization Settings
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-systems-organization-settings-api-openapi.yml
+- aid: jumpcloud:jumpcloud-translation-rules-api
+  name: JumpCloud Translation Rules API
+  description: The Translation Rules API from JumpCloud — 5 operation(s) for translation rules.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Translation Rules
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-translation-rules-api-openapi.yml
+- aid: jumpcloud:jumpcloud-user-group-associations-api
+  name: JumpCloud User Group Associations API
+  description: >-
+    The User Group Associations API from JumpCloud — 12 operation(s) for user group associations.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - User Group Associations
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-user-group-associations-api-openapi.yml
+- aid: jumpcloud:jumpcloud-user-group-members-membership-api
+  name: JumpCloud User Group Members & Membership API
+  description: >-
+    The User Group Members & Membership API from JumpCloud — 2 operation(s) for user group members & membership.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - User Group Members & Membership
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-user-group-members-membership-api-openapi.yml
+- aid: jumpcloud:jumpcloud-user-groups-api
+  name: JumpCloud User Groups API
+  description: The User Groups API from JumpCloud — 17 operation(s) for user groups.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - User Groups
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-user-groups-api-openapi.yml
+- aid: jumpcloud:jumpcloud-users-api
+  name: JumpCloud Users API
+  description: The Users API from JumpCloud — 17 operation(s) for users.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-users-api-openapi.yml
+- aid: jumpcloud:jumpcloud-webhook-notifications-api
+  name: JumpCloud Webhook Notifications API
+  description: The Webhook Notifications API from JumpCloud — 1 operation(s) for webhook notifications.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Webhook Notifications
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-webhook-notifications-api-openapi.yml
+- aid: jumpcloud:jumpcloud-webhook-notifications-channels-api
+  name: JumpCloud Webhook Notifications Channels API
+  description: >-
+    The Webhook Notifications Channels API from JumpCloud — 1 operation(s) for webhook notifications channels.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Webhook Notifications Channels
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-webhook-notifications-channels-api-openapi.yml
+- aid: jumpcloud:jumpcloud-workday-import-api
+  name: JumpCloud Workday Import API
+  description: The Workday Import API from JumpCloud — 6 operation(s) for workday import.
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Workday Import
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-workday-import-api-openapi.yml
+- aid: jumpcloud:jumpcloud-workflows-api
+  name: JumpCloud Workflows API
+  description: Operations related to public workflows
+  humanURL: https://docs.jumpcloud.com/api/1.0/index.html
+  baseURL: https://console.jumpcloud.com/api
+  tags:
+  - Workflows
+  properties:
+  - type: OpenAPI
+    url: openapi/jumpcloud-workflows-api-openapi.yml
 common:
 - type: CapabilityMap
   url: capabilities/jumpcloud-capability-edges.yml

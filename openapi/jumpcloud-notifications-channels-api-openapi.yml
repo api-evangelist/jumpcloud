@@ -1,0 +1,949 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Notifications Channels API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Notifications Channels
+paths:
+  /notifications/channels:
+    get:
+      summary: This endpoint is used for listing the notification channels
+      description: This endpoint allows you to list notification channels.
+      operationId: NotificationsChannelsService_ListChannels
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.notifications.ListChannelsResponse'
+      parameters:
+      - name: filter
+        description: "A filter to apply to the query.\n\n  **Filter structure**: `<field>:<operator>:<value>`.\n\n  **field** = Populate with a valid field from an endpoint response.\n\n  **operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.\n\n  **value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.\n\n  **Example** `GET /api/v2/groups?filter=name:eq:Test+Group`\n"
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      - name: fields
+        description: The fields on the items listed to return.
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: skip
+        description: The offset into the records to return.
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '0'
+      - name: sort
+        description: 'An optional comma separated field names used to sort the collection.
+
+          Default sort is ascending, prefix with `-` to sort descending.'
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      - name: limit
+        description: 'The number of channels to return at once.
+
+          If the number of channels returned is less than `limit` there are no more channels to fetch.
+
+          If the number of channels returned is equal to limit there may be more channels to fetch. Increment `skip` by `limit` to get the next set of channels.'
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+          default: '100'
+      tags:
+      - Notifications Channels
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - notifications.channels
+      - notifications.channels.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/notifications/channels?filter=SOME_ARRAY_VALUE&fields=SOME_ARRAY_VALUE&skip=SOME_STRING_VALUE&sort=SOME_ARRAY_VALUE&limit=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/notifications/channels"
+
+
+          querystring = {"filter":"SOME_ARRAY_VALUE","fields":"SOME_ARRAY_VALUE","skip":"SOME_STRING_VALUE","sort":"SOME_ARRAY_VALUE","limit":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/notifications/channels?filter=SOME_ARRAY_VALUE&fields=SOME_ARRAY_VALUE&skip=SOME_STRING_VALUE&sort=SOME_ARRAY_VALUE&limit=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+    post:
+      summary: This endpoint is used for creating the channels
+      description: This endpoint allows you to create a notification channel.
+      operationId: NotificationsChannelsService_CreateChannel
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.notifications.CreateChannelResponse'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.notifications.CreateChannelResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.notifications.CreateChannelRequest'
+        description: CreateChannelRequest represents the request to create a channel.
+        required: true
+      tags:
+      - Notifications Channels
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - notifications.channels
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/notifications/channels \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"channel\":{\"config\":{\"email\":{\"role\":[{\"objectId\":\"string\",\"roleObjectId\":\"string\"}],\"user\":[{\"address\":\"string\",\"name\":\"string\",\"objectId\":\"string\"}]},\"slack\":{\"slackChannel\":[{\"objectId\":\"string\",\"slackChannelId\":\"string\",\"slackTeamId\":\"string\",\"slackWorkspaceName\":\"string\"}]},\"webhook\":{\"authPassword\":\"string\",\"authToken\":\"string\",\"authType\":\"WEBHOOK_AUTH_TYPE_UNSPECIFIED\",\"authUsername\":\"string\",\"customHeaders\":[{\"key\":\"string\",\"masked\":true,\"objectId\":\"string\",\"value\":\"string\"}],\"maskedUrlPortion\":[{\"key\":\"string\",\"objectId\":\"string\",\"value\":\"string\"}],\"objectId\":\"string\",\"sslVerification\":true,\"url\":\"string\",\"urlMasked\":true}},\"description\":\"string\",\"enabled\":true,\"name\":\"string\",\"type\":\"CHANNEL_TYPE_UNSPECIFIED\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/notifications/channels\"\n\npayload = {\"channel\": {\n        \"config\": {\n            \"email\": {\n                \"role\": [\n                    {\n                        \"objectId\": \"string\",\n                        \"roleObjectId\": \"string\"\n                    }\n                ],\n                \"user\": [\n                    {\n                        \"address\": \"string\",\n                        \"name\": \"string\",\n                        \"objectId\": \"string\"\n                    }\n                ]\n            },\n            \"slack\": {\"slackChannel\": [\n                    {\n                        \"objectId\": \"string\",\n                        \"slackChannelId\": \"string\",\n                        \"slackTeamId\": \"string\",\n                        \"slackWorkspaceName\": \"string\"\n                    }\n                ]},\n            \"webhook\": {\n                \"authPassword\": \"string\",\n                \"authToken\": \"string\",\n                \"authType\": \"WEBHOOK_AUTH_TYPE_UNSPECIFIED\",\n                \"authUsername\": \"string\",\n                \"customHeaders\": [\n                    {\n                        \"key\": \"string\",\n                        \"masked\": True,\n                        \"objectId\": \"string\",\n                        \"value\": \"string\"\n                    }\n                ],\n                \"maskedUrlPortion\": [\n                    {\n                        \"key\": \"string\",\n                        \"objectId\": \"string\",\n                        \"value\": \"string\"\n                    }\n                ],\n                \"objectId\": \"string\",\n                \"sslVerification\": True,\n                \"url\": \"string\",\n                \"urlMasked\": True\n            }\n        },\n        \"description\": \"string\",\n        \"enabled\": True,\n        \"name\": \"string\",\n        \"type\": \"CHANNEL_TYPE_UNSPECIFIED\"\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/notifications/channels'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"channel":{"config":{"email":{"role":[{"objectId":"string","roleObjectId":"string"}],"user":[{"address":"string","name":"string","objectId":"string"}]},"slack":{"slackChannel":[{"objectId":"string","slackChannelId":"string","slackTeamId":"string","slackWorkspaceName":"string"}]},"webhook":{"authPassword":"string","authToken":"string","authType":"WEBHOOK_AUTH_TYPE_UNSPECIFIED","authUsername":"string","customHeaders":[{"key":"string","masked":true,"objectId":"string","value":"string"}],"maskedUrlPortion":[{"key":"string","objectId":"string","value":"string"}],"objectId":"string","sslVerification":true,"url":"string","urlMasked":true}},"description":"string","enabled":true,"name":"string","type":"CHANNEL_TYPE_UNSPECIFIED"}}'''
+  /notifications/channels/{id}:
+    get:
+      summary: This endpoint is used for getting a notification channel
+      description: This endpoint allows you to get a notification channel.
+      operationId: NotificationsChannelsService_GetChannel
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.notifications.GetChannelResponse'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - Notifications Channels
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - notifications.channels
+      - notifications.channels.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/notifications/channels/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/notifications/channels/{id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/notifications/channels/{id}'' -Method GET -Headers $headers'
+    delete:
+      summary: This endpoint is used to delete notification channels
+      description: This endpoint allows you to delete a notification channel.
+      operationId: NotificationsChannelsService_DeleteChannel
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema: {}
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      tags:
+      - Notifications Channels
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - notifications.channels
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/notifications/channels/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/notifications/channels/{id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/notifications/channels/{id}'' -Method DELETE -Headers $headers'
+    patch:
+      summary: This endpoint is used for updating the channels
+      description: This endpoint allows you to update a notification channel.
+      operationId: NotificationsChannelsService_UpdateChannel
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.notifications.UpdateChannelResponse'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel:
+                  $ref: '#/components/schemas/jumpcloud.notifications.Channel'
+              description: UpdateChannelRequest represents the request to update a channel.
+        required: true
+      tags:
+      - Notifications Channels
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - notifications.channels
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PATCH \\\n  --url https://console.jumpcloud.com/api/v2/notifications/channels/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"channel\":{\"config\":{\"email\":{\"role\":[{\"objectId\":\"string\",\"roleObjectId\":\"string\"}],\"user\":[{\"address\":\"string\",\"name\":\"string\",\"objectId\":\"string\"}]},\"slack\":{\"slackChannel\":[{\"objectId\":\"string\",\"slackChannelId\":\"string\",\"slackTeamId\":\"string\",\"slackWorkspaceName\":\"string\"}]},\"webhook\":{\"authPassword\":\"string\",\"authToken\":\"string\",\"authType\":\"WEBHOOK_AUTH_TYPE_UNSPECIFIED\",\"authUsername\":\"string\",\"customHeaders\":[{\"key\":\"string\",\"masked\":true,\"objectId\":\"string\",\"value\":\"string\"}],\"maskedUrlPortion\":[{\"key\":\"string\",\"objectId\":\"string\",\"value\":\"string\"}],\"objectId\":\"string\",\"sslVerification\":true,\"url\":\"string\",\"urlMasked\":true}},\"description\":\"string\",\"enabled\":true,\"name\":\"string\",\"type\":\"CHANNEL_TYPE_UNSPECIFIED\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/notifications/channels/{id}\"\n\npayload = {\"channel\": {\n        \"config\": {\n            \"email\": {\n                \"role\": [\n                    {\n                        \"objectId\": \"string\",\n                        \"roleObjectId\": \"string\"\n                    }\n                ],\n                \"user\": [\n                    {\n                        \"address\": \"string\",\n                        \"name\": \"string\",\n                        \"objectId\": \"string\"\n                    }\n                ]\n            },\n            \"slack\": {\"slackChannel\": [\n                    {\n                        \"objectId\": \"string\",\n                        \"slackChannelId\": \"string\",\n                        \"slackTeamId\": \"string\",\n                        \"slackWorkspaceName\": \"string\"\n                    }\n                ]},\n            \"webhook\": {\n                \"authPassword\": \"string\",\n                \"authToken\": \"string\",\n                \"authType\": \"WEBHOOK_AUTH_TYPE_UNSPECIFIED\",\n                \"authUsername\": \"string\",\n                \"customHeaders\": [\n                    {\n                        \"key\": \"string\",\n                        \"masked\": True,\n                        \"objectId\": \"string\",\n                        \"value\": \"string\"\n                    }\n                ],\n                \"maskedUrlPortion\": [\n                    {\n                        \"key\": \"string\",\n                        \"objectId\": \"string\",\n                        \"value\": \"string\"\n                    }\n                ],\n                \"objectId\": \"string\",\n                \"sslVerification\": True,\n                \"url\": \"string\",\n                \"urlMasked\": True\n            }\n        },\n        \"description\": \"string\",\n        \"enabled\": True,\n        \"name\": \"string\",\n        \"type\": \"CHANNEL_TYPE_UNSPECIFIED\"\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PATCH\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/notifications/channels/{id}'' -Method PATCH -Headers $headers -ContentType ''application/json'' -Body ''{"channel":{"config":{"email":{"role":[{"objectId":"string","roleObjectId":"string"}],"user":[{"address":"string","name":"string","objectId":"string"}]},"slack":{"slackChannel":[{"objectId":"string","slackChannelId":"string","slackTeamId":"string","slackWorkspaceName":"string"}]},"webhook":{"authPassword":"string","authToken":"string","authType":"WEBHOOK_AUTH_TYPE_UNSPECIFIED","authUsername":"string","customHeaders":[{"key":"string","masked":true,"objectId":"string","value":"string"}],"maskedUrlPortion":[{"key":"string","objectId":"string","value":"string"}],"objectId":"string","sslVerification":true,"url":"string","urlMasked":true}},"description":"string","enabled":true,"name":"string","type":"CHANNEL_TYPE_UNSPECIFIED"}}'''
+  /notifications/channels/slack/{slackTeamId}:
+    delete:
+      summary: This endpoint is used to delete slack channels
+      description: This endpoint allows you to delete a notification channel.
+      operationId: NotificationsChannelsService_DeleteSlackChannel
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema: {}
+      parameters:
+      - name: slackTeamId
+        description: represents the slack team identifier.
+        in: path
+        required: true
+        schema:
+          type: string
+      tags:
+      - Notifications Channels
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - notifications.channels
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/notifications/channels/slack/{slackTeamId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/notifications/channels/slack/{slackTeamId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/notifications/channels/slack/{slackTeamId}'' -Method DELETE -Headers $headers'
+components:
+  schemas:
+    jumpcloud.notifications.CreateChannelRequest:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/jumpcloud.notifications.Channel'
+      description: CreateChannelRequest represents the request to create a channel.
+    jumpcloud.notifications.EmailRecipientConfigRole:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: byte
+          description: represents the role identifier.
+        roleObjectId:
+          type: string
+          format: byte
+          description: represents the role object identifier.
+      description: EmailRecipientConfigRole represents the details of email recipient config role.
+    jumpcloud.notifications.ChannelTypeConfig:
+      type: object
+      properties:
+        email:
+          $ref: '#/components/schemas/jumpcloud.notifications.EmailRecipientConfig'
+        slack:
+          $ref: '#/components/schemas/jumpcloud.notifications.SlackConfig'
+        webhook:
+          $ref: '#/components/schemas/jumpcloud.notifications.WebhookConfig'
+      description: ChannelTypeConfig represents the configuration for the channel type.
+    jumpcloud.notifications.SlackConfig:
+      type: object
+      properties:
+        slackChannel:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.notifications.SlackChannelConfig'
+          description: represents the slack channel ID where notifications will be sent.
+      description: SlackConfig represents the slack notification config.
+    jumpcloud.notifications.ChannelType:
+      type: string
+      enum:
+      - CHANNEL_TYPE_UNSPECIFIED
+      - CHANNEL_TYPE_EMAIL
+      - CHANNEL_TYPE_WEBHOOK
+      - CHANNEL_TYPE_SLACK
+      default: CHANNEL_TYPE_UNSPECIFIED
+      description: "ChannelType represents the type of the channel.\n\n - CHANNEL_TYPE_UNSPECIFIED: CHANNEL_TYPE_UNSPECIFIED represents an invalid channel type.\n - CHANNEL_TYPE_EMAIL: CHANNEL_TYPE_EMAIL represents the email channel type.\n - CHANNEL_TYPE_WEBHOOK: CHANNEL_TYPE_WEBHOOK represents the webhook channel type.\n - CHANNEL_TYPE_SLACK: CHANNEL_TYPE_SLACK represents the slack channel type."
+    jumpcloud.notifications.SlackChannelConfig:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: byte
+        slackChannelId:
+          type: string
+          description: represents the slack channel identifier.
+        slackTeamId:
+          type: string
+          description: represents the slack team identifier.
+        slackWorkspaceName:
+          type: string
+          description: represents the slack workspace name.
+    jumpcloud.notifications.CustomHeaders:
+      type: object
+      properties:
+        key:
+          type: string
+        masked:
+          type: boolean
+        objectId:
+          type: string
+          format: byte
+        value:
+          type: string
+      description: CustomHeaders represents the custom headers for the webhook.
+    jumpcloud.notifications.MaskedURLPortion:
+      type: object
+      properties:
+        key:
+          type: string
+        objectId:
+          type: string
+          format: byte
+        value:
+          type: string
+      description: MaskedURLPortion represents the masked portion of the URL.
+    jumpcloud.notifications.ListChannelsResponse:
+      type: object
+      properties:
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.notifications.Channel'
+          description: represents the list of channels.
+        count:
+          type: integer
+          format: uint64
+          description: represents the count of channels.
+      description: ListChannelResponse holds the list of channels requested via a ListChannelsRequest.
+    jumpcloud.notifications.CreateChannelResponse:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/jumpcloud.notifications.Channel'
+      description: CreateChannelResponse represents the response for creating a channel.
+    jumpcloud.notifications.EmailRecipientConfig:
+      type: object
+      properties:
+        role:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.notifications.EmailRecipientConfigRole'
+        user:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.notifications.EmailRecipientConfigUser'
+      description: EmailRecipientConfig represents the email recipient.
+    jumpcloud.notifications.GetChannelResponse:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/jumpcloud.notifications.Channel'
+      description: GetChannelResponse represents the response for getting a channel.
+    jumpcloud.notifications.WebhookAuthType:
+      type: string
+      enum:
+      - WEBHOOK_AUTH_TYPE_UNSPECIFIED
+      - WEBHOOK_AUTH_TYPE_BASIC
+      - WEBHOOK_AUTH_TYPE_BEARER
+      default: WEBHOOK_AUTH_TYPE_UNSPECIFIED
+      description: "WebhookAuthType represents the authentication type for the webhook.\n\n - WEBHOOK_AUTH_TYPE_UNSPECIFIED: WEBHOOK_AUTH_TYPE_UNSPECIFIED represents an invalid authentication type.\n - WEBHOOK_AUTH_TYPE_BASIC: WEBHOOK_AUTH_TYPE_BASIC represents basic authentication.\n - WEBHOOK_AUTH_TYPE_BEARER: WEBHOOK_AUTH_TYPE_BEARER represents bearer token authentication."
+    jumpcloud.notifications.WebhookConfig:
+      type: object
+      properties:
+        authPassword:
+          type: string
+        authToken:
+          type: string
+        authType:
+          $ref: '#/components/schemas/jumpcloud.notifications.WebhookAuthType'
+        authUsername:
+          type: string
+        customHeaders:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.notifications.CustomHeaders'
+        maskedUrlPortion:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.notifications.MaskedURLPortion'
+        objectId:
+          type: string
+          format: byte
+          description: represents the webhook identifier.
+        sslVerification:
+          type: boolean
+        url:
+          type: string
+          description: represents the webhook url.
+        urlMasked:
+          type: boolean
+      description: WebhookConfig represents the webhook configuration.
+    jumpcloud.notifications.EmailRecipientConfigUser:
+      type: object
+      properties:
+        address:
+          type: string
+          description: represents the recipient email address.
+        name:
+          type: string
+          description: represents the recipient name.
+        objectId:
+          type: string
+          format: byte
+          description: represents the address identifier.
+      description: EmailRecipientConfigUser represents the details of email recipient config user.
+    jumpcloud.notifications.Channel:
+      type: object
+      properties:
+        config:
+          $ref: '#/components/schemas/jumpcloud.notifications.ChannelTypeConfig'
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          type: string
+          format: byte
+          readOnly: true
+        description:
+          type: string
+          description: represents the description of the channel.
+        enabled:
+          type: boolean
+          description: represents the status of the channel.
+        name:
+          type: string
+          description: represents the name of the channel.
+        objectId:
+          type: string
+          format: byte
+          description: Channel represents a medium through which notifications are sent, such as email notifications.
+          readOnly: true
+        organizationObjectId:
+          type: string
+          format: byte
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/jumpcloud.notifications.ChannelType'
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedBy:
+          type: string
+          format: byte
+          readOnly: true
+      description: Channel represents the notification channel.
+    jumpcloud.notifications.UpdateChannelResponse:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/jumpcloud.notifications.Channel'
+      description: UpdateChannelResponse represents the response for updating a channel.
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

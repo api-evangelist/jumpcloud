@@ -1,0 +1,2369 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Policies API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Policies
+paths:
+  /policies:
+    x-functionalities-tags:
+    - devices-windows-policy-crud
+    - devices-darwin-policy-crud
+    - devices-linux-policy-crud
+    - devices-ios-policy-crud
+    get:
+      description: 'This endpoint returns all policies.
+
+
+        ##### Sample Request
+
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policies \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: policies_list
+      parameters:
+      - $ref: '#/components/parameters/trait_fields_fields'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Policy'
+                type: array
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      summary: Lists all the Policies
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policies?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies\"\n\nquerystring = {\"fields\":\"SOME_ARRAY_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      description: 'This endpoint allows you to create a policy. Given the amount of configurable parameters required to create a Policy, we suggest you use the JumpCloud Admin Console to create new policies.
+
+
+        ##### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/policies \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        {Policy_Parameters}
+
+        }''
+
+        ```'
+      operationId: policies_post
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyWithDetails'
+      security:
+      - x-api-key: []
+      summary: Create a new Policy
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/policies \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"name\":\"string\",\"notes\":\"string\",\"template\":{\"id\":\"string\"},\"values\":[{\"configFieldID\":\"string\",\"value\":\"string\",\"sensitive\":true}]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies\"\n\npayload = {\n    \"name\": \"string\",\n    \"notes\": \"string\",\n    \"template\": {\"id\": \"string\"},\n    \"values\": [\n        {\n            \"configFieldID\": \"string\",\n            \"value\": \"string\",\n            \"sensitive\": True\n        }\n    ]\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"name":"string","notes":"string","template":{"id":"string"},"values":[{"configFieldID":"string","value":"string","sensitive":true}]}'''
+  /policies/{id}:
+    parameters:
+    - description: ObjectID of the Policy object.
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - devices-windows-policy-crud
+    - devices-darwin-policy-crud
+    - devices-linux-policy-crud
+    - devices-ios-policy-crud
+    delete:
+      description: 'This endpoint allows you to delete a policy.
+
+
+        #### Sample Request
+
+
+        ```
+
+        curl -X DELETE https://console.jumpcloud.com/api/v2/policies/5a837ecd232e110d4291e6b9 \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: policies_delete
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: No Content
+      security:
+      - x-api-key: []
+      summary: Deletes a Policy
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/policies/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"DELETE\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{id}'' -Method DELETE -Headers $headers'
+    get:
+      description: 'This endpoint returns a specific policy.
+
+
+        ###### Sample Request
+
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policies/{PolicyID} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: policies_get
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyWithDetails'
+      security:
+      - x-api-key: []
+      summary: Gets a specific Policy
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/policies/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{id}'' -Method GET -Headers $headers'
+    put:
+      description: 'This endpoint allows you to update a policy. Given the amount of configurable parameters required to update a Policy, we suggest you use the JumpCloud Admin Console to create new policies.
+
+
+        ##### Sample Request
+
+        ```
+
+        curl -X PUT https://console.jumpcloud.com/api/v2/policies/59fced45c9118022172547ff \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        {Policy_Parameters}
+
+        }''
+
+        ```'
+      operationId: policies_put
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+      security:
+      - x-api-key: []
+      summary: Update an existing Policy
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/policies/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"name\":\"string\",\"notes\":\"string\",\"values\":[{\"configFieldID\":\"string\",\"value\":\"string\",\"sensitive\":true}]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{id}\"\n\npayload = {\n    \"name\": \"string\",\n    \"notes\": \"string\",\n    \"values\": [\n        {\n            \"configFieldID\": \"string\",\n            \"value\": \"string\",\n            \"sensitive\": True\n        }\n    ]\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"name":"string","notes":"string","values":[{"configFieldID":"string","value":"string","sensitive":true}]}'''
+  /policies/{policy_id}/associations:
+    parameters:
+    - description: ObjectID of the Policy.
+      in: path
+      name: policy_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - policy-associations
+    get:
+      description: 'This endpoint returns the _direct_ associations of a Policy.
+
+
+        A direct association can be a non-homogeneous relationship between 2 different objects, for example Policies and Systems.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET ''https://console.jumpcloud.com/api/v2/policies/{Policy_ID}/associations?targets=system_group \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_policyAssociationsList
+      parameters:
+      - $ref: '#/components/parameters/trait_graphTargetsPolicy_targets'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphConnection'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the associations of a Policy
+      tags:
+      - Policies
+      x-scopes:
+      - associations.systems
+      - associations.systems.readonly
+      - associations
+      - associations.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policies/{policy_id}/associations?targets=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{policy_id}/associations\"\n\nquerystring = {\"targets\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{policy_id}/associations?targets=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+    post:
+      description: 'This endpoint allows you to manage the _direct_ associations of a Policy.
+
+
+        A direct association can be a non-homogeneous relationship between 2 different objects, for example Policies and Systems.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/policies/{Policy_ID}/associations/ \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "op": "add",
+
+        "type": "system_group",
+
+        "id": "{Group_ID}"
+
+        }''
+
+        ```'
+      operationId: graph_policyAssociationsPost
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphOperation-Policy'
+      responses:
+        '204':
+          description: ''
+      security:
+      - x-api-key: []
+      summary: Manage the associations of a Policy
+      tags:
+      - Policies
+      x-scopes:
+      - associations.systems
+      - associations
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/policies/{policy_id}/associations \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"id\":\"string\",\"op\":\"add\",\"attributes\":{},\"type\":\"system\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{policy_id}/associations\"\n\npayload = {\n    \"id\": \"string\",\n    \"op\": \"add\",\n    \"attributes\": {},\n    \"type\": \"system\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{policy_id}/associations'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"id":"string","op":"add","attributes":{},"type":"system"}'''
+  /policies/{policy_id}/memberof:
+    parameters:
+    - description: ObjectID of the Policy.
+      in: path
+      name: policy_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - policy-members
+    get:
+      description: 'This endpoint returns all the Policy Groups a Policy is a member of.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policies/{Policy_ID}/memberof \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+
+        ```'
+      operationId: graph_policyMemberOf
+      parameters:
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_systemContextAuth_Date'
+      - $ref: '#/components/parameters/trait_systemContextAuth_Authorization'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphObjectWithPaths'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the parent Groups of a Policy
+      tags:
+      - Policies
+      x-scopes:
+      - groups
+      - groups.readonly
+      - groups.self
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policies/{policy_id}/memberof?filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'Authorization: SOME_STRING_VALUE' \\\n  --header 'Date: SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{policy_id}/memberof\"\n\nquerystring = {\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"Date\": \"SOME_STRING_VALUE\",\n    \"Authorization\": \"SOME_STRING_VALUE\",\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("Date", "SOME_STRING_VALUE")
+
+          $headers.Add("Authorization", "SOME_STRING_VALUE")
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{policy_id}/memberof?filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /policies/{policy_id}/policyresults:
+    parameters:
+    - in: path
+      name: policy_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - policy-results
+    get:
+      description: 'This endpoint returns all policies results for a specific policy.
+
+
+        ##### Sample Request
+
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policies/{Policy_ID}/policyresults \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: policyresults_list
+      parameters:
+      - $ref: '#/components/parameters/trait_fields_fields'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PolicyResult'
+                type: array
+      security:
+      - x-api-key: []
+      summary: Lists all the policy results of a policy
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policies/{policy_id}/policyresults?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{policy_id}/policyresults\"\n\nquerystring = {\"fields\":\"SOME_ARRAY_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{policy_id}/policyresults?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /policies/{policy_id}/policystatuses:
+    parameters:
+    - in: path
+      name: policy_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - policy-results
+    get:
+      description: 'This endpoint returns the latest policy results for a specific policy.
+
+
+        ##### Sample Request
+
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policies/{Policy_ID}/policystatuses \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: policystatuses_policiesList
+      parameters:
+      - $ref: '#/components/parameters/trait_fields_fields'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PolicyResult'
+                type: array
+      security:
+      - x-api-key: []
+      summary: Lists the latest policy results of a policy
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policies/{policy_id}/policystatuses?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{policy_id}/policystatuses\"\n\nquerystring = {\"fields\":\"SOME_ARRAY_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{policy_id}/policystatuses?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /policies/{policy_id}/systemgroups:
+    parameters:
+    - description: ObjectID of the Command.
+      in: path
+      name: policy_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - devices-windows-policy-crud
+    - devices-darwin-policy-crud
+    - devices-linux-policy-crud
+    - devices-ios-policy-crud
+    get:
+      description: 'This endpoint will return all Systems Groups bound to a Policy, either directly or indirectly, essentially traversing the JumpCloud Graph for your Organization.
+
+
+        Each element will contain the group''s type, id, attributes and paths.
+
+
+        The `attributes` object is a key/value hash of compiled graph attributes for all paths followed.
+
+
+        The `paths` array enumerates each path from this Policy to the corresponding System Group; this array represents all grouping and/or associations that would have to be removed to deprovision the System Group from this Policy.
+
+
+        See `/members` and `/associations` endpoints to manage those collections.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policies/{Policy_ID}/systemgroups \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_policyTraverseSystemGroup
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphObjectWithPaths'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the System Groups bound to a Policy
+      tags:
+      - Policies
+      x-scopes:
+      - groups
+      - groups.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policies/{policy_id}/systemgroups?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{policy_id}/systemgroups\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{policy_id}/systemgroups?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /policies/{policy_id}/users:
+    parameters:
+    - description: ObjectID of the Policy.
+      in: path
+      name: policy_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - devices-windows-policy-crud
+    - devices-darwin-policy-crud
+    - devices-linux-policy-crud
+    - devices-ios-policy-crud
+    - users-read
+    get:
+      description: 'This endpoint will return all Users bound to a Policy, either directly or indirectly, essentially traversing the JumpCloud Graph for your Organization.
+
+
+        Each element will contain the type, id, attributes and paths.
+
+
+        The `attributes` object is a key/value hash of compiled graph attributes for all paths followed.
+
+
+        The `paths` array enumerates each path from this Policy to the corresponding User; this array represents all grouping and/or associations that would have to be removed to deprovision the User from this Policy.
+
+
+        See `/members` and `/associations` endpoints to manage those collections.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policies/{Policy_ID}/users \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_policyTraverseUser
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphObjectWithPaths'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the Users bound to a Policy
+      tags:
+      - Policies
+      x-scopes:
+      - users
+      - users.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policies/{policy_id}/users?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{policy_id}/users\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{policy_id}/users?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /policies/{policy_id}/usergroups:
+    parameters:
+    - description: ObjectID of the Policy.
+      in: path
+      name: policy_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - devices-windows-policy-crud
+    - devices-darwin-policy-crud
+    - devices-linux-policy-crud
+    - devices-ios-policy-crud
+    - groups
+    get:
+      description: 'This endpoint will return all User Groups bound to a Policy, either directly or indirectly, essentially traversing the JumpCloud Graph for your Organization.
+
+
+        Each element will contain the type, id, attributes and paths.
+
+
+        The `attributes` object is a key/value hash of compiled graph attributes for all paths followed.
+
+
+        The `paths` array enumerates each path from this Policy to the corresponding User Group; this array represents all grouping and/or associations that would have to be removed to deprovision the User Group from this Policy.
+
+
+        See `/members` and `/associations` endpoints to manage those collections.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policies/{Policy_ID}/usergroups \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_policyTraverseUserGroup
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphObjectWithPaths'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the User Groups bound to a Policy
+      tags:
+      - Policies
+      x-scopes:
+      - groups
+      - groups.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policies/{policy_id}/usergroups?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{policy_id}/usergroups\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{policy_id}/usergroups?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /policies/{policy_id}/systems:
+    parameters:
+    - description: ObjectID of the Command.
+      in: path
+      name: policy_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - devices-windows-policy-crud
+    - devices-darwin-policy-crud
+    - devices-linux-policy-crud
+    - devices-ios-policy-crud
+    get:
+      description: 'This endpoint will return all Systems bound to a Policy, either directly or indirectly, essentially traversing the JumpCloud Graph for your Organization.
+
+
+        Each element will contain the type, id, attributes and paths.
+
+
+        The `attributes` object is a key/value hash of compiled graph attributes for all paths followed.
+
+
+        The `paths` array enumerates each path from this Policy to the corresponding System; this array represents all grouping and/or associations that would have to be removed to deprovision the System from this Policy.
+
+
+        See `/members` and `/associations` endpoints to manage those collections.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policies/{Policy_ID}/systems \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_policyTraverseSystem
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphObjectWithPaths'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the Systems bound to a Policy
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policies/{policy_id}/systems?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policies/{policy_id}/systems\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policies/{policy_id}/systems?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /policyresults:
+    x-functionalities-tags:
+    - policy-results
+    get:
+      description: 'This endpoint returns all policy results for an organization.
+
+
+        ##### Sample Request
+
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policyresults \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: policyresults_org_list
+      parameters:
+      - $ref: '#/components/parameters/trait_fields_fields'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PolicyResult'
+                type: array
+      security:
+      - x-api-key: []
+      summary: Lists all of the policy results for an organization
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policyresults?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policyresults\"\n\nquerystring = {\"fields\":\"SOME_ARRAY_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policyresults?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /policyresults/{id}:
+    parameters:
+    - description: ObjectID of the Policy Result.
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - policy-results
+    get:
+      description: 'This endpoint will return the policy results for a specific policy.
+
+
+        ##### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policyresults/{Policy_ID} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: policyresults_get
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyResult'
+      security:
+      - x-api-key: []
+      summary: Get a specific Policy Result
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/policyresults/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policyresults/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policyresults/{id}'' -Method GET -Headers $headers'
+  /policytemplates:
+    x-functionalities-tags:
+    - policy-templates
+    get:
+      description: 'This endpoint returns all policy templates.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policytemplates \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: policytemplates_list
+      parameters:
+      - $ref: '#/components/parameters/trait_fields_fields'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PolicyTemplate'
+                type: array
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      summary: Lists all of the Policy Templates
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/policytemplates?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policytemplates\"\n\nquerystring = {\"fields\":\"SOME_ARRAY_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policytemplates?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /policytemplates/{id}:
+    parameters:
+    - description: ObjectID of the Policy Template.
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - policy-templates
+    get:
+      description: 'This endpoint returns a specific policy template.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/policytemplates/{Policy_Template_ID}\
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: policytemplates_get
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyTemplateWithDetails'
+      security:
+      - x-api-key: []
+      summary: Get a specific Policy Template
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/policytemplates/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/policytemplates/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/policytemplates/{id}'' -Method GET -Headers $headers'
+  /systems/{system_id}/policystatuses:
+    parameters:
+    - description: ObjectID of the System.
+      in: path
+      name: system_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - systems
+    - policies
+    get:
+      description: 'This endpoint returns the policy results for a particular system.
+
+
+        ##### Sample Request
+
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/systems/{System_ID}/policystatuses \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+
+        ```'
+      operationId: policystatuses_systemsList
+      parameters:
+      - $ref: '#/components/parameters/trait_fields_fields'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PolicyResult'
+                type: array
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+      security:
+      - x-api-key: []
+      summary: List the policy statuses for a system
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/systems/{system_id}/policystatuses?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/systems/{system_id}/policystatuses\"\n\nquerystring = {\"fields\":\"SOME_ARRAY_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/systems/{system_id}/policystatuses?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /users/{user_id}/policystatuses:
+    parameters:
+    - description: ObjectID of the User.
+      in: path
+      name: user_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - users-read
+    - policies
+    get:
+      description: 'This endpoint returns the policy results for a particular user.
+
+
+        ##### Sample Request
+
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/users/{User_ID}/policystatuses \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+
+        ```'
+      operationId: policystatuses_usersList
+      parameters:
+      - $ref: '#/components/parameters/trait_fields_fields'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PolicyResult'
+                type: array
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+      security:
+      - x-api-key: []
+      summary: List the policy statuses for a user
+      tags:
+      - Policies
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/users/{user_id}/policystatuses?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/users/{user_id}/policystatuses\"\n\nquerystring = {\"fields\":\"SOME_ARRAY_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/users/{user_id}/policystatuses?fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      x-examples: {}
+      description: ''
+      properties:
+        code:
+          format: int32
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        status:
+          type: string
+          description: HTTP status description
+    OSRestriction:
+      description: Contains OS properties to restrict the application of policies to devices based on the device's OS
+      type: object
+      examples:
+      - with-apple-restrictions:
+          osName: iPadOS
+          earliestVersion: '14.1'
+          deprecatedVersion: '16.2'
+          appleRestrictions:
+            requiresSupervision: false
+            supportedEnrollmentTypes:
+            - automated
+            - device
+            - user
+      properties:
+        osName:
+          type: string
+          description: The name of the OS in which this restriction applies
+        earliestVersion:
+          type: string
+          description: The earliest version of the OS in which the policy can be applied
+        isMdmRequired:
+          type: boolean
+          description: Boolean representing if the policy requires the device to be MDM enrolled
+        deprecatedVersion:
+          type: string
+          description: The version of the OS in which the policy was deprecated
+        supportedEnrollmentTypes:
+          type: array
+          description: This field is deprecated and will be ignored. Use appleRestrictions.supportedEnrollmentTypes instead
+          x-deprecated: true
+          items:
+            type: string
+            enum:
+            - automated
+            - device
+            - user
+        appleRestrictions:
+          type: object
+          description: The Apple specific restricitons for this policy, if there are any
+          properties:
+            requiresSupervision:
+              type: boolean
+              description: Boolean representing if the policy requires the Apple devices to be MDM supervised
+            supportedEnrollmentTypes:
+              type: array
+              description: The supported Apple enrollment types for this policy
+              items:
+                type: string
+                enum:
+                - automated
+                - device
+                - user
+    GraphConnection:
+      description: Represents an edge between two graph objects. From can be omitted if it is clear from context.
+      properties:
+        attributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        from:
+          $ref: '#/components/schemas/GraphObject'
+        to:
+          $ref: '#/components/schemas/GraphObject'
+      required:
+      - to
+      title: GraphConnection
+      type: object
+    PolicyUpdateRequest:
+      description: A request to update an instance of a policy template.
+      properties:
+        name:
+          description: The description for this specific Policy.
+          type: string
+        notes:
+          description: The notes for this specific Policy.
+          type: string
+        values:
+          items:
+            $ref: '#/components/schemas/PolicyValue'
+          type: array
+      required:
+      - name
+      title: PolicyRequest
+      type: object
+    PolicyTemplateConfigField:
+      title: PolicyTemplateConfigField
+      type: object
+      properties:
+        defaultValue:
+          description: The default value for this field.
+          oneOf:
+          - type: string
+          - type: number
+          - type: boolean
+          - type: array
+            items: {}
+          - type: 'null'
+        displayOptions:
+          description: The options that correspond to the display_type.
+          type:
+          - object
+          - 'null'
+        displayType:
+          description: The default rendering for this field.
+          enum:
+          - checkbox
+          - date
+          - email
+          - file
+          - number
+          - select
+          - text
+          - textarea
+          - singlelistbox
+          - doublelistbox
+          - table
+          - segmentedbutton
+          - radio
+          - copywell
+          - timeinput
+          - datepickerrange
+          - multilist
+          - paginationlist
+          - searchandselect
+          - datetimepicker
+          - numberinline
+          - objectstoragefile
+          type: string
+        id:
+          description: ObjectId uniquely identifying a Policy Template Configuration Field
+          type: string
+        label:
+          description: The default label for this field.
+          type: string
+        name:
+          description: A unique name identifying this config field.
+          type: string
+        position:
+          description: The default position to render this field.
+          type: number
+        readOnly:
+          description: If an admin is allowed to modify this field.
+          type: boolean
+        required:
+          description: If this field is required for this field.
+          type: boolean
+        sensitive:
+          type: boolean
+          description: Defines if the policy template config field is sensitive or not.
+        validators:
+          description: Descriptors to perform extended assertions on the supplied config field value.
+          type:
+          - object
+          - 'null'
+        tooltip:
+          properties:
+            template:
+              type: string
+            variables:
+              properties:
+                icon:
+                  type: string
+                message:
+                  type: string
+              type: object
+          type:
+          - object
+          - 'null'
+      required:
+      - id
+      - name
+    PolicyTemplateWithDetails:
+      description: The shallow information about a Policy Template.
+      properties:
+        activation:
+          description: Requirements before the policy can be activated.
+          type: string
+        behavior:
+          description: Specifics about the behavior of the policy.
+          type: string
+        configFields:
+          description: An unordered list of all the fields that can be configured for this Policy Template.
+          items:
+            $ref: '#/components/schemas/PolicyTemplateConfigField'
+          type: array
+        description:
+          description: The default description for the Policy.
+          type: string
+        displayName:
+          description: The default display name for the Policy.
+          type: string
+        id:
+          description: ObjectId uniquely identifying a Policy Template.
+          type: string
+        name:
+          description: The unique name for the Policy Template.
+          type: string
+        osMetaFamily:
+          enum:
+          - linux
+          - darwin
+          - windows
+          - ios
+          - universal
+          - android
+          type: string
+        osRestrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/OSRestriction'
+      title: PolicyTemplateWithDetails
+      type: object
+    PolicyCreateRequest:
+      description: A request to create an instance of a policy template.
+      properties:
+        name:
+          description: The description for this specific Policy.
+          type: string
+        notes:
+          description: The notes for this specific Policy.
+          type: string
+        template:
+          properties:
+            id:
+              description: ObjectId uniquely identifying a Policy instance.
+              type: string
+          required:
+          - id
+          type: object
+        values:
+          items:
+            $ref: '#/components/schemas/PolicyValue'
+          type: array
+      required:
+      - name
+      - template
+      title: PolicyCreateRequest
+      type: object
+    GraphAttributes:
+      additionalProperties: true
+      description: The graph attributes.
+      title: GraphAttributes
+      type:
+      - object
+      - 'null'
+    GraphType:
+      description: A graph object type.
+      enum:
+      - active_directory
+      - agent
+      - agent_group
+      - application
+      - command
+      - g_suite
+      - idp_routing_policy
+      - ldap_server
+      - office_365
+      - policy
+      - policy_group
+      - radius_server
+      - password_manager_item
+      - system
+      - system_group
+      - user
+      - user_group
+      title: GraphType
+      type: string
+    PolicyTemplate:
+      description: The shallow information about a Policy Template.
+      title: PolicyTemplate
+      type: object
+      properties:
+        activation:
+          description: Requirements before the policy can be activated.
+          type: string
+        behavior:
+          description: Specifics about the behavior of the policy.
+          type: string
+        deliveryTypes:
+          description: The supported delivery mechanisms for this policy template.
+          type: array
+          items:
+            type: string
+            enum:
+            - agent
+            - mdm
+            default: agent
+        description:
+          description: The default description for the Policy.
+          type: string
+        displayName:
+          description: The default display name for the Policy.
+          type: string
+        id:
+          description: ObjectId uniquely identifying a Policy Template.
+          type: string
+        name:
+          description: The unique name for the Policy Template.
+          type: string
+        osMetaFamily:
+          enum:
+          - linux
+          - darwin
+          - windows
+          - ios
+          - universal
+          - android
+          type: string
+        state:
+          default: ''
+          description: String describing the release status of the policy template.
+          type: string
+        alert:
+          description: Text to describe any risk associated with this policy.
+          type:
+          - string
+          - 'null'
+        reference:
+          description: URL to visit for further information.
+          type:
+          - string
+          - 'null'
+        osRestrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/OSRestriction'
+      x-examples:
+        example-1:
+          activation: string
+          behavior: string
+          deliveryTypes:
+          - agent
+          description: string
+          displayName: string
+          name: string
+          osMetaFamily: linux
+          state: ''
+          alert: string
+          reference: string
+          osRestrictions:
+          - osName: string
+            earliestVersion: string
+            deprecatedVersion: string
+            supportedEnrollmentTypes:
+            - automated
+    PolicyValue:
+      title: PolicyValue
+      type: object
+      properties:
+        configFieldID:
+          description: The ObjectId of the corresponding Policy Template configuration field.
+          type: string
+        value:
+          description: The value for the configuration field for this Policy instance.
+          items: {}
+          oneOf:
+          - type: string
+          - type: number
+          - type: boolean
+          - type: array
+            items: {}
+        sensitive:
+          type: boolean
+          description: Defines if the value is sensitive or not.
+    GraphObject:
+      properties:
+        attributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        id:
+          description: The ObjectID of the graph object.
+          type: string
+        type:
+          description: The type of graph object.
+          type: string
+      required:
+      - type
+      - id
+      title: GraphObject
+      type: object
+    Policy:
+      description: An instance of a policy template.
+      properties:
+        id:
+          description: ObjectId uniquely identifying a Policy.
+          type: string
+        name:
+          description: The description for this specific Policy.
+          type: string
+        template:
+          $ref: '#/components/schemas/PolicyTemplate'
+      title: Policy
+      type: object
+    SyncStatus:
+      description: Sync status information for this object. Only present when syncStatus query parameter is true.
+      type: object
+      properties:
+        syncedAt:
+          description: The last time the object was synced.
+          type: string
+          format: date-time
+        code:
+          description: Status code of the sync operation.
+          type: integer
+        message:
+          description: Status message of the sync operation.
+          type: string
+        details:
+          description: Additional details about the sync status.
+          type: array
+          items:
+            type: object
+    PolicyResult:
+      properties:
+        detail:
+          description: Details pertaining to the policy result.
+          type: string
+        endedAt:
+          description: The end of the policy application.
+          format: date-time
+          type: string
+        exitStatus:
+          description: The 32-bit unsigned exit status from the applying the policy.
+          type: integer
+          format: uint32
+        id:
+          description: ObjectId uniquely identifying a Policy Result.
+          type: string
+        policyID:
+          description: ObjectId uniquely identifying the parent Policy.
+          type: string
+        startedAt:
+          description: The start of the policy application.
+          format: date-time
+          type: string
+        state:
+          description: Enumeration describing the state of the policy. Success, failed, or pending.
+          type: string
+        stdErr:
+          description: The STDERR output from applying the policy.
+          type: string
+        stdOut:
+          description: The STDOUT output from applying the policy.
+          type: string
+        success:
+          description: True if the policy was successfully applied; false otherwise.
+          type: boolean
+        systemID:
+          description: ObjectId uniquely identifying the parent System.
+          type: string
+        userObjectId:
+          description: ObjectId uniquely identifying the parent User.
+          type: string
+      title: PolicyResult
+      type: object
+    PolicyWithDetails:
+      description: An instance of a policy template.
+      properties:
+        configFields:
+          items:
+            $ref: '#/components/schemas/PolicyTemplateConfigField'
+          type: array
+        id:
+          description: ObjectId uniquely identifying a Policy.
+          type: string
+        name:
+          description: The description for this specific Policy.
+          type: string
+        notes:
+          description: The notes for this specific Policy.
+          type: string
+        template:
+          $ref: '#/components/schemas/PolicyTemplate'
+        values:
+          items:
+            $ref: '#/components/schemas/PolicyValue'
+          type: array
+      title: PolicyWithDetails
+      type: object
+    GraphOperation:
+      properties:
+        id:
+          description: The ObjectID of graph object being added or removed as an association.
+          type: string
+        op:
+          description: How to modify the graph connection.
+          enum:
+          - add
+          - remove
+          - update
+          type: string
+      required:
+      - id
+      - op
+      title: GraphOperation
+      type: object
+    GraphObjectWithPaths:
+      properties:
+        compiledAttributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        id:
+          description: Object ID of this graph object.
+          type: string
+        paths:
+          description: Every path through the graph from the requested object to this object. Each path lists the groupings and associations it follows; all of them would have to be removed to remove this object from the requested object.
+          items:
+            items:
+              $ref: '#/components/schemas/GraphConnection'
+            type: array
+          type: array
+        type:
+          $ref: '#/components/schemas/GraphType'
+        externalId:
+          description: The external resource ID that is being synced. Only present when syncStatus query parameter is true.
+          type: string
+        syncStatus:
+          $ref: '#/components/schemas/SyncStatus'
+      required:
+      - type
+      - id
+      - paths
+      title: GraphObjectWithPaths
+      type: object
+    GraphOperation-Policy:
+      allOf:
+      - $ref: '#/components/schemas/GraphOperation'
+      - properties:
+          attributes:
+            $ref: '#/components/schemas/GraphAttributes'
+          type:
+            description: Targets which a "policy" can be associated to.
+            enum:
+            - system
+            - system_group
+            - user
+            - user_group
+            type: string
+        required:
+        - type
+      title: GraphOperation (Policy)
+      type: object
+  parameters:
+    trait_limit_limit:
+      description: The number of records to return at once. Limited to 100.
+      in: query
+      name: limit
+      schema:
+        type: integer
+        default: 10
+    trait_filter_filter:
+      description: 'A filter to apply to the query.
+
+
+        **Filter structure**: `<field>:<operator>:<value>`.
+
+
+        **field** = Populate with a valid field from an endpoint response.
+
+
+        **operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.
+
+        _Note: v1 operators differ from v2 operators._
+
+
+        **value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.
+
+
+        **EX:** `GET /api/v2/groups?filter=name:eq:Test+Group`'
+      in: query
+      name: filter
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_skip_skip:
+      description: The offset into the records to return.
+      in: query
+      name: skip
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    trait_sort_sort:
+      description: 'The comma separated fields used to sort the collection.
+
+        Default sort is ascending, prefix with `-` to sort descending.
+
+        '
+      in: query
+      name: sort
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_graphTargetsPolicy_targets:
+      name: targets
+      description: Targets which a "policy" can be associated to.
+      in: query
+      required: true
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          enum:
+          - system
+          - system_group
+          - user
+          - user_group
+          type: string
+    trait_multiTenantRequestHeaders_x-org-id:
+      description: Organization identifier that can be obtained from console settings.
+      in: header
+      name: x-org-id
+      schema:
+        type: string
+    trait_systemContextAuth_Date:
+      description: Current date header for the System Context API
+      in: header
+      name: Date
+      schema:
+        type: string
+    trait_systemContextAuth_Authorization:
+      description: Authorization header for the System Context API
+      in: header
+      name: Authorization
+      schema:
+        type: string
+    trait_fields_fields:
+      description: 'The comma separated fields included in the returned records.
+
+        If omitted, the default list of fields will be returned.
+
+        '
+      in: query
+      name: fields
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+  responses:
+    trait_standardErrors_401:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

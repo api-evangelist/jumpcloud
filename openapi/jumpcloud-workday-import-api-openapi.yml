@@ -1,0 +1,1240 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Workday Import API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Workday Import
+paths:
+  /workdays:
+    x-functionalities-tags:
+    - workday
+    get:
+      description: 'This endpoint will return all the available information about all your instances of Workday.
+
+
+        ##### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/workdays/ \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: workdays_list
+      parameters:
+      - $ref: '#/components/parameters/trait_fields_fields'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/workday-output'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List Workdays
+      tags:
+      - Workday Import
+      x-scopes:
+      - directories
+      - directories.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/workdays?fields=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/workdays\"\n\nquerystring = {\"fields\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/workdays?fields=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      description: 'This endpoint allows you to create a new workday instance.
+
+
+        You must supply a username and password for `Basic Authentication` that is the same as your WorkDay Integrator System User. Failure to provide these credentials will result in the request being rejected.
+
+
+        Currently `O-Auth` isn''t a supported authentication protocol for WorkDay, but will be in the future.
+
+
+        Currently, only one instance is allowed and it must be `Workday Import`.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/workdays/ \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "name": "Workday2",
+
+        "reportUrl":"https://workday.com/ccx/service/customreport2/gms/user/reportname?format=json",
+
+        "auth": {
+
+        "basic": {
+
+        "username": "someDeveloper",
+
+        "password": "notTheRealPassword"
+
+        }
+
+        }
+
+        }''
+
+        ```'
+      operationId: workdays_post
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/workday-input'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workday-output'
+      security:
+      - x-api-key: []
+      summary: Create new Workday
+      tags:
+      - Workday Import
+      x-scopes:
+      - directories
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/workdays \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"auth\":{\"basic\":{\"password\":\"in tempor ipsum quis\",\"username\":\"mollit ex\"},\"oauth\":{\"code\":\"non laborum dolore\"}},\"name\":\"dolore tempor\",\"reportUrl\":\"est sit laboris\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/workdays\"\n\npayload = {\n    \"auth\": {\n        \"basic\": {\n            \"password\": \"in tempor ipsum quis\",\n            \"username\": \"mollit ex\"\n        },\n        \"oauth\": {\"code\": \"non laborum dolore\"}\n    },\n    \"name\": \"dolore tempor\",\n    \"reportUrl\": \"est sit laboris\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/workdays'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"auth":{"basic":{"password":"in tempor ipsum quis","username":"mollit ex"},"oauth":{"code":"non laborum dolore"}},"name":"dolore tempor","reportUrl":"est sit laboris"}'''
+  /workdays/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - workday
+    get:
+      description: 'This endpoint will return all the available information about an instance of Workday.
+
+
+        #### Sample Request
+
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/workdays/ \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: workdays_get
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workday-output'
+      security:
+      - x-api-key: []
+      summary: Get Workday
+      tags:
+      - Workday Import
+      x-scopes:
+      - directories
+      - directories.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/workdays/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/workdays/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/workdays/{id}'' -Method GET -Headers $headers'
+    put:
+      description: 'This endpoint allows you to update the name and Custom Report URL for a Workday Instance.
+
+
+        Currently, the name can not be changed from the default of `Workday Import`.
+
+
+        ##### Sample Request
+
+        ```
+
+        curl -X PUT https://console.jumpcloud.com/api/v2/workdays/{WorkdayID} \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "reportUrl":"{Report_URL}",
+
+        "name":"{Name}"
+
+        } ''
+
+        ```'
+      operationId: workdays_put
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/workday-fields'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workday-output'
+      security:
+      - x-api-key: []
+      summary: Update Workday
+      tags:
+      - Workday Import
+      x-scopes:
+      - directories
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/workdays/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"name\":\"string\",\"reportUrl\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/workdays/{id}\"\n\npayload = {\n    \"name\": \"string\",\n    \"reportUrl\": \"string\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/workdays/{id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"name":"string","reportUrl":"string"}'''
+  /workdays/{id}/import/{job_id}/results:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: job_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - workday
+    get:
+      description: 'This endpoint provides a list of job results from the workday import and will contain all imported data from Workday.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/workdays/{WorkdayID}/import/{ImportJobID}/results \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: workdays_importresults
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/job-workresult'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List Import Results
+      tags:
+      - Workday Import
+      x-scopes:
+      - directories
+      - directories.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/workdays/{id}/import/{job_id}/results?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/workdays/{id}/import/{job_id}/results\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/workdays/{id}/import/{job_id}/results?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+  /workdays/{workday_id}/auth:
+    parameters:
+    - in: path
+      name: workday_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - workday
+    delete:
+      description: 'Removes any and all authorization methods from the workday instance
+
+
+        ##### Sample Request
+
+        ```
+
+        curl -X DELETE https://console.jumpcloud.com/api/v2/workdays/{WorkDayID}/auth \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: workdays_deauthorize
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: ''
+      security:
+      - x-api-key: []
+      summary: Deauthorize Workday
+      tags:
+      - Workday Import
+      x-scopes:
+      - directories
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/workdays/{workday_id}/auth \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/workdays/{workday_id}/auth\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"DELETE\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/workdays/{workday_id}/auth'' -Method DELETE -Headers $headers'
+    post:
+      description: 'This endpoint adds an authorization method to a workday instance.
+
+
+        You must supply a username and password for `Basic Authentication` that is the same as your WorkDay Integrator System User. Failure to provide these credentials will result in the request being rejected.
+
+
+        Currently `O-Auth` isn''t a supported authentication protocol for WorkDay, but will be in the future.
+
+
+        #### Sample Request
+
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/workdays/{WorkDayID}/auth \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "auth":{
+
+        "basic": {
+
+        "username": "someDeveloper",
+
+        "password": "notTheRealPassword"
+
+
+        }
+
+        }
+
+        }''
+
+
+        ```'
+      operationId: workdays_authorize
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/auth-input-object'
+      responses:
+        '204':
+          description: ''
+      security:
+      - x-api-key: []
+      summary: Authorize Workday
+      tags:
+      - Workday Import
+      x-scopes:
+      - directories
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/workdays/{workday_id}/auth \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"auth\":{\"basic\":{\"password\":\"mollit cillum\",\"username\":\"veniam dolore\"},\"oauth\":{\"code\":\"minim ad ea dolor\"}}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/workdays/{workday_id}/auth\"\n\npayload = {\"auth\": {\n        \"basic\": {\n            \"password\": \"mollit cillum\",\n            \"username\": \"veniam dolore\"\n        },\n        \"oauth\": {\"code\": \"minim ad ea dolor\"}\n    }}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/workdays/{workday_id}/auth'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"auth":{"basic":{"password":"mollit cillum","username":"veniam dolore"},"oauth":{"code":"minim ad ea dolor"}}}'''
+  /workdays/{workday_id}/import:
+    parameters:
+    - in: path
+      name: workday_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - workday
+    post:
+      description: 'The endpoint allows you to create a Workday Import request.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/workdays/{WorkdayID}/import \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''[
+
+        {
+
+        "email":"{email}",
+
+        "firstname":"{firstname}",
+
+        "lastname":"{firstname}",
+
+        "username":"{username}",
+
+        "attributes":[
+
+        {"name":"EmployeeID","value":"0000"},
+
+        {"name":"WorkdayID","value":"name.name"}
+
+        ]
+
+
+        }
+
+        ]
+
+        ```'
+      operationId: workdays_import
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        $ref: '#/components/requestBodies/bulk-user-createArray'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/job-id'
+      security:
+      - x-api-key: []
+      summary: Workday Import
+      tags:
+      - Workday Import
+      x-scopes:
+      - users
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/workdays/{workday_id}/import \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '[{\"attributes\":[{}],\"email\":\"string\",\"firstname\":\"string\",\"lastname\":\"string\",\"username\":\"string\"}]'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/workdays/{workday_id}/import\"\n\npayload = [\n    {\n        \"attributes\": [{}],\n        \"email\": \"string\",\n        \"firstname\": \"string\",\n        \"lastname\": \"string\",\n        \"username\": \"string\"\n    }\n]\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/workdays/{workday_id}/import'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''[{"attributes":[{}],"email":"string","firstname":"string","lastname":"string","username":"string"}]'''
+  /workdays/{workday_id}/workers:
+    parameters:
+    - in: path
+      name: workday_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - workday
+    get:
+      description: 'This endpoint will return all of the data in your WorkDay Custom Report that has been associated with your WorkDay Instance in JumpCloud.
+
+
+        ##### Sample Request
+
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/workdays/{WorkDayID}/workers \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+
+        ```'
+      operationId: workdays_workers
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/workday-worker'
+                type: array
+              examples:
+                response:
+                  value:
+                  - lastName: sint dolore Excepteur ad
+                  - attributes: {}
+                    email: nostrud tempor anim ips
+                    firstName: et ad
+                    username: Excepteur culpa nulla aliqua
+                  - attributes: {}
+                    email: veniam ullamco
+                  - {}
+                  - lastName: do
+      security:
+      - x-api-key: []
+      summary: List Workday Workers
+      tags:
+      - Workday Import
+      x-scopes:
+      - directories
+      - directories.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/workdays/{workday_id}/workers?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/workdays/{workday_id}/workers\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/workdays/{workday_id}/workers?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+components:
+  parameters:
+    trait_multiTenantRequestHeaders_x-org-id:
+      description: Organization identifier that can be obtained from console settings.
+      in: header
+      name: x-org-id
+      schema:
+        type: string
+    trait_filter_filter:
+      description: 'A filter to apply to the query.
+
+
+        **Filter structure**: `<field>:<operator>:<value>`.
+
+
+        **field** = Populate with a valid field from an endpoint response.
+
+
+        **operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.
+
+        _Note: v1 operators differ from v2 operators._
+
+
+        **value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.
+
+
+        **EX:** `GET /api/v2/groups?filter=name:eq:Test+Group`'
+      in: query
+      name: filter
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_skip_skip:
+      description: The offset into the records to return.
+      in: query
+      name: skip
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    trait_sort_sort:
+      description: 'The comma separated fields used to sort the collection.
+
+        Default sort is ascending, prefix with `-` to sort descending.
+
+        '
+      in: query
+      name: sort
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_limit_limit:
+      description: The number of records to return at once. Limited to 100.
+      in: query
+      name: limit
+      schema:
+        type: integer
+        default: 10
+    trait_fields_fields:
+      description: 'The comma separated fields included in the returned records.
+
+        If omitted, the default list of fields will be returned.
+
+        '
+      in: query
+      name: fields
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+  schemas:
+    job-workresult:
+      properties:
+        createdAt:
+          type:
+          - string
+          - 'null'
+        id:
+          type:
+          - string
+          - 'null'
+        meta:
+          type: object
+        persistedFields:
+          type:
+          - object
+          - 'null'
+        status:
+          type:
+          - string
+          - 'null'
+        statusMsg:
+          type:
+          - string
+          - 'null'
+        updatedAt:
+          type:
+          - string
+          - 'null'
+      title: Job WorkResult
+      type: object
+    workday-output:
+      properties:
+        auth:
+          properties:
+            basic:
+              $ref: '#/components/schemas/auth-info'
+            oauth:
+              $ref: '#/components/schemas/auth-info'
+          type: object
+        id:
+          type: string
+        lastImport:
+          type: string
+        name:
+          type: string
+        reportUrl:
+          type: string
+      title: Workday Output
+      type: object
+    workday-worker:
+      properties:
+        attributes:
+          type: object
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        username:
+          type: string
+      title: Workday Worker
+      type: object
+    job-id:
+      title: Job ID
+      type: object
+      x-examples:
+        example-1:
+          jobId: string
+      properties:
+        jobId:
+          type: string
+    auth-input:
+      properties:
+        basic:
+          properties:
+            password:
+              type: string
+            username:
+              type: string
+          type: object
+        oauth:
+          properties:
+            code:
+              type: string
+          type: object
+      title: Auth Input
+      type: object
+    workday-fields:
+      properties:
+        name:
+          type: string
+        reportUrl:
+          type: string
+      title: Workday Fields
+      type: object
+    auth-info:
+      properties:
+        expiry:
+          type: string
+        isValid:
+          type: boolean
+        message:
+          type: string
+      title: Auth Info
+      type: object
+    bulk-user-create:
+      description: See [V1 system user creation](https://docs.jumpcloud.com/api/1.0/index.html#operation/systemusers_post) for full list of attributes.
+      properties:
+        attributes:
+          description: Map of additional attributes.
+          items:
+            type: object
+          type: array
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        username:
+          type: string
+      title: Bulk User Create
+      type: object
+    workday-input:
+      examples:
+      - auth:
+          basic:
+            password: in tempor ipsum quis
+            username: mollit ex
+          oauth:
+            code: non laborum dolore
+        name: dolore tempor
+        reportUrl: est sit laboris
+      properties:
+        auth:
+          $ref: '#/components/schemas/auth-input'
+        name:
+          type: string
+        reportUrl:
+          type: string
+      title: Workday Input
+      type: object
+    auth-input-object:
+      properties:
+        auth:
+          $ref: '#/components/schemas/auth-input'
+      examples:
+      - auth:
+          basic:
+            password: mollit cillum
+            username: veniam dolore
+          oauth:
+            code: minim ad ea dolor
+      title: Auth Input Object
+      type: object
+  requestBodies:
+    bulk-user-createArray:
+      content:
+        application/json:
+          schema:
+            items:
+              $ref: '#/components/schemas/bulk-user-create'
+            type: array
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

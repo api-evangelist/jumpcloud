@@ -1,0 +1,12 @@
+{
+ "url": "https://docs.jumpcloud.com/api/2.0/index.yaml",
+ "final": "https://docs.jumpcloud.com/api/2.0/index.yaml",
+ "status": 200,
+ "content_type": "text/yaml",
+ "bytes": 3106647,
+ "sha256": "d75007c1e93002286eb6b2e16680f802a511285656263ca92cc1607d2fa43d87",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "re-archived: the provider's current document replaced a stale archive (roadmap#793); the old files are in openapi/_superseded/2026-10-19-stale"
+}

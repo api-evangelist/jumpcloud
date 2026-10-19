@@ -1,0 +1,3433 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Assets API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Assets
+  description: Operations related to Assets
+paths:
+  /assets/field-configurations:
+    get:
+      tags:
+      - Assets
+      summary: List field configurations
+      description: Retrieve a list of field configurations available for assets. Field configurations define all fields and their properties for organizing asset data.
+      operationId: listFieldConfigurations
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      responses:
+        '200':
+          description: Field configurations retrieved successfully
+          x-examples:
+            application/json:
+              sampleList:
+                summary: Mix of default and custom fields across scopes
+                value:
+                  results:
+                  - id: 507f1f77bcf86cd799439011
+                    label: Status
+                    default: true
+                    mandatory: true
+                    scope: Device
+                  - id: 605a1f77bcf86cd7994390aa
+                    label: Owner
+                    default: true
+                    mandatory: false
+                    scope: Common
+                  - id: 6924631f16a853000117a601
+                    label: Tag
+                    default: false
+                    mandatory: false
+                    scope: Accessory
+                  totalCount: 3
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.ListFieldConfigsResponse'
+        '400':
+          description: Bad request - invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/assets/field-configurations \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/field-configurations"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/field-configurations'' -Method GET -Headers $headers'
+  /assets/field-configurations/{id}/select-options:
+    get:
+      tags:
+      - Assets
+      summary: List select options for a field configuration
+      description: Get all select options available for a specific field configuration by ID
+      operationId: getFieldConfigSelectOptions
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The field configuration ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Select options retrieved successfully
+          x-examples:
+            application/json:
+              statusOptions:
+                summary: Select options for a field such as Status (IDs match `value.id` on references in asset responses)
+                value:
+                  results:
+                  - id: 6924631f16a853000117a678
+                    value: In stock
+                  - id: 6924631f16a853000117a679
+                    value: Deployed
+                  - id: 6924631f16a853000117a67a
+                    value: Retired
+                  totalCount: 3
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.ListSelectOptionsResponse'
+        '400':
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Field configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/assets/field-configurations/{id}/select-options \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/field-configurations/{id}/select-options"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/field-configurations/{id}/select-options'' -Method GET -Headers $headers'
+  /assets/devices/{id}:
+    get:
+      tags:
+      - Assets
+      summary: Get a device asset by ID
+      description: Retrieve a specific device asset by its ID
+      operationId: getDeviceAsset
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The device asset ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Device asset retrieved successfully
+          x-examples:
+            application/json:
+              stringsAndReferences:
+                summary: Strings and references — each field is a `FieldValue` (`editable` + `value`); reference `value` matches create/update `fields` plus `name`/`type`
+                value:
+                  id: 507f1f77bcf86cd799439011
+                  jcSystemId: 605c3f99bcf86cd7994390cc
+                  fields:
+                    Name:
+                      editable: true
+                      value: Finance laptop 12
+                    Model:
+                      editable: true
+                      value: MacBookPro18,3
+                    Serial Number:
+                      editable: true
+                      value: C02XK0ZLMN8Q
+                    Status:
+                      editable: true
+                      value:
+                        id: 6924631f16a853000117a678
+                        name: In stock
+                        type: select
+                    Owner:
+                      editable: true
+                      value:
+                        id: 605a1f77bcf86cd7994390aa
+                        name: Jane Smith
+                        type: user
+                    Location:
+                      editable: true
+                      value:
+                        id: 605b2f88bcf86cd7994390bb
+                        name: London HQ
+                        type: location
+              datesDatetimePriceBoolean:
+                summary: Calendar date, RFC3339 datetime, price object, and boolean in `FieldValue.value`
+                value:
+                  id: 507f1f77bcf86cd799439011
+                  jcSystemId: 605c3f99bcf86cd7994390cc
+                  fields:
+                    Name:
+                      editable: true
+                      value: Staging MacBook
+                    Purchase Date:
+                      editable: true
+                      value: 2024-11-01
+                    Warranty Expiry Date:
+                      editable: true
+                      value: 2027-11-01
+                    Date Deployed:
+                      editable: true
+                      value: 2024-11-05 16:45:00
+                    Purchase Cost:
+                      editable: true
+                      value:
+                        amount: 1799
+                        currency: USD
+                    Disk Encrypted:
+                      editable: true
+                      value: true
+              integers:
+                summary: Integer fields as JSON numbers in `FieldValue.value`
+                value:
+                  id: 507f1f77bcf86cd799439011
+                  jcSystemId: 605c3f99bcf86cd7994390cc
+                  fields:
+                    Name:
+                      editable: true
+                      value: Lab workstation
+                    RAM:
+                      editable: true
+                      value: 16384
+                    Warranty Period:
+                      editable: true
+                      value: 36
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.Asset'
+        '400':
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Device asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/assets/devices/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/devices/{id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/devices/{id}'' -Method GET -Headers $headers'
+    put:
+      tags:
+      - Assets
+      summary: Update a device asset
+      description: Update an existing device asset by its ID
+      operationId: updateDeviceAsset
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The device asset ID
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.assets.UpdateAssetRequest'
+        description: Device asset update data
+        required: true
+        x-examples:
+          application/json:
+            partialReferenceAndStrings:
+              summary: Update reference fields and plain strings
+              value:
+                fields:
+                  Status:
+                    id: 6924631f16a853000117a679
+                  Model: MacBookPro18,5
+                  Serial Number: C02XK0ZLMN8Q
+            partialDatesDatetimePrice:
+              summary: Update calendar date, RFC3339 datetime, and purchase cost
+              value:
+                fields:
+                  Purchase Date: 2025-01-10
+                  Warranty Expiry Date: 2028-01-10
+                  Date Deployed: 2025-01-10 09:00:00
+                  Purchase Cost:
+                    amount: 1999.5
+                    currency: USD
+            partialIntegersAndBoolean:
+              summary: Update integer fields and a boolean as JSON numbers/boolean
+              value:
+                fields:
+                  RAM: 32768
+                  Warranty Period: 24
+                  Disk Encrypted: false
+      responses:
+        '200':
+          description: Device asset updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.Asset'
+        '400':
+          description: Bad request - invalid data or ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Device asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/assets/devices/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"fields\":{\"Status\":{\"id\":\"6924631f16a853000117a679\"},\"Model\":\"MacBookPro18,5\",\"Purchase Date\":\"2025-01-10\",\"Date Deployed\":\"2025-01-10T09:00:00\",\"Purchase Cost\":{\"amount\":1999.5,\"currency\":\"USD\"}}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/devices/{id}\"\n\npayload = {\"fields\": {\n        \"Status\": {\"id\": \"6924631f16a853000117a679\"},\n        \"Model\": \"MacBookPro18,5\",\n        \"Purchase Date\": \"2025-01-10\",\n        \"Date Deployed\": \"2025-01-10T09:00:00\",\n        \"Purchase Cost\": {\n            \"amount\": 1999.5,\n            \"currency\": \"USD\"\n        }\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/devices/{id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"fields":{"Status":{"id":"6924631f16a853000117a679"},"Model":"MacBookPro18,5","Purchase Date":"2025-01-10","Date Deployed":"2025-01-10T09:00:00","Purchase Cost":{"amount":1999.5,"currency":"USD"}}}'''
+    delete:
+      tags:
+      - Assets
+      summary: Delete a device asset
+      description: Delete an existing device asset by its ID
+      operationId: deleteDeviceAsset
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The device asset ID
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Device asset deleted successfully
+        '400':
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Device asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/assets/devices/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/devices/{id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/devices/{id}'' -Method DELETE -Headers $headers'
+  /assets/devices:
+    get:
+      tags:
+      - Assets
+      summary: List device assets
+      description: Retrieve a list of device assets with optional pagination
+      operationId: listDeviceAssets
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: limit
+        in: query
+        description: Maximum number of results to return
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 100
+          default: 10
+      - name: skip
+        in: query
+        description: Number of results to skip for pagination
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+          default: 0
+      - name: fields
+        in: query
+        description: Field configuration labels to include in each asset's `fields` map (comma-separated). Each name must match the `label` from `GET /assets/field-configurations` for devices.
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Device assets retrieved successfully
+          x-examples:
+            application/json:
+              firstPage:
+                summary: Paginated list — same `Asset` shape as GET by id
+                value:
+                  results:
+                  - id: 507f1f77bcf86cd799439011
+                    jcSystemId: 605c3f99bcf86cd7994390cc
+                    fields:
+                      Name:
+                        editable: true
+                        value: Finance laptop 12
+                      Model:
+                        editable: true
+                        value: MacBookPro18,3
+                      Status:
+                        editable: true
+                        value:
+                          id: 6924631f16a853000117a678
+                          name: In stock
+                          type: select
+                  - id: 507f1f77bcf86cd799439012
+                    jcSystemId: 605c3f99bcf86cd7994390dd
+                    fields:
+                      Name:
+                        editable: true
+                        value: Staging MacBook
+                      Purchase Date:
+                        editable: true
+                        value: 2024-11-01
+                  totalCount: 150
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.AssetListResponse'
+        '400':
+          description: Bad request - invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/assets/devices?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&fields=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/devices"
+
+
+          querystring = {"limit":"SOME_INTEGER_VALUE","skip":"SOME_INTEGER_VALUE","fields":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/devices?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&fields=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      tags:
+      - Assets
+      summary: Create a device asset
+      description: Create a new device asset
+      operationId: createDeviceAsset
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.assets.CreateAssetRequest'
+        description: Device asset creation data
+        required: true
+        x-examples:
+          application/json:
+            stringsAndReferences:
+              summary: Text fields and reference objects (`id` is lowercase hex)
+              value:
+                fields:
+                  Name: Finance laptop 12
+                  Model: MacBookPro18,3
+                  Serial Number: C02XK0ZLMN8Q
+                  Status:
+                    id: 6924631f16a853000117a678
+                  Owner:
+                    id: 605a1f77bcf86cd7994390aa
+                  Location:
+                    id: 605b2f88bcf86cd7994390bb
+            datesDatetimePriceBoolean:
+              summary: Calendar date (`YYYY-MM-DD`), RFC3339 datetime, price object, boolean
+              value:
+                fields:
+                  Name: Staging MacBook
+                  Purchase Date: 2024-11-01
+                  Warranty Expiry Date: 2027-11-01
+                  Date Deployed: 2024-11-05 16:45:00
+                  Purchase Cost:
+                    amount: 1799
+                    currency: USD
+                  Disk Encrypted: true
+            integers:
+              summary: Integer fields as JSON numbers (RAM in MB, warranty months)
+              value:
+                fields:
+                  Name: Lab workstation
+                  RAM: 16384
+                  Warranty Period: 36
+      responses:
+        '201':
+          description: Device asset created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.Asset'
+        '400':
+          description: Bad request - invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '409':
+          description: Conflict - asset with unique field value already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/assets/devices \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"fields\":{\"Name\":\"Engineering MacBook Pro 14\",\"Model\":\"MacBookPro18,4\",\"Serial Number\":\"C02XG0FDJK7Q\",\"Status\":{\"id\":\"6924631f16a853000117a678\"},\"Owner\":{\"id\":\"605a1f77bcf86cd7994390aa\"},\"Location\":{\"id\":\"605b2f88bcf86cd7994390bb\"},\"Purchase Date\":\"2024-06-15\",\"Date Deployed\":\"2024-06-15T14:30:00\",\"Purchase Cost\":{\"amount\":2499.99,\"currency\":\"USD\"},\"Disk Encrypted\":true}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/devices\"\n\npayload = {\"fields\": {\n        \"Name\": \"Engineering MacBook Pro 14\",\n        \"Model\": \"MacBookPro18,4\",\n        \"Serial Number\": \"C02XG0FDJK7Q\",\n        \"Status\": {\"id\": \"6924631f16a853000117a678\"},\n        \"Owner\": {\"id\": \"605a1f77bcf86cd7994390aa\"},\n        \"Location\": {\"id\": \"605b2f88bcf86cd7994390bb\"},\n        \"Purchase Date\": \"2024-06-15\",\n        \"Date Deployed\": \"2024-06-15T14:30:00\",\n        \"Purchase Cost\": {\n            \"amount\": 2499.99,\n            \"currency\": \"USD\"\n        },\n        \"Disk Encrypted\": True\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/devices'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"fields":{"Name":"Engineering MacBook Pro 14","Model":"MacBookPro18,4","Serial Number":"C02XG0FDJK7Q","Status":{"id":"6924631f16a853000117a678"},"Owner":{"id":"605a1f77bcf86cd7994390aa"},"Location":{"id":"605b2f88bcf86cd7994390bb"},"Purchase Date":"2024-06-15","Date Deployed":"2024-06-15T14:30:00","Purchase Cost":{"amount":2499.99,"currency":"USD"},"Disk Encrypted":true}}'''
+  /assets/devices/batch:
+    patch:
+      tags:
+      - Assets
+      summary: Batch update device assets
+      description: Update multiple device assets with a single field value change
+      operationId: batchUpdateDeviceAssets
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.assets.BatchUpdateDeviceAssetsRequest'
+        description: Batch update data with asset IDs and field value
+        required: true
+        x-examples:
+          application/json:
+            stringFieldExample:
+              summary: Update a simple string field (e.g. Model)
+              value:
+                assetIds:
+                - 6936c139154c470001b5f53d
+                fields:
+                  Model: Macbook Air
+            referenceFieldExample:
+              summary: Update a reference field (e.g. Status)
+              value:
+                assetIds:
+                - 6936c139154c470001b5f53d
+                fields:
+                  Status:
+                    id: 6924631f16a853000117a678
+      responses:
+        '200':
+          description: Batch update completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.BatchUpdateDeviceAssetsResponse'
+        '400':
+          description: Bad request - invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PATCH \\\n  --url https://console.jumpcloud.com/api/v2/assets/devices/batch \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"assetIds\":[\"6936c139154c470001b5f53d\"],\"fields\":{\"Status\":{\"id\":\"6924631f16a853000117a678\"}}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/devices/batch\"\n\npayload = {\n    \"assetIds\": [\"6936c139154c470001b5f53d\"],\n    \"fields\": {\"Status\": {\"id\": \"6924631f16a853000117a678\"}}\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PATCH\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/devices/batch'' -Method PATCH -Headers $headers -ContentType ''application/json'' -Body ''{"assetIds":["6936c139154c470001b5f53d"],"fields":{"Status":{"id":"6924631f16a853000117a678"}}}'''
+  /assets/devices/jc-system/{jcSystemId}:
+    get:
+      tags:
+      - Assets
+      summary: Get a device asset by JC System ID
+      description: Retrieve a specific device asset by its JumpCloud System ID
+      operationId: getDeviceAssetByJCSystemID
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: jcSystemId
+        in: path
+        required: true
+        description: The JumpCloud System ID of the device asset
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Device asset retrieved successfully
+          x-examples:
+            application/json:
+              summaryBySystem:
+                summary: Subset of device fields when resolving by JumpCloud system ID
+                value:
+                  id: 507f1f77bcf86cd799439011
+                  assetStatus:
+                    id: 6924631f16a853000117a678
+                    name: Active
+                    type: select
+                  warrantyExpiredDate: 2027-11-01
+                  purchaseCost:
+                    amount: 1799
+                    currency: USD
+                  deployedDate: 2024-11-05
+                  ownershipType:
+                    id: 605d4f88bcf86cd7994390ee
+                    name: Corporate
+                    type: select
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.DeviceAssetByJCSystemID'
+        '400':
+          description: Bad request - invalid JC System ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Device asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/assets/devices/jc-system/{jcSystemId} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/devices/jc-system/{jcSystemId}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/devices/jc-system/{jcSystemId}'' -Method GET -Headers $headers'
+  /assets/accessories/{id}:
+    get:
+      tags:
+      - Assets
+      summary: Get an accessory asset by ID
+      description: Retrieve a specific accessory asset by its ID
+      operationId: getAccessoryAsset
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The accessory asset ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Accessory asset retrieved successfully
+          x-examples:
+            application/json:
+              stringsAndReferences:
+                summary: Strings and select/user/location references (same labels as create accessory)
+                value:
+                  id: 507f1f77bcf86cd799439011
+                  fields:
+                    Name:
+                      editable: true
+                      value: USB-C Travel Hub
+                    Tag:
+                      editable: true
+                      value: ACC-10442
+                    Model:
+                      editable: true
+                      value: Anker 341
+                    Type:
+                      editable: true
+                      value:
+                        id: 6924631f16a853000117a601
+                        name: Dock
+                        type: select
+                    Status:
+                      editable: true
+                      value:
+                        id: 6924631f16a853000117a678
+                        name: In stock
+                        type: select
+                    Location:
+                      editable: true
+                      value:
+                        id: 605b2f88bcf86cd7994390bb
+                        name: London HQ
+                        type: location
+                    Owner:
+                      editable: true
+                      value:
+                        id: 605a1f77bcf86cd7994390aa
+                        name: Jane Smith
+                        type: user
+              datetimeOnAccessory:
+                summary: RFC3339 datetime in `FieldValue.value`
+                value:
+                  id: 507f1f77bcf86cd799439011
+                  fields:
+                    Name:
+                      editable: true
+                      value: Docking station
+                    Date Deployed:
+                      editable: true
+                      value: 2024-08-01 12:00:00
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.Asset'
+        '400':
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Accessory asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/assets/accessories/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/accessories/{id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/accessories/{id}'' -Method GET -Headers $headers'
+    put:
+      tags:
+      - Assets
+      summary: Update an accessory asset
+      description: Update an existing accessory asset by its ID
+      operationId: updateAccessoryAsset
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The accessory asset ID
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.assets.UpdateAssetRequest'
+        description: Accessory asset update data
+        required: true
+        x-examples:
+          application/json:
+            partialReferenceAndStrings:
+              summary: Update select references and string fields
+              value:
+                fields:
+                  Status:
+                    id: 6924631f16a853000117a679
+                  Type:
+                    id: 6924631f16a853000117a602
+                  Model: Anker 555
+                  Tag: ACC-99177
+      responses:
+        '200':
+          description: Accessory asset updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.Asset'
+        '400':
+          description: Bad request - invalid data or ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Accessory asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/assets/accessories/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"fields\":{\"Status\":{\"id\":\"6924631f16a853000117a679\"},\"Model\":\"MacBookPro18,5\",\"Purchase Date\":\"2025-01-10\",\"Date Deployed\":\"2025-01-10T09:00:00\",\"Purchase Cost\":{\"amount\":1999.5,\"currency\":\"USD\"}}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/accessories/{id}\"\n\npayload = {\"fields\": {\n        \"Status\": {\"id\": \"6924631f16a853000117a679\"},\n        \"Model\": \"MacBookPro18,5\",\n        \"Purchase Date\": \"2025-01-10\",\n        \"Date Deployed\": \"2025-01-10T09:00:00\",\n        \"Purchase Cost\": {\n            \"amount\": 1999.5,\n            \"currency\": \"USD\"\n        }\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/accessories/{id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"fields":{"Status":{"id":"6924631f16a853000117a679"},"Model":"MacBookPro18,5","Purchase Date":"2025-01-10","Date Deployed":"2025-01-10T09:00:00","Purchase Cost":{"amount":1999.5,"currency":"USD"}}}'''
+    delete:
+      tags:
+      - Assets
+      summary: Delete an accessory asset
+      description: Delete an existing accessory asset by its ID
+      operationId: deleteAccessoryAsset
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The accessory asset ID
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Accessory asset deleted successfully
+        '400':
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Accessory asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/assets/accessories/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/accessories/{id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/accessories/{id}'' -Method DELETE -Headers $headers'
+  /assets/accessories:
+    get:
+      tags:
+      - Assets
+      summary: List accessory assets
+      description: Retrieve a list of accessory assets with optional pagination
+      operationId: listAccessoryAssets
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: limit
+        in: query
+        description: Maximum number of results to return
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 100
+          default: 100
+      - name: skip
+        in: query
+        description: Number of results to skip for pagination
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+          default: 0
+      - name: fields
+        in: query
+        description: Field configuration labels to include in each asset's `fields` map. Each name must match the `label` from `GET /assets/field-configurations` for accessories.
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Accessory assets retrieved successfully
+          x-examples:
+            application/json:
+              firstPage:
+                summary: Paginated accessories — same `Asset` shape as GET by id
+                value:
+                  results:
+                  - id: 507f1f77bcf86cd799439011
+                    fields:
+                      Name:
+                        editable: true
+                        value: USB-C Travel Hub
+                      Status:
+                        editable: true
+                        value:
+                          id: 6924631f16a853000117a678
+                          name: In stock
+                          type: select
+                  - id: 507f1f77bcf86cd799439012
+                    fields:
+                      Name:
+                        editable: true
+                        value: Docking station
+                      Date Deployed:
+                        editable: true
+                        value: 2024-08-01 12:00:00
+                  totalCount: 42
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.AssetListResponse'
+        '400':
+          description: Bad request - invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/assets/accessories?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&fields=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/accessories"
+
+
+          querystring = {"limit":"SOME_INTEGER_VALUE","skip":"SOME_INTEGER_VALUE","fields":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/accessories?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&fields=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      tags:
+      - Assets
+      summary: Create an accessory asset
+      description: Create a new accessory asset
+      operationId: createAccessoryAsset
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.assets.CreateAssetRequest'
+        description: Accessory asset creation data
+        required: true
+        x-examples:
+          application/json:
+            stringsAndReferences:
+              summary: Strings plus reference fields (type, status, location, owner)
+              value:
+                fields:
+                  Name: USB-C Travel Hub
+                  Tag: ACC-10442
+                  Model: Anker 341
+                  Type:
+                    id: 6924631f16a853000117a601
+                  Status:
+                    id: 6924631f16a853000117a678
+                  Location:
+                    id: 605b2f88bcf86cd7994390bb
+                  Owner:
+                    id: 605a1f77bcf86cd7994390aa
+            datetimeOnAccessory:
+              summary: RFC3339 datetime on accessory (Date Deployed)
+              value:
+                fields:
+                  Name: Docking station
+                  Date Deployed: 2024-08-01 12:00:00
+      responses:
+        '201':
+          description: Accessory asset created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.Asset'
+        '400':
+          description: Bad request - invalid data format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/assets/accessories \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"fields\":{\"Name\":\"Engineering MacBook Pro 14\",\"Model\":\"MacBookPro18,4\",\"Serial Number\":\"C02XG0FDJK7Q\",\"Status\":{\"id\":\"6924631f16a853000117a678\"},\"Owner\":{\"id\":\"605a1f77bcf86cd7994390aa\"},\"Location\":{\"id\":\"605b2f88bcf86cd7994390bb\"},\"Purchase Date\":\"2024-06-15\",\"Date Deployed\":\"2024-06-15T14:30:00\",\"Purchase Cost\":{\"amount\":2499.99,\"currency\":\"USD\"},\"Disk Encrypted\":true}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/accessories\"\n\npayload = {\"fields\": {\n        \"Name\": \"Engineering MacBook Pro 14\",\n        \"Model\": \"MacBookPro18,4\",\n        \"Serial Number\": \"C02XG0FDJK7Q\",\n        \"Status\": {\"id\": \"6924631f16a853000117a678\"},\n        \"Owner\": {\"id\": \"605a1f77bcf86cd7994390aa\"},\n        \"Location\": {\"id\": \"605b2f88bcf86cd7994390bb\"},\n        \"Purchase Date\": \"2024-06-15\",\n        \"Date Deployed\": \"2024-06-15T14:30:00\",\n        \"Purchase Cost\": {\n            \"amount\": 2499.99,\n            \"currency\": \"USD\"\n        },\n        \"Disk Encrypted\": True\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/accessories'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"fields":{"Name":"Engineering MacBook Pro 14","Model":"MacBookPro18,4","Serial Number":"C02XG0FDJK7Q","Status":{"id":"6924631f16a853000117a678"},"Owner":{"id":"605a1f77bcf86cd7994390aa"},"Location":{"id":"605b2f88bcf86cd7994390bb"},"Purchase Date":"2024-06-15","Date Deployed":"2024-06-15T14:30:00","Purchase Cost":{"amount":2499.99,"currency":"USD"},"Disk Encrypted":true}}'''
+  /assets/accessories/batch:
+    patch:
+      tags:
+      - Assets
+      summary: Batch update accessory assets
+      description: Update multiple accessory assets with a single field value change
+      operationId: batchUpdateAccessoryAssets
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.assets.BatchUpdateAccessoryAssetsRequest'
+        description: Batch update data with asset IDs and field value
+        required: true
+        x-examples:
+          application/json:
+            stringFieldExample:
+              summary: Update a simple string field (e.g. Model)
+              value:
+                assetIds:
+                - 6936c139154c470001b5f53d
+                fields:
+                  Model: Apple Pen
+            referenceFieldExample:
+              summary: Update a reference field (e.g. Status)
+              value:
+                assetIds:
+                - 6936c139154c470001b5f53d
+                fields:
+                  Status:
+                    id: 6924631f16a853000117a678
+      responses:
+        '200':
+          description: Batch update completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.BatchUpdateAccessoryAssetsResponse'
+        '400':
+          description: Bad request - invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PATCH \\\n  --url https://console.jumpcloud.com/api/v2/assets/accessories/batch \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"assetIds\":[\"6936c139154c470001b5f53d\",\"507f1f77bcf86cd799439011\"],\"fields\":{\"Model\":\"Apple Pen\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/accessories/batch\"\n\npayload = {\n    \"assetIds\": [\"6936c139154c470001b5f53d\", \"507f1f77bcf86cd799439011\"],\n    \"fields\": {\"Model\": \"Apple Pen\"}\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PATCH\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/accessories/batch'' -Method PATCH -Headers $headers -ContentType ''application/json'' -Body ''{"assetIds":["6936c139154c470001b5f53d","507f1f77bcf86cd799439011"],"fields":{"Model":"Apple Pen"}}'''
+  /assets/locations/{id}:
+    get:
+      tags:
+      - Assets
+      summary: Get a location asset
+      description: Retrieve a specific location asset by its ID
+      operationId: getLocationAsset
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The location asset ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Location asset retrieved successfully
+          x-examples:
+            application/json:
+              stringsAndReferences:
+                summary: Address strings and parent/manager references (same labels as create location)
+                value:
+                  id: 507f1f77bcf86cd799439011
+                  fields:
+                    Name:
+                      editable: true
+                      value: London HQ
+                    Address:
+                      editable: true
+                      value: 221B Baker Street
+                    City:
+                      editable: true
+                      value: London
+                    Postal Code:
+                      editable: true
+                      value: NW1 6XE
+                    Phone:
+                      editable: true
+                      value: +44 20 7946 0958
+                    Parent:
+                      editable: true
+                      value:
+                        id: 605b2f88bcf86cd7994390cc
+                        name: UK Region
+                        type: location
+                    Manager:
+                      editable: true
+                      value:
+                        id: 605a1f77bcf86cd7994390dd
+                        name: Alex Lee
+                        type: user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.Asset'
+        '400':
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Location asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/assets/locations/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/locations/{id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/locations/{id}'' -Method GET -Headers $headers'
+    put:
+      tags:
+      - Assets
+      summary: Update a location asset
+      description: Update an existing location asset by its ID
+      operationId: updateLocationAsset
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The location asset ID
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.assets.UpdateAssetRequest'
+        description: Location asset update data
+        required: true
+        x-examples:
+          application/json:
+            partialStringsAndReferences:
+              summary: Update address strings and reference fields
+              value:
+                fields:
+                  Name: London HQ — Baker St
+                  Address: 221B Baker Street
+                  City: London
+                  Parent:
+                    id: 605b2f88bcf86cd7994390ee
+                  Manager:
+                    id: 605a1f77bcf86cd7994390ff
+      responses:
+        '200':
+          description: Location asset updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.Asset'
+        '400':
+          description: Bad request - invalid data or ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Location asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/assets/locations/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"fields\":{\"Status\":{\"id\":\"6924631f16a853000117a679\"},\"Model\":\"MacBookPro18,5\",\"Purchase Date\":\"2025-01-10\",\"Date Deployed\":\"2025-01-10T09:00:00\",\"Purchase Cost\":{\"amount\":1999.5,\"currency\":\"USD\"}}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/locations/{id}\"\n\npayload = {\"fields\": {\n        \"Status\": {\"id\": \"6924631f16a853000117a679\"},\n        \"Model\": \"MacBookPro18,5\",\n        \"Purchase Date\": \"2025-01-10\",\n        \"Date Deployed\": \"2025-01-10T09:00:00\",\n        \"Purchase Cost\": {\n            \"amount\": 1999.5,\n            \"currency\": \"USD\"\n        }\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/locations/{id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"fields":{"Status":{"id":"6924631f16a853000117a679"},"Model":"MacBookPro18,5","Purchase Date":"2025-01-10","Date Deployed":"2025-01-10T09:00:00","Purchase Cost":{"amount":1999.5,"currency":"USD"}}}'''
+    delete:
+      tags:
+      - Assets
+      summary: Delete a location asset
+      description: Delete an existing location asset by its ID
+      operationId: deleteLocationAsset
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The location asset ID
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Location asset deleted successfully
+        '400':
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Location asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/assets/locations/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/locations/{id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/locations/{id}'' -Method DELETE -Headers $headers'
+  /assets/locations:
+    get:
+      tags:
+      - Assets
+      summary: List location assets
+      description: Retrieve a list of location assets with optional pagination
+      operationId: listLocationAssets
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: limit
+        in: query
+        description: Maximum number of results to return
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          default: 100
+      - name: skip
+        in: query
+        description: Number of results to skip for pagination
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+          default: 0
+      - name: fields
+        in: query
+        description: Field configuration labels to include in each asset's `fields` map (comma-separated). Each name must match the `label` from `GET /assets/field-configurations` for locations.
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Location assets retrieved successfully
+          x-examples:
+            application/json:
+              firstPage:
+                summary: Paginated locations — same `Asset` shape as GET by id
+                value:
+                  results:
+                  - id: 507f1f77bcf86cd799439011
+                    fields:
+                      Name:
+                        editable: true
+                        value: London HQ
+                      City:
+                        editable: true
+                        value: London
+                      Parent:
+                        editable: true
+                        value:
+                          id: 605b2f88bcf86cd7994390cc
+                          name: UK Region
+                          type: location
+                  - id: 507f1f77bcf86cd799439012
+                    fields:
+                      Name:
+                        editable: true
+                        value: Austin Office
+                      Address:
+                        editable: true
+                        value: 500 W 2nd St
+                  totalCount: 28
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.AssetListResponse'
+        '400':
+          description: Bad request - invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/assets/locations?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&fields=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/locations"
+
+
+          querystring = {"limit":"SOME_INTEGER_VALUE","skip":"SOME_INTEGER_VALUE","fields":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/locations?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&fields=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      tags:
+      - Assets
+      summary: Create a location asset
+      description: Create a new location asset
+      operationId: createLocationAsset
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.assets.CreateAssetRequest'
+        description: Location asset creation data
+        required: true
+        x-examples:
+          application/json:
+            stringsAndReferences:
+              summary: Location name, address text fields, and parent/manager references
+              value:
+                fields:
+                  Name: London HQ
+                  Address: 221B Baker Street
+                  City: London
+                  Postal Code: NW1 6XE
+                  Phone: +44 20 7946 0958
+                  Parent:
+                    id: 605b2f88bcf86cd7994390cc
+                  Manager:
+                    id: 605a1f77bcf86cd7994390dd
+      responses:
+        '201':
+          description: Location asset created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.Asset'
+        '400':
+          description: Bad request - invalid data format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/assets/locations \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"fields\":{\"Name\":\"Engineering MacBook Pro 14\",\"Model\":\"MacBookPro18,4\",\"Serial Number\":\"C02XG0FDJK7Q\",\"Status\":{\"id\":\"6924631f16a853000117a678\"},\"Owner\":{\"id\":\"605a1f77bcf86cd7994390aa\"},\"Location\":{\"id\":\"605b2f88bcf86cd7994390bb\"},\"Purchase Date\":\"2024-06-15\",\"Date Deployed\":\"2024-06-15T14:30:00\",\"Purchase Cost\":{\"amount\":2499.99,\"currency\":\"USD\"},\"Disk Encrypted\":true}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/locations\"\n\npayload = {\"fields\": {\n        \"Name\": \"Engineering MacBook Pro 14\",\n        \"Model\": \"MacBookPro18,4\",\n        \"Serial Number\": \"C02XG0FDJK7Q\",\n        \"Status\": {\"id\": \"6924631f16a853000117a678\"},\n        \"Owner\": {\"id\": \"605a1f77bcf86cd7994390aa\"},\n        \"Location\": {\"id\": \"605b2f88bcf86cd7994390bb\"},\n        \"Purchase Date\": \"2024-06-15\",\n        \"Date Deployed\": \"2024-06-15T14:30:00\",\n        \"Purchase Cost\": {\n            \"amount\": 2499.99,\n            \"currency\": \"USD\"\n        },\n        \"Disk Encrypted\": True\n    }}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/locations'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"fields":{"Name":"Engineering MacBook Pro 14","Model":"MacBookPro18,4","Serial Number":"C02XG0FDJK7Q","Status":{"id":"6924631f16a853000117a678"},"Owner":{"id":"605a1f77bcf86cd7994390aa"},"Location":{"id":"605b2f88bcf86cd7994390bb"},"Purchase Date":"2024-06-15","Date Deployed":"2024-06-15T14:30:00","Purchase Cost":{"amount":2499.99,"currency":"USD"},"Disk Encrypted":true}}'''
+  /assets/locations/batch:
+    patch:
+      tags:
+      - Assets
+      summary: Batch update location assets
+      description: Update multiple location assets with a single field value change
+      operationId: batchUpdateLocationAssets
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.assets.BatchUpdateLocationAssetsRequest'
+        description: Batch update data with asset IDs and field value
+        required: true
+        x-examples:
+          application/json:
+            stringFieldExample:
+              summary: Update a simple string field (e.g. Name)
+              value:
+                assetIds:
+                - 6936c139154c470001b5f53d
+                fields:
+                  Name: Super HQ
+            referenceFieldExample:
+              summary: Update a reference field (e.g. Status)
+              value:
+                assetIds:
+                - 6936c139154c470001b5f53d
+                fields:
+                  Status:
+                    id: 6924631f16a853000117a678
+      responses:
+        '200':
+          description: Batch update completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.BatchUpdateLocationAssetsResponse'
+        '400':
+          description: Bad request - invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PATCH \\\n  --url https://console.jumpcloud.com/api/v2/assets/locations/batch \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"assetIds\":[\"6936c139154c470001b5f53d\",\"507f1f77bcf86cd799439011\"],\"fields\":{\"Name\":\"Super HQ\"}}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/locations/batch\"\n\npayload = {\n    \"assetIds\": [\"6936c139154c470001b5f53d\", \"507f1f77bcf86cd799439011\"],\n    \"fields\": {\"Name\": \"Super HQ\"}\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PATCH\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/locations/batch'' -Method PATCH -Headers $headers -ContentType ''application/json'' -Body ''{"assetIds":["6936c139154c470001b5f53d","507f1f77bcf86cd799439011"],"fields":{"Name":"Super HQ"}}'''
+  /assets/devices/{id}/history:
+    get:
+      tags:
+      - Assets
+      summary: List device asset history
+      description: Retrieve the history of a device asset
+      operationId: listDeviceAssetHistory
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The device asset ID
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Maximum number of results to return
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          default: 100
+      - name: skip
+        in: query
+        description: Number of results to skip for pagination
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+          default: 0
+      responses:
+        '200':
+          description: Device asset history retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.AssetHistoryResponse'
+        '400':
+          description: Bad request - invalid asset ID or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Device asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/assets/devices/{id}/history?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/devices/{id}/history"
+
+
+          querystring = {"limit":"SOME_INTEGER_VALUE","skip":"SOME_INTEGER_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/devices/{id}/history?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+    post:
+      tags:
+      - Assets
+      summary: Create device asset history note
+      description: Add a note to the device asset history
+      operationId: createDeviceAssetHistoryNote
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The device asset ID
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/jumpcloud.http.assets.CreateAssetHistoryNoteRequest'
+      responses:
+        '201':
+          description: History note created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.AssetHistoryEvent'
+        '400':
+          description: Bad request - invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Device asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/assets/devices/{id}/history \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"note\":\"Asset transferred to new department\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/devices/{id}/history\"\n\npayload = {\"note\": \"Asset transferred to new department\"}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/devices/{id}/history'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"note":"Asset transferred to new department"}'''
+  /assets/accessories/{id}/history:
+    get:
+      tags:
+      - Assets
+      summary: List accessory asset history
+      description: Retrieve the history of an accessory asset
+      operationId: listAccessoryAssetHistory
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The accessory asset ID
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Maximum number of results to return
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          default: 100
+      - name: skip
+        in: query
+        description: Number of results to skip for pagination
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+          default: 0
+      responses:
+        '200':
+          description: Accessory asset history retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.AssetHistoryResponse'
+        '400':
+          description: Bad request - invalid asset ID or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Accessory asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/assets/accessories/{id}/history?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/accessories/{id}/history"
+
+
+          querystring = {"limit":"SOME_INTEGER_VALUE","skip":"SOME_INTEGER_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/accessories/{id}/history?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+    post:
+      tags:
+      - Assets
+      summary: Create accessory asset history note
+      description: Add a note to the accessory asset history
+      operationId: createAccessoryAssetHistoryNote
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The accessory asset ID
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/jumpcloud.http.assets.CreateAssetHistoryNoteRequest'
+      responses:
+        '201':
+          description: History note created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.AssetHistoryEvent'
+        '400':
+          description: Bad request - invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Accessory asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/assets/accessories/{id}/history \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"note\":\"Asset transferred to new department\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/accessories/{id}/history\"\n\npayload = {\"note\": \"Asset transferred to new department\"}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/accessories/{id}/history'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"note":"Asset transferred to new department"}'''
+  /assets/locations/{id}/history:
+    get:
+      tags:
+      - Assets
+      summary: List location asset history
+      description: Retrieve the history of a location asset
+      operationId: listLocationAssetHistory
+      x-scopes:
+      - assets
+      - assets.readonly
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The location asset ID
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Maximum number of results to return
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          default: 100
+      - name: skip
+        in: query
+        description: Number of results to skip for pagination
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+          default: 0
+      responses:
+        '200':
+          description: Location asset history retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.AssetHistoryResponse'
+        '400':
+          description: Bad request - invalid asset ID or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Location asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/assets/locations/{id}/history?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/assets/locations/{id}/history"
+
+
+          querystring = {"limit":"SOME_INTEGER_VALUE","skip":"SOME_INTEGER_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/locations/{id}/history?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+    post:
+      tags:
+      - Assets
+      summary: Create location asset history note
+      description: Add a note to the location asset history
+      operationId: createLocationAssetHistoryNote
+      x-scopes:
+      - assets
+      security:
+      - x-api-key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The location asset ID
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/jumpcloud.http.assets.CreateAssetHistoryNoteRequest'
+      responses:
+        '201':
+          description: History note created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.AssetHistoryEvent'
+        '400':
+          description: Bad request - invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '401':
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        '404':
+          description: Location asset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.assets.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/assets/locations/{id}/history \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"note\":\"Asset transferred to new department\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/assets/locations/{id}/history\"\n\npayload = {\"note\": \"Asset transferred to new department\"}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/assets/locations/{id}/history'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"note":"Asset transferred to new department"}'''
+components:
+  schemas:
+    jumpcloud.http.assets.Asset:
+      type: object
+      description: Generic asset representation with field values. Each `fields` value is a `FieldValue` (`editable` plus typed `value`); see the API overview for how `value` is encoded by field type.
+      required:
+      - id
+      - fields
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the asset
+          examples:
+          - 507f1f77bcf86cd799439011
+        jcSystemId:
+          type: string
+          description: JumpCloud system identifier for device assets, as a lowercase hex string.
+          examples:
+          - 507f1f77bcf86cd799439012
+        fields:
+          type: object
+          description: Asset field values keyed by field label (`FieldValue` per key). Labels match `GET /assets/field-configurations`.
+          additionalProperties:
+            $ref: '#/components/schemas/jumpcloud.http.assets.FieldValue'
+          examples:
+          - Name:
+              editable: true
+              value: Finance laptop 12
+            Model:
+              editable: true
+              value: MacBookPro18,3
+            Serial Number:
+              editable: true
+              value: C02XK0ZLMN8Q
+            Status:
+              editable: true
+              value:
+                id: 6924631f16a853000117a678
+                name: In stock
+                type: select
+            Owner:
+              editable: true
+              value:
+                id: 605a1f77bcf86cd7994390aa
+                name: Jane Smith
+                type: user
+            Location:
+              editable: true
+              value:
+                id: 605b2f88bcf86cd7994390bb
+                name: London HQ
+                type: location
+      examples:
+      - id: 507f1f77bcf86cd799439011
+        jcSystemId: 605c3f99bcf86cd7994390cc
+        fields:
+          Name:
+            editable: true
+            value: Finance laptop 12
+          Model:
+            editable: true
+            value: MacBookPro18,3
+          Status:
+            editable: true
+            value:
+              id: 6924631f16a853000117a678
+              name: In stock
+              type: select
+    jumpcloud.http.assets.error:
+      type: object
+      description: Error response containing details about what went wrong
+      required:
+      - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong
+    jumpcloud.http.assets.ListFieldConfigsResponse:
+      type: object
+      description: Response containing a paginated list of field configurations
+      required:
+      - results
+      - totalCount
+      properties:
+        results:
+          type: array
+          description: Array of field configurations
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.assets.FieldConfig'
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of field configurations available
+          examples:
+          - 10
+    jumpcloud.http.assets.BatchUpdateAccessoryAssetsResponse:
+      type: object
+      description: Response containing results of batch accessory asset update operation
+      required:
+      - updatedAssetCount
+      - notUpdatedAssetCount
+      properties:
+        updatedAssetCount:
+          type: integer
+          format: int32
+          description: Number of assets successfully updated
+          examples:
+          - 5
+        notUpdatedAssetCount:
+          type: integer
+          format: int32
+          description: Number of assets that could not be updated
+          examples:
+          - 0
+    jumpcloud.http.assets.UpdateAssetRequest:
+      type: object
+      description: Request payload for updating an existing asset of any type
+      required:
+      - fields
+      properties:
+        fields:
+          type: object
+          description: Asset field values organized by field label to update
+          additionalProperties: true
+          examples:
+          - Status:
+              id: 6924631f16a853000117a679
+            Model: MacBookPro18,5
+            Purchase Date: 2025-01-10
+            Date Deployed: 2025-01-10 09:00:00
+            Purchase Cost:
+              amount: 1999.5
+              currency: USD
+    jumpcloud.http.assets.BatchUpdateReference:
+      type: object
+      description: Reference value for batch update operations
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          description: The reference ID
+          examples:
+          - 507f1f77bcf86cd799439013
+        name:
+          type: string
+          description: The reference display name
+          examples:
+          - Active
+        type:
+          type: string
+          description: The type of reference
+          enum:
+          - user
+          - user_group
+          - location
+          - select
+          - device_group
+          examples:
+          - select
+    jumpcloud.http.assets.BatchUpdateLocationAssetsResponse:
+      type: object
+      description: Response containing results of batch location asset update operation
+      required:
+      - updatedAssetCount
+      - notUpdatedAssetCount
+      properties:
+        updatedAssetCount:
+          type: integer
+          format: int32
+          description: Number of assets successfully updated
+          examples:
+          - 5
+        notUpdatedAssetCount:
+          type: integer
+          format: int32
+          description: Number of assets that could not be updated
+          examples:
+          - 0
+    jumpcloud.http.assets.Price:
+      type: object
+      description: Monetary amount with currency
+      required:
+      - amount
+      - currency
+      properties:
+        amount:
+          type: number
+          format: double
+          description: The monetary amount
+          examples:
+          - 1299.99
+        currency:
+          type: string
+          description: The currency code (ISO 4217)
+          examples:
+          - USD
+    jumpcloud.http.assets.CreateAssetRequest:
+      type: object
+      description: Request payload for creating a new asset of any type
+      required:
+      - fields
+      properties:
+        fields:
+          type: object
+          description: Map of field label to raw JSON value for each field to set (not `FieldValue` objects). Formats match the API overview (dates, RFC3339 datetimes, `{"id"}` for references, etc.).
+          additionalProperties: true
+          examples:
+          - Name: Engineering MacBook Pro 14
+            Model: MacBookPro18,4
+            Serial Number: C02XG0FDJK7Q
+            Status:
+              id: 6924631f16a853000117a678
+            Owner:
+              id: 605a1f77bcf86cd7994390aa
+            Location:
+              id: 605b2f88bcf86cd7994390bb
+            Purchase Date: 2024-06-15
+            Date Deployed: 2024-06-15 14:30:00
+            Purchase Cost:
+              amount: 2499.99
+              currency: USD
+            Disk Encrypted: true
+    jumpcloud.http.assets.CreateAssetHistoryNoteRequest:
+      type: object
+      description: Request payload for creating a note entry in asset history
+      required:
+      - note
+      properties:
+        note:
+          type: string
+          description: The content of the note to add to asset history
+          examples:
+          - Asset transferred to new department
+    jumpcloud.http.assets.DeviceAssetByJCSystemID:
+      type: object
+      description: Device asset representation when retrieved by JumpCloud system ID
+      required:
+      - id
+      - connectedAccessoryCount
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the device asset
+          examples:
+          - 507f1f77bcf86cd799439011
+        assetStatus:
+          $ref: '#/components/schemas/jumpcloud.http.assets.Reference'
+        warrantyExpiredDate:
+          type: string
+          format: date
+          description: The warranty expiration date
+          examples:
+          - 2025-12-31
+        purchaseCost:
+          $ref: '#/components/schemas/jumpcloud.http.assets.Price'
+        deployedDate:
+          type: string
+          format: date
+          description: The date the device was deployed
+          examples:
+          - 2024-01-15
+        ownershipType:
+          $ref: '#/components/schemas/jumpcloud.http.assets.Reference'
+        connectedAccessoryCount:
+          type: integer
+          format: int32
+          description: Number of accessory assets connected to this device
+          examples:
+          - 3
+    jumpcloud.http.assets.BatchUpdateFieldValue:
+      type: object
+      description: Field value for batch updating assets
+      required:
+      - label
+      - value
+      properties:
+        label:
+          type: string
+          description: The label of the field to update
+          examples:
+          - Status
+        value:
+          $ref: '#/components/schemas/jumpcloud.http.assets.BatchUpdateReference'
+    jumpcloud.http.assets.BatchUpdateAccessoryAssetsRequest:
+      type: object
+      description: Request payload for batch updating multiple accessory assets with a single field value
+      required:
+      - assetIds
+      properties:
+        assetIds:
+          type: array
+          description: Array of accessory asset IDs to update
+          items:
+            type: string
+          examples:
+          - - 507f1f77bcf86cd799439011
+            - 507f1f77bcf86cd799439012
+        fieldValue:
+          $ref: '#/components/schemas/jumpcloud.http.assets.BatchUpdateFieldValue'
+        fields:
+          type: object
+          description: Asset field values organized by field label to update
+          additionalProperties: true
+      examples:
+      - assetIds:
+        - 6936c139154c470001b5f53d
+        - 507f1f77bcf86cd799439011
+        fields:
+          Model: Apple Pen
+    jumpcloud.http.assets.FieldConfig:
+      type: object
+      description: Represents a field configuration
+      required:
+      - id
+      - label
+      - default
+      - mandatory
+      - scope
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the field configuration
+          examples:
+          - 507f1f77bcf86cd799439011
+        label:
+          type: string
+          description: The display label for the field
+          examples:
+          - Status
+        default:
+          type: boolean
+          description: Whether this is a default/system field
+          examples:
+          - false
+        mandatory:
+          type: boolean
+          description: Whether the field is required
+          examples:
+          - true
+        scope:
+          type: string
+          description: The asset type(s) this field applies to
+          enum:
+          - Common
+          - Device
+          - Accessory
+          - Location
+          examples:
+          - Device
+    jumpcloud.http.assets.Reference:
+      type: object
+      description: A reference to another entity (user, group, location, etc.)
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          description: The reference ID
+          examples:
+          - 507f1f77bcf86cd799439013
+        name:
+          type: string
+          description: The reference display name
+          examples:
+          - Active
+        type:
+          type: string
+          description: The type of reference
+          enum:
+          - user
+          - user_group
+          - location
+          - select
+          - device_group
+          examples:
+          - select
+    jumpcloud.http.assets.ListSelectOptionsResponse:
+      type: object
+      description: Response containing select field options
+      required:
+      - results
+      - totalCount
+      properties:
+        results:
+          type: array
+          description: Array of select options
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.assets.SelectOption'
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of select options available
+          examples:
+          - 5
+    jumpcloud.http.assets.AssetHistoryEvent:
+      type: object
+      description: Represents a historical event that occurred on an asset
+      required:
+      - eventType
+      - occurredAt
+      - actor
+      - actionSource
+      properties:
+        eventType:
+          type: string
+          enum:
+          - ASSET_HISTORY_EVENT_TYPE_CREATE
+          - ASSET_HISTORY_EVENT_TYPE_DELETE
+          - ASSET_HISTORY_EVENT_TYPE_UPDATE_FIELDS
+          - ASSET_HISTORY_EVENT_TYPE_UPDATE_STATUS
+          - ASSET_HISTORY_EVENT_TYPE_UPDATE_LOCATION
+          - ASSET_HISTORY_EVENT_TYPE_UPDATE_OWNER
+          - ASSET_HISTORY_EVENT_TYPE_UPDATE_AGENT_STATUS
+          - ASSET_HISTORY_EVENT_TYPE_UPDATE_MFA_STATUS
+          - ASSET_HISTORY_EVENT_TYPE_UPDATE_MDM_STATUS
+          - ASSET_HISTORY_EVENT_TYPE_NOTE
+          description: The type of history event
+          examples:
+          - ASSET_HISTORY_EVENT_TYPE_NOTE
+        note:
+          type: string
+          description: Note content for note events
+          examples:
+          - Asset transferred to new department
+        changedFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.assets.FieldChange'
+        occurredAt:
+          type: string
+          format: date-time
+          description: When the event occurred
+          examples:
+          - 2024-01-15 10:30:00
+        actor:
+          $ref: '#/components/schemas/jumpcloud.http.assets.Actor'
+        actionSource:
+          type: string
+          enum:
+          - ACTION_SOURCE_MANUAL
+          - ACTION_SOURCE_SYSTEM
+          - ACTION_SOURCE_IMPORT
+          - ACTION_SOURCE_API
+          description: Source of the action
+          examples:
+          - ACTION_SOURCE_MANUAL
+    jumpcloud.http.assets.FieldChange:
+      type: object
+      description: Represents a field that was changed in an asset update event
+      required:
+      - label
+      properties:
+        label:
+          type: string
+          description: The field label that changed
+          examples:
+          - Status
+        oldValue:
+          $ref: '#/components/schemas/jumpcloud.http.assets.ChangeValue'
+        newValue:
+          $ref: '#/components/schemas/jumpcloud.http.assets.ChangeValue'
+    jumpcloud.http.assets.AssetListResponse:
+      type: object
+      description: Response containing a paginated list of assets
+      required:
+      - results
+      - totalCount
+      properties:
+        results:
+          type: array
+          description: Array of assets
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.assets.Asset'
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of assets available (for pagination)
+          examples:
+          - 150
+      examples:
+      - results:
+        - id: 507f1f77bcf86cd799439011
+          jcSystemId: 605c3f99bcf86cd7994390cc
+          fields:
+            Name:
+              editable: true
+              value: Finance laptop 12
+            Model:
+              editable: true
+              value: MacBookPro18,3
+            Status:
+              editable: true
+              value:
+                id: 6924631f16a853000117a678
+                name: In stock
+                type: select
+        - id: 507f1f77bcf86cd799439012
+          jcSystemId: 605c3f99bcf86cd7994390dd
+          fields:
+            Name:
+              editable: true
+              value: Staging MacBook
+            Purchase Date:
+              editable: true
+              value: 2024-11-01
+        totalCount: 150
+    jumpcloud.http.assets.ChangeValue:
+      type: object
+      description: Represents a field value in asset history (before/after change)
+      properties:
+        value:
+          description: The actual value
+    jumpcloud.http.assets.BatchUpdateLocationAssetsRequest:
+      type: object
+      description: Request payload for batch updating multiple location assets with a single field value
+      required:
+      - assetIds
+      properties:
+        assetIds:
+          type: array
+          description: Array of location asset IDs to update
+          items:
+            type: string
+          examples:
+          - - 507f1f77bcf86cd799439011
+            - 507f1f77bcf86cd799439012
+        fieldValue:
+          $ref: '#/components/schemas/jumpcloud.http.assets.BatchUpdateFieldValue'
+        fields:
+          type: object
+          description: Asset field values organized by field label to update
+          additionalProperties: true
+      examples:
+      - assetIds:
+        - 6936c139154c470001b5f53d
+        - 507f1f77bcf86cd799439011
+        fields:
+          Name: Super HQ
+    jumpcloud.http.assets.SelectOption:
+      type: object
+      description: Represents a select field option with its properties
+      required:
+      - id
+      - value
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the select option
+          examples:
+          - 507f1f77bcf86cd799439011
+        value:
+          type: string
+          description: The display value of the select option
+          examples:
+          - Active
+        editable:
+          type: boolean
+          description: Whether the option can be edited or removed by the organization.
+          examples:
+          - false
+    jumpcloud.http.assets.BatchUpdateDeviceAssetsResponse:
+      type: object
+      description: Response containing results of batch device asset update operation
+      required:
+      - updatedAssetCount
+      - notUpdatedAssetCount
+      properties:
+        updatedAssetCount:
+          type: integer
+          format: int32
+          description: Number of assets successfully updated
+          examples:
+          - 5
+        notUpdatedAssetCount:
+          type: integer
+          format: int32
+          description: Number of assets that could not be updated
+          examples:
+          - 0
+    jumpcloud.http.assets.FieldValue:
+      type: object
+      description: Represents a field value with metadata indicating if it's editable
+      required:
+      - editable
+      - value
+      properties:
+        editable:
+          type: boolean
+          description: Whether this field can be edited by the user
+          examples:
+          - true
+        value:
+          description: The field value (type varies based on field configuration)
+    jumpcloud.http.assets.Actor:
+      type: object
+      description: Represents who performed an action on an asset
+      required:
+      - name
+      - type
+      properties:
+        id:
+          type: string
+          description: The actor's unique identifier
+          examples:
+          - 507f1f77bcf86cd799439011
+        name:
+          type: string
+          description: The actor's name
+          examples:
+          - John Doe
+        type:
+          type: string
+          enum:
+          - ACTOR_TYPE_USER
+          - ACTOR_TYPE_SYSTEM
+          - ACTOR_TYPE_SERVICE_ACCOUNT
+          - ACTOR_TYPE_SYSTEM_USER
+          description: The type of actor
+          examples:
+          - ACTOR_TYPE_USER
+    jumpcloud.http.assets.BatchUpdateDeviceAssetsRequest:
+      type: object
+      description: Request payload for batch updating multiple device assets with a single field value
+      required:
+      - assetIds
+      properties:
+        assetIds:
+          type: array
+          description: Array of device asset IDs to update
+          items:
+            type: string
+          examples:
+          - - 507f1f77bcf86cd799439011
+            - 507f1f77bcf86cd799439012
+        fieldValue:
+          $ref: '#/components/schemas/jumpcloud.http.assets.BatchUpdateFieldValue'
+        fields:
+          type: object
+          description: Asset field values organized by field label to update
+          additionalProperties: true
+      examples:
+      - assetIds:
+        - 6936c139154c470001b5f53d
+        fields:
+          Status:
+            id: 6924631f16a853000117a678
+    jumpcloud.http.assets.AssetHistoryResponse:
+      type: object
+      description: Response containing paginated asset history events
+      required:
+      - results
+      - totalCount
+      properties:
+        results:
+          type: array
+          description: Array of asset history events
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.assets.AssetHistoryEvent'
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of history events available (for pagination)
+          examples:
+          - 25
+  requestBodies:
+    jumpcloud.http.assets.CreateAssetHistoryNoteRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/jumpcloud.http.assets.CreateAssetHistoryNoteRequest'
+      description: History note data
+      required: true
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

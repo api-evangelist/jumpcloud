@@ -1,0 +1,2070 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud SaaS App Management API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: SaaS App Management
+  description: Operations related to SaaS App Management
+paths:
+  /saas-management/application-catalog:
+    get:
+      tags:
+      - SaaS App Management
+      summary: List catalog applications
+      description: Retrieve a paginated list of catalog applications. Supports filtering by name and batch retrieval by IDs.
+      operationId: listCatalogApplications
+      x-scopes:
+      - saas
+      - saas.readonly
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: limit
+        in: query
+        description: Maximum number of catalog applications to return
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+      - name: offset
+        in: query
+        description: Number of catalog applications to skip
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: name
+        in: query
+        description: Filter catalog applications by name
+        required: false
+        schema:
+          type: string
+      - name: ids
+        in: query
+        description: List of catalog application IDs to retrieve (batch-get). When provided, pagination and name filter are ignored.
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: List of catalog applications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIListCatalogApplicationsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/saas-management/application-catalog?limit=SOME_INTEGER_VALUE&offset=SOME_INTEGER_VALUE&name=SOME_STRING_VALUE&ids=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/application-catalog"
+
+
+          querystring = {"limit":"SOME_INTEGER_VALUE","offset":"SOME_INTEGER_VALUE","name":"SOME_STRING_VALUE","ids":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/application-catalog?limit=SOME_INTEGER_VALUE&offset=SOME_INTEGER_VALUE&name=SOME_STRING_VALUE&ids=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /saas-management/application-catalog/{catalog_application_id}:
+    get:
+      tags:
+      - SaaS App Management
+      summary: Get catalog application
+      description: Retrieve a specific catalog application by ID. Supports both custom (org-specific) and managed (global) catalog application IDs.
+      operationId: getCatalogApplication
+      x-scopes:
+      - saas
+      - saas.readonly
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: catalog_application_id
+        in: path
+        description: Catalog application ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Catalog application details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPICatalogApplication'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/saas-management/application-catalog/{catalog_application_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/application-catalog/{catalog_application_id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/application-catalog/{catalog_application_id}'' -Method GET -Headers $headers'
+  /saas-management/applications:
+    get:
+      tags:
+      - SaaS App Management
+      summary: List applications
+      description: Retrieve a paginated list of applications for the organization
+      operationId: listApplications
+      x-scopes:
+      - saas
+      - saas.readonly
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: limit
+        in: query
+        description: Maximum number of applications to return
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 50
+      - name: offset
+        in: query
+        description: Number of applications to skip
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: expand
+        in: query
+        description: 'Optional list of related resources to include in each list item. Supported values: `discovery_source_types` (derived from account discovery records linked to the application).'
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            const: discovery_source_types
+          uniqueItems: true
+      responses:
+        '200':
+          description: List of applications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIListApplicationsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/saas-management/applications?limit=SOME_INTEGER_VALUE&offset=SOME_INTEGER_VALUE&expand=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/applications"
+
+
+          querystring = {"limit":"SOME_INTEGER_VALUE","offset":"SOME_INTEGER_VALUE","expand":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/applications?limit=SOME_INTEGER_VALUE&offset=SOME_INTEGER_VALUE&expand=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      tags:
+      - SaaS App Management
+      summary: Create application
+      description: Create a new application
+      operationId: createApplication
+      x-scopes:
+      - saas
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPICreateApplicationRequest'
+        description: Application creation request
+        required: true
+      responses:
+        '201':
+          description: Application created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIApplication'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/saas-management/applications \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"app_name\":\"string\",\"app_domains\":[\"string\"],\"description\":\"string\",\"catalog_app_id\":\"string\",\"owner_user_id\":\"string\",\"status\":\"NEWLY_DISCOVERED\",\"access_restriction\":\"NO_ACTION\",\"alternative_button\":\"string\",\"alternative_button_url\":\"string\",\"custom_restriction_message\":\"string\",\"restriction_excluded_group_ids\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/saas-management/applications\"\n\npayload = {\n    \"app_name\": \"string\",\n    \"app_domains\": [\"string\"],\n    \"description\": \"string\",\n    \"catalog_app_id\": \"string\",\n    \"owner_user_id\": \"string\",\n    \"status\": \"NEWLY_DISCOVERED\",\n    \"access_restriction\": \"NO_ACTION\",\n    \"alternative_button\": \"string\",\n    \"alternative_button_url\": \"string\",\n    \"custom_restriction_message\": \"string\",\n    \"restriction_excluded_group_ids\": [\"string\"]\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/applications'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"app_name":"string","app_domains":["string"],"description":"string","catalog_app_id":"string","owner_user_id":"string","status":"NEWLY_DISCOVERED","access_restriction":"NO_ACTION","alternative_button":"string","alternative_button_url":"string","custom_restriction_message":"string","restriction_excluded_group_ids":["string"]}'''
+  /saas-management/applications/{application_id}:
+    get:
+      tags:
+      - SaaS App Management
+      summary: Get application
+      description: Retrieve a specific application by ID
+      operationId: getApplication
+      x-scopes:
+      - saas
+      - saas.readonly
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: application_id
+        in: path
+        description: Application ID
+        required: true
+        schema:
+          type: string
+      - name: expand
+        in: query
+        description: 'Optional list of related resources to include in the response. Supported values: `sso_apps`.'
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            const: sso_apps
+          uniqueItems: true
+      responses:
+        '200':
+          description: Application details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIApplication'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}?expand=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}"
+
+
+          querystring = {"expand":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}?expand=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    put:
+      tags:
+      - SaaS App Management
+      summary: Update application
+      description: Update an existing application
+      operationId: updateApplication
+      x-scopes:
+      - saas
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: application_id
+        in: path
+        description: Application ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIUpdateApplicationRequest'
+        description: Application update request
+        required: true
+      responses:
+        '200':
+          description: Application updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIApplication'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"owner_user_id\":\"string\",\"app_name\":\"string\",\"app_domains\":[\"string\"],\"description\":\"string\",\"status\":\"NEWLY_DISCOVERED\",\"access_restriction\":\"NO_ACTION\",\"alternative_button\":\"string\",\"alternative_button_url\":\"string\",\"custom_restriction_message\":\"string\",\"restriction_excluded_group_ids\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}\"\n\npayload = {\n    \"owner_user_id\": \"string\",\n    \"app_name\": \"string\",\n    \"app_domains\": [\"string\"],\n    \"description\": \"string\",\n    \"status\": \"NEWLY_DISCOVERED\",\n    \"access_restriction\": \"NO_ACTION\",\n    \"alternative_button\": \"string\",\n    \"alternative_button_url\": \"string\",\n    \"custom_restriction_message\": \"string\",\n    \"restriction_excluded_group_ids\": [\"string\"]\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"owner_user_id":"string","app_name":"string","app_domains":["string"],"description":"string","status":"NEWLY_DISCOVERED","access_restriction":"NO_ACTION","alternative_button":"string","alternative_button_url":"string","custom_restriction_message":"string","restriction_excluded_group_ids":["string"]}'''
+    delete:
+      tags:
+      - SaaS App Management
+      summary: Delete application
+      description: Delete a specific application
+      operationId: deleteApplication
+      x-scopes:
+      - saas
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: application_id
+        in: path
+        description: Application ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Application deleted successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}'' -Method DELETE -Headers $headers'
+  /saas-management/applications/{application_id}/usage:
+    get:
+      tags:
+      - SaaS App Management
+      summary: Get application usage
+      description: Retrieve a specific application usage by application ID
+      operationId: getApplicationUsage
+      x-scopes:
+      - saas
+      - saas.readonly
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: application_id
+        in: path
+        description: Application ID
+        required: true
+        schema:
+          type: string
+      - name: day_count
+        in: query
+        description: Day count to filter (min:1 max:90)
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Application usage details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIApplicationUsageResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/usage?day_count=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/usage"
+
+
+          querystring = {"day_count":"SOME_INTEGER_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/usage?day_count=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+  /saas-management/application-licenses:
+    get:
+      tags:
+      - SaaS App Management
+      summary: List licenses
+      description: Retrieve a paginated list of licenses for an organization
+      operationId: listLicenses
+      x-scopes:
+      - saas
+      - saas.readonly
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: limit
+        in: query
+        description: Maximum number of licenses to return
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 50
+      - name: offset
+        in: query
+        description: Number of licenses to skip
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      responses:
+        '200':
+          description: List of licenses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPILicenseListResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/saas-management/application-licenses?limit=SOME_INTEGER_VALUE&offset=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/application-licenses"
+
+
+          querystring = {"limit":"SOME_INTEGER_VALUE","offset":"SOME_INTEGER_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/application-licenses?limit=SOME_INTEGER_VALUE&offset=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+  /saas-management/application-licenses/{application_id}:
+    get:
+      tags:
+      - SaaS App Management
+      summary: List application licenses
+      description: Retrieve a paginated list of licenses for a specific application
+      operationId: listApplicationLicenses
+      x-scopes:
+      - saas
+      - saas.readonly
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: application_id
+        in: path
+        description: Application ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List of application licenses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIListApplicationLicensesResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/saas-management/application-licenses/{application_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/application-licenses/{application_id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/application-licenses/{application_id}'' -Method GET -Headers $headers'
+  /saas-management/applications/{application_id}/accounts:
+    get:
+      tags:
+      - SaaS App Management
+      summary: List application accounts
+      description: Retrieve accounts for a specific application
+      operationId: listApplicationAccounts
+      x-scopes:
+      - saas
+      - saas.readonly
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: application_id
+        in: path
+        description: Application ID
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Maximum number of accounts to return
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 50
+      - name: offset
+        in: query
+        description: Number of accounts to skip
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      responses:
+        '200':
+          description: List of application accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIListAccountsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/accounts?limit=SOME_INTEGER_VALUE&offset=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/accounts"
+
+
+          querystring = {"limit":"SOME_INTEGER_VALUE","offset":"SOME_INTEGER_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/accounts?limit=SOME_INTEGER_VALUE&offset=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+  /saas-management/applications/{application_id}/accounts/{account_id}:
+    get:
+      tags:
+      - SaaS App Management
+      summary: Get account
+      description: Retrieve a specific account by ID
+      operationId: getAccount
+      x-scopes:
+      - saas
+      - saas.readonly
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: application_id
+        in: path
+        description: Application ID
+        required: true
+        schema:
+          type: string
+      - name: account_id
+        in: path
+        description: Account ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Account details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIAccount'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/accounts/{account_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/accounts/{account_id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/accounts/{account_id}'' -Method GET -Headers $headers'
+    delete:
+      tags:
+      - SaaS App Management
+      summary: Delete account
+      description: Delete a specific account
+      operationId: deleteAccount
+      x-scopes:
+      - saas
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      parameters:
+      - name: application_id
+        in: path
+        description: Application ID
+        required: true
+        schema:
+          type: string
+      - name: account_id
+        in: path
+        description: Account ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Account deleted successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+        default:
+          description: Generic error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.http.saas_app_management.error'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/accounts/{account_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/accounts/{account_id}"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/saas-management/applications/{application_id}/accounts/{account_id}'' -Method DELETE -Headers $headers'
+components:
+  schemas:
+    jumpcloud.http.saas_app_management.PublicAPIUpdateApplicationRequest:
+      type: object
+      properties:
+        owner_user_id:
+          type: string
+          description: Owner User ID
+        app_name:
+          type: string
+          description: Application name if it is a custom application.
+        app_domains:
+          type: array
+          items:
+            type: string
+          description: List of app URLs if it is a custom application.
+        description:
+          type: string
+          description: Description of the application if it is a custom application.
+        status:
+          type: string
+          enum:
+          - NEWLY_DISCOVERED
+          - APPROVED
+          - UNAPPROVED
+          - IGNORED
+          description: Application status
+        access_restriction:
+          type: string
+          enum:
+          - NO_ACTION
+          - WARNING
+          - BLOCK
+          - DISMISSIBLE_WARNING
+          - DEFAULT_ACTION
+          description: Access restriction type
+        alternative_button:
+          type: string
+          description: Alternative button text
+        alternative_button_url:
+          type: string
+          description: Alternative button URL
+        custom_restriction_message:
+          type: string
+          description: Custom restriction message
+        restriction_excluded_group_ids:
+          type: array
+          items:
+            type: string
+          description: List of excluded group IDs
+    jumpcloud.http.saas_app_management.PublicAPILicenseContractEntity:
+      type: object
+      properties:
+        cost:
+          type: number
+          description: Total yearly contract cost
+        currency:
+          type: string
+          description: Contract currency
+        term:
+          type: string
+          enum:
+          - MONTHLY_TERM
+          - YEARLY_TERM
+          - FREE_TERM
+          description: License contract renewal period term
+        renewal_date:
+          type: string
+          description: Contract renewal date
+        notes:
+          type: string
+          description: License contract user notes
+    jumpcloud.http.saas_app_management.PublicAPIListAccountsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIAccount'
+          description: List of application accounts
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of accounts available
+          minimum: 0
+    jumpcloud.http.saas_app_management.PublicAPIApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Application ID
+        name:
+          type: string
+          description: Application name
+        catalog_app_id:
+          type: string
+          description: Catalog Application ID
+        owner_user_id:
+          type: string
+          description: Owner User ID
+        status:
+          type: string
+          enum:
+          - NEWLY_DISCOVERED
+          - APPROVED
+          - UNAPPROVED
+          - IGNORED
+          description: Application status
+        access_restriction:
+          type: string
+          enum:
+          - NO_ACTION
+          - WARNING
+          - BLOCK
+          - DISMISSIBLE_WARNING
+          - DEFAULT_ACTION
+          description: Access restriction type
+        alternative_button:
+          type: string
+          description: Alternative button text
+        alternative_button_url:
+          type: string
+          description: Alternative button URL
+        custom_restriction_message:
+          type: string
+          description: Custom restriction message
+        discovered_at:
+          type: string
+          format: date-time
+          description: Application discovery timestamp
+        restriction_excluded_group_ids:
+          type: array
+          items:
+            type: string
+          description: List of excluded group IDs
+        sso_apps:
+          type: array
+          description: SSO connections associated with the application. Only populated when `sso_apps` is requested via the `expand` query parameter.
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPISSOApp'
+          x-omitempty: true
+    jumpcloud.http.saas_app_management.PublicAPIAccount:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Account ID
+        user_id:
+          type: string
+          description: User ID
+        parent_app_id:
+          type: string
+          description: Parent Application ID
+        email:
+          type: string
+          description: Account email
+        username:
+          type: string
+          description: Account username
+    jumpcloud.http.saas_app_management.PublicAPICreateApplicationRequest:
+      type: object
+      required:
+      - status
+      properties:
+        app_name:
+          type: string
+          description: Application name if it is a custom application. Either provide app_name or catalog_app_id parameter.
+        app_domains:
+          type: array
+          items:
+            type: string
+          description: List of app URLs if it is a custom application.
+        description:
+          type: string
+          description: Description of the application if it is a custom application.
+        catalog_app_id:
+          type: string
+          description: Catalog application ID if it is already in our app catalog. Either provide app_name or catalog_app_id parameter.
+        owner_user_id:
+          type: string
+          description: Owner User ID
+        status:
+          type: string
+          enum:
+          - NEWLY_DISCOVERED
+          - APPROVED
+          - UNAPPROVED
+          - IGNORED
+          description: Application status
+        access_restriction:
+          type: string
+          enum:
+          - NO_ACTION
+          - WARNING
+          - BLOCK
+          - DISMISSIBLE_WARNING
+          - DEFAULT_ACTION
+          description: Access restriction type if the status is set to UNAPPROVED.
+        alternative_button:
+          type: string
+          description: Alternative button text
+        alternative_button_url:
+          type: string
+          description: Alternative button URL
+        custom_restriction_message:
+          type: string
+          description: Custom restriction message
+        restriction_excluded_group_ids:
+          type: array
+          items:
+            type: string
+          description: List of excluded group IDs
+    jumpcloud.http.saas_app_management.PublicAPIListApplicationLicensesResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPILicenseEntity'
+          description: List of application licenses
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of application licenses available
+          minimum: 0
+        contract:
+          $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPILicenseContractEntity'
+    jumpcloud.http.saas_app_management.PublicAPIListApplicationsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIApplicationListEntity'
+          description: List of applications
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of applications available
+          minimum: 0
+    jumpcloud.http.saas_app_management.PublicAPIApplicationListEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Application ID
+        catalog_app_id:
+          type: string
+          description: Catalog Application ID
+        owner_user_id:
+          type: string
+          description: Owner User ID
+        status:
+          type: string
+          enum:
+          - NEWLY_DISCOVERED
+          - APPROVED
+          - UNAPPROVED
+          - IGNORED
+          description: Application status
+        access_restriction:
+          type: string
+          enum:
+          - NO_ACTION
+          - WARNING
+          - BLOCK
+          - DISMISSIBLE_WARNING
+          - DEFAULT_ACTION
+          description: Access restriction type
+        custom_restriction_message:
+          type: string
+          description: Custom restriction message
+        discovered_at:
+          type: string
+          format: date-time
+          description: Application discovery timestamp
+        restriction_excluded_group_ids:
+          type: array
+          items:
+            type: string
+          description: List of excluded group IDs
+        discovery_source_types:
+          type: array
+          items:
+            type: string
+          description: 'Distinct discovery source types for accounts linked to this application (present when `expand=discovery_source_types` is requested). Possible values are: BROWSER_EXTENSION, JUMPCLOUD_SSO, CONNECTOR, JUMPCLOUD_DEVICE, LICENSE.'
+          x-omitempty: true
+    jumpcloud.http.saas_app_management.PublicAPILicenseEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: License ID
+        name:
+          type: string
+          description: License name
+        count:
+          type: integer
+          description: License total user count
+          x-omitempty: false
+        cost_per_license:
+          type: number
+          description: License cost per user per month
+        assigned:
+          type: integer
+          description: License assigned user count
+          x-omitempty: false
+        unassigned:
+          type: integer
+          description: License unassigned user count
+          x-omitempty: false
+        is_unlimited:
+          type: boolean
+          description: License unlimited flag
+    jumpcloud.http.saas_app_management.PublicAPICatalogApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Catalog application ID
+        name:
+          type: string
+          description: Name of the catalog application
+        description:
+          type: string
+          description: Description of the catalog application
+        domains:
+          type: array
+          items:
+            type: string
+          description: List of domains mapped with this application
+        logo_url:
+          type: string
+          description: URL of the catalog application logo
+    jumpcloud.http.saas_app_management.PublicAPIListCatalogApplicationsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPICatalogApplicationListEntity'
+          description: List of catalog applications
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of catalog applications available
+          minimum: 0
+    jumpcloud.http.saas_app_management.error:
+      type: object
+      description: Error response containing details about what went wrong
+      required:
+      - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong
+    jumpcloud.http.saas_app_management.PublicAPIApplicationUsageListEntity:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account ID
+        latest_used_at:
+          type: string
+          format: date-time
+          description: Latest Used At
+        account_email:
+          type: string
+          description: Account Email
+        account_username:
+          type: string
+          description: Account Username
+        user_id:
+          type: string
+          description: User ID
+        user_email:
+          type: string
+          description: User Email
+    jumpcloud.http.saas_app_management.PublicAPISSOApp:
+      type: object
+      description: SSO connection associated with an application
+      properties:
+        id:
+          type: string
+          description: SSO application ID
+        app_name:
+          type: string
+          description: Name of the catalog application associated with this SSO connection
+          x-omitempty: true
+        display_label:
+          type: string
+          description: Display label of the SSO application
+          x-omitempty: true
+        template_name:
+          type: string
+          description: Template name of the SSO application
+        status:
+          type: string
+          enum:
+          - NOT_CONNECTED
+          - CONNECTED
+          description: SSO connection status
+    jumpcloud.http.saas_app_management.PublicAPILicenseListResponseItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Contract ID
+        currency:
+          type: string
+          description: Contract currency
+        licenses:
+          type: object
+          description: Application licenses counts summary
+          properties:
+            total:
+              type: integer
+              description: Total licenses count
+            assigned:
+              type: integer
+              description: Assigned licenses count
+            unassigned:
+              type: integer
+              description: Unassigned licenses count
+        costs:
+          type: object
+          description: Application licenses costs summary
+          properties:
+            estimated_cost:
+              type: number
+              description: Total yearly cost of all licenses to estimate yearly contract cost
+            contract_cost:
+              type: number
+              description: Total yearly cost of contract
+            saving_opportunity_cost:
+              type: number
+              description: Total yearly cost saving potential from unassigned licenses
+        renewal_date:
+          type: string
+          description: Next renewal date of the application contract
+        contract_term:
+          type: string
+          enum:
+          - MONTHLY_TERM
+          - YEARLY_TERM
+          - FREE_TERM
+          description: License contract renewal period term
+    jumpcloud.http.saas_app_management.PublicAPIApplicationUsageResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPIApplicationUsageListEntity'
+          description: List of application usages
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of application usages available
+          minimum: 0
+    jumpcloud.http.saas_app_management.PublicAPICatalogApplicationListEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Catalog application ID
+        name:
+          type: string
+          description: Name of the catalog application
+        logo_url:
+          type: string
+          description: URL of the catalog application logo
+    jumpcloud.http.saas_app_management.PublicAPILicenseListResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          description: List of licenses
+          items:
+            $ref: '#/components/schemas/jumpcloud.http.saas_app_management.PublicAPILicenseListResponseItem'
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of licenses available
+          minimum: 0
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

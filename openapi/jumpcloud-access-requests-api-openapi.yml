@@ -1,0 +1,1998 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Access Requests API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Access Requests
+paths:
+  /userapprovalrequest:
+    post:
+      summary: User Approval Access Request
+      description: Endpoint for user approval
+      operationId: WorkflowAccessRequestApi_UserApprovalRequest
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.UserApprovalRequestResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.ingresso.UserApprovalRequestRequest'
+        required: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/userapprovalrequest \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"approvedDuration\":\"string\",\"id\":\"string\",\"organizationObjectId\":\"string\",\"remarks\":\"string\",\"status\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/userapprovalrequest\"\n\npayload = {\n    \"approvedDuration\": \"string\",\n    \"id\": \"string\",\n    \"organizationObjectId\": \"string\",\n    \"remarks\": \"string\",\n    \"status\": \"string\"\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/userapprovalrequest'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"approvedDuration":"string","id":"string","organizationObjectId":"string","remarks":"string","status":"string"}'''
+  /approversprogress/{id}:
+    get:
+      summary: Get Approval flow progress by id for admin portal
+      description: Endpoint for getting the approval progress of a access request
+      operationId: WorkflowAccessRequestApi_GetAccessRequestApprovalProgressAdminPortal
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.GetAccessRequestApprovalProgressResponse'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/approversprogress/{id}?organizationObjectId=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/approversprogress/{id}"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approversprogress/{id}?organizationObjectId=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+  /approvalflowrequest:
+    get:
+      summary: Get all Workflow Access Requests
+      description: Endpoint for getting the list of workflows access requests
+      operationId: WorkflowAccessRequestApi_GetAllWorkflowAccessRequests
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.GetAllWorkflowAccessRequestResponse'
+      parameters:
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: skip
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+        allowReserved: true
+      - name: fields
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/approvalflowrequest?organizationObjectId=SOME_STRING_VALUE&limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/approvalflowrequest"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE","limit":"SOME_STRING_VALUE","skip":"SOME_STRING_VALUE","sort":"SOME_STRING_VALUE","fields":"SOME_ARRAY_VALUE","filter":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowrequest?organizationObjectId=SOME_STRING_VALUE&limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      summary: Create Workflow Access Request
+      description: Endpoint for adding a new workflow access request
+      operationId: WorkflowAccessRequestApi_CreateWorkflowAccessRequest
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.CreateWorkflowAccessRequestResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.ingresso.CreateWorkflowAccessRequestRequest'
+        required: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/approvalflowrequest \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"deviceId\":\"string\",\"devicePermissionLevel\":\"string\",\"id\":\"string\",\"organizationObjectId\":\"string\",\"reason\":\"string\",\"requestedDuration\":\"string\",\"sessionStartDate\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflowrequest\"\n\npayload = {\n    \"deviceId\": \"string\",\n    \"devicePermissionLevel\": \"string\",\n    \"id\": \"string\",\n    \"organizationObjectId\": \"string\",\n    \"reason\": \"string\",\n    \"requestedDuration\": \"string\",\n    \"sessionStartDate\": \"string\"\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowrequest'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"deviceId":"string","devicePermissionLevel":"string","id":"string","organizationObjectId":"string","reason":"string","requestedDuration":"string","sessionStartDate":"string"}'''
+  /approvalflowrequest/{id}:
+    get:
+      summary: Get Workflow Access Requests
+      description: Endpoint that returns the workflow access request by id
+      operationId: WorkflowAccessRequestApi_GetWorkflowAccessRequests
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.GetWorkflowAccessRequestResponse'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}?organizationObjectId=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}?organizationObjectId=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+    put:
+      summary: Update Workflow Access Requests
+      description: Endpoint that updates the workflow access request by id
+      operationId: WorkflowAccessRequestApi_UpdateWorkflowAccessRequests
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.UpdateWorkflowAccessRequestResponse'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admin:
+                  type: string
+                approvedDuration:
+                  type: string
+                internalNote:
+                  type: string
+                organizationObjectId:
+                  type: string
+                  format: byte
+                remarks:
+                  type: string
+                status:
+                  type: string
+        required: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/approvalflowrequest/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"admin\":\"string\",\"approvedDuration\":\"string\",\"internalNote\":\"string\",\"organizationObjectId\":\"string\",\"remarks\":\"string\",\"status\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}\"\n\npayload = {\n    \"admin\": \"string\",\n    \"approvedDuration\": \"string\",\n    \"internalNote\": \"string\",\n    \"organizationObjectId\": \"string\",\n    \"remarks\": \"string\",\n    \"status\": \"string\"\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"admin":"string","approvedDuration":"string","internalNote":"string","organizationObjectId":"string","remarks":"string","status":"string"}'''
+  /approvalflows:
+    get:
+      summary: Get all Access workflows
+      description: Endpoint for getting all access workflows
+      operationId: AccessWorkflowApi_GetAllAccessWorkFlows
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.GetAllAccessWorkFlowsResponse'
+      parameters:
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: skip
+        in: query
+        required: false
+        schema:
+          type: string
+          format: int64
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+        allowReserved: true
+      - name: fields
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+        allowReserved: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/approvalflows?organizationObjectId=SOME_STRING_VALUE&limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/approvalflows"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE","limit":"SOME_STRING_VALUE","skip":"SOME_STRING_VALUE","sort":"SOME_STRING_VALUE","fields":"SOME_ARRAY_VALUE","filter":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflows?organizationObjectId=SOME_STRING_VALUE&limit=SOME_STRING_VALUE&skip=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&fields=SOME_ARRAY_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      summary: Create Access Workflow
+      description: Endpoint for adding a new access workflow
+      operationId: AccessWorkflowApi_CreateAccessWorkflow
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.CreateAccessWorkflowResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.ingresso.CreateAccessWorkflowRequest'
+        required: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/approvalflows \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"approvalType\":\"string\",\"approverRequirement\":\"string\",\"approverResources\":[{\"requireAll\":true,\"resourceId\":\"string\",\"resourceName\":\"string\",\"resourceOrder\":0,\"resourceType\":\"string\"}],\"category\":\"string\",\"description\":\"string\",\"deviceLevelPermission\":[\"string\"],\"fixedDuration\":\"string\",\"iconColor\":\"string\",\"iconUrl\":\"string\",\"multiSelectDuration\":[\"string\"],\"name\":\"string\",\"nonAdminApproval\":true,\"organizationObjectId\":\"string\",\"resourceId\":\"string\",\"resourceType\":\"string\",\"slackConfig\":[{\"slackResourceId\":\"string\"}],\"slackDmEnabled\":true,\"slackEnabled\":true,\"status\":\"string\",\"timeBasedAccess\":true,\"ttlConfig\":\"TTL_CONFIG_UNSPECIFIED\",\"visibleTo\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflows\"\n\npayload = {\n    \"approvalType\": \"string\",\n    \"approverRequirement\": \"string\",\n    \"approverResources\": [\n        {\n            \"requireAll\": True,\n            \"resourceId\": \"string\",\n            \"resourceName\": \"string\",\n            \"resourceOrder\": 0,\n            \"resourceType\": \"string\"\n        }\n    ],\n    \"category\": \"string\",\n    \"description\": \"string\",\n    \"deviceLevelPermission\": [\"string\"],\n    \"fixedDuration\": \"string\",\n    \"iconColor\": \"string\",\n    \"iconUrl\": \"string\",\n    \"multiSelectDuration\": [\"string\"],\n    \"name\": \"string\",\n    \"nonAdminApproval\": True,\n    \"organizationObjectId\": \"string\",\n    \"resourceId\": \"string\",\n    \"resourceType\": \"string\",\n    \"slackConfig\": [{\"slackResourceId\": \"string\"}],\n    \"slackDmEnabled\": True,\n    \"slackEnabled\": True,\n    \"status\": \"string\",\n    \"timeBasedAccess\": True,\n    \"ttlConfig\": \"TTL_CONFIG_UNSPECIFIED\",\n    \"visibleTo\": [\"string\"]\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflows'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"approvalType":"string","approverRequirement":"string","approverResources":[{"requireAll":true,"resourceId":"string","resourceName":"string","resourceOrder":0,"resourceType":"string"}],"category":"string","description":"string","deviceLevelPermission":["string"],"fixedDuration":"string","iconColor":"string","iconUrl":"string","multiSelectDuration":["string"],"name":"string","nonAdminApproval":true,"organizationObjectId":"string","resourceId":"string","resourceType":"string","slackConfig":[{"slackResourceId":"string"}],"slackDmEnabled":true,"slackEnabled":true,"status":"string","timeBasedAccess":true,"ttlConfig":"TTL_CONFIG_UNSPECIFIED","visibleTo":["string"]}'''
+  /approvalflows/{approvalFlowId}:
+    get:
+      summary: Get AccessWorkflow by id
+      description: Endpoint for getting workflow by id
+      operationId: AccessWorkflowApi_GetAccessWorkflow
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.AccessWorkflow'
+      parameters:
+      - name: approvalFlowId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/approvalflows/{approvalFlowId}?organizationObjectId=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/approvalflows/{approvalFlowId}"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflows/{approvalFlowId}?organizationObjectId=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+    put:
+      summary: Update Access Workflow
+      description: Endpoint for updating a new access workflow
+      operationId: AccessWorkflowApi_UpdateAccessWorkflow
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.UpdateAccessWorkflowResponse'
+      parameters:
+      - name: approvalFlowId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                approvalType:
+                  type: string
+                approverRequirement:
+                  type: string
+                approverResources:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/jumpcloud.ingresso.ApproverResource'
+                description:
+                  type: string
+                deviceLevelPermission:
+                  type: array
+                  items:
+                    type: string
+                fixedDuration:
+                  type: string
+                iconColor:
+                  type: string
+                iconUrl:
+                  type: string
+                multiSelectDuration:
+                  type: array
+                  items:
+                    type: string
+                name:
+                  type: string
+                nonAdminApproval:
+                  type: boolean
+                organizationObjectId:
+                  type: string
+                  format: byte
+                resourceId:
+                  type: string
+                slackConfig:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/jumpcloud.ingresso.SlackConfig'
+                slackDmEnabled:
+                  type: boolean
+                slackEnabled:
+                  type: boolean
+                status:
+                  type: string
+                timeBasedAccess:
+                  type: boolean
+                ttlConfig:
+                  $ref: '#/components/schemas/jumpcloud.ingresso.TtlConfig'
+                visibleTo:
+                  type: array
+                  items:
+                    type: string
+        required: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/approvalflows/{approvalFlowId} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"approvalType\":\"string\",\"approverRequirement\":\"string\",\"approverResources\":[{\"requireAll\":true,\"resourceId\":\"string\",\"resourceName\":\"string\",\"resourceOrder\":0,\"resourceType\":\"string\"}],\"description\":\"string\",\"deviceLevelPermission\":[\"string\"],\"fixedDuration\":\"string\",\"iconColor\":\"string\",\"iconUrl\":\"string\",\"multiSelectDuration\":[\"string\"],\"name\":\"string\",\"nonAdminApproval\":true,\"organizationObjectId\":\"string\",\"resourceId\":\"string\",\"slackConfig\":[{\"slackResourceId\":\"string\"}],\"slackDmEnabled\":true,\"slackEnabled\":true,\"status\":\"string\",\"timeBasedAccess\":true,\"ttlConfig\":\"TTL_CONFIG_UNSPECIFIED\",\"visibleTo\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflows/{approvalFlowId}\"\n\npayload = {\n    \"approvalType\": \"string\",\n    \"approverRequirement\": \"string\",\n    \"approverResources\": [\n        {\n            \"requireAll\": True,\n            \"resourceId\": \"string\",\n            \"resourceName\": \"string\",\n            \"resourceOrder\": 0,\n            \"resourceType\": \"string\"\n        }\n    ],\n    \"description\": \"string\",\n    \"deviceLevelPermission\": [\"string\"],\n    \"fixedDuration\": \"string\",\n    \"iconColor\": \"string\",\n    \"iconUrl\": \"string\",\n    \"multiSelectDuration\": [\"string\"],\n    \"name\": \"string\",\n    \"nonAdminApproval\": True,\n    \"organizationObjectId\": \"string\",\n    \"resourceId\": \"string\",\n    \"slackConfig\": [{\"slackResourceId\": \"string\"}],\n    \"slackDmEnabled\": True,\n    \"slackEnabled\": True,\n    \"status\": \"string\",\n    \"timeBasedAccess\": True,\n    \"ttlConfig\": \"TTL_CONFIG_UNSPECIFIED\",\n    \"visibleTo\": [\"string\"]\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflows/{approvalFlowId}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"approvalType":"string","approverRequirement":"string","approverResources":[{"requireAll":true,"resourceId":"string","resourceName":"string","resourceOrder":0,"resourceType":"string"}],"description":"string","deviceLevelPermission":["string"],"fixedDuration":"string","iconColor":"string","iconUrl":"string","multiSelectDuration":["string"],"name":"string","nonAdminApproval":true,"organizationObjectId":"string","resourceId":"string","slackConfig":[{"slackResourceId":"string"}],"slackDmEnabled":true,"slackEnabled":true,"status":"string","timeBasedAccess":true,"ttlConfig":"TTL_CONFIG_UNSPECIFIED","visibleTo":["string"]}'''
+    delete:
+      summary: Delete access workflow
+      description: Endpoint for deleting accessworkflow by id
+      operationId: AccessWorkflowApi_DeleteAccessWorkflow
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.DeleteAccessWorkflowResponse'
+      parameters:
+      - name: approvalFlowId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url 'https://console.jumpcloud.com/api/v2/approvalflows/{approvalFlowId}?organizationObjectId=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/approvalflows/{approvalFlowId}"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("DELETE", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflows/{approvalFlowId}?organizationObjectId=SOME_STRING_VALUE'' -Method DELETE -Headers $headers'
+  /approvalflowsettings:
+    get:
+      summary: Get AccessWorkflow settings for an organisation
+      description: Endpoint for getting workflow settings for an organisation
+      operationId: AccessWorkflowSettingsApi_GetAccessWorkflowSettings
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.AccessWorkflowSettings'
+      parameters:
+      - name: organizationObjectId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: byte
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/approvalflowsettings?organizationObjectId=SOME_STRING_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/approvalflowsettings"
+
+
+          querystring = {"organizationObjectId":"SOME_STRING_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowsettings?organizationObjectId=SOME_STRING_VALUE'' -Method GET -Headers $headers'
+    post:
+      summary: Create Access Workflow Settings for an organization
+      description: Endpoint for adding a new access workflow Settings
+      operationId: AccessWorkflowSettingsApi_CreateAccessWorkflowSettings
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.CreateAccessWorkflowSettingsResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.ingresso.CreateAccessWorkflowSettingsRequest'
+        required: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/approvalflowsettings \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"adminApprovalEmail\":true,\"channelEvents\":[{\"channelObjectId\":\"string\",\"eventTypes\":[\"ACCESS_MANAGEMENT_EVENT_TYPE_UNSPECIFIED\"]}],\"exposeApprovalProgress\":true,\"organizationObjectId\":\"string\",\"resourceRequest\":true,\"userApprovalEmail\":true,\"userRequestEmail\":true}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflowsettings\"\n\npayload = {\n    \"adminApprovalEmail\": True,\n    \"channelEvents\": [\n        {\n            \"channelObjectId\": \"string\",\n            \"eventTypes\": [\"ACCESS_MANAGEMENT_EVENT_TYPE_UNSPECIFIED\"]\n        }\n    ],\n    \"exposeApprovalProgress\": True,\n    \"organizationObjectId\": \"string\",\n    \"resourceRequest\": True,\n    \"userApprovalEmail\": True,\n    \"userRequestEmail\": True\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowsettings'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"adminApprovalEmail":true,"channelEvents":[{"channelObjectId":"string","eventTypes":["ACCESS_MANAGEMENT_EVENT_TYPE_UNSPECIFIED"]}],"exposeApprovalProgress":true,"organizationObjectId":"string","resourceRequest":true,"userApprovalEmail":true,"userRequestEmail":true}'''
+    put:
+      summary: Update Access Workflow Settings
+      description: Endpoint for updating a access workflow settings for an organization
+      operationId: AccessWorkflowSettingsApi_UpdateAccessWorkflowSettings
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.UpdateAccessWorkflowSettingsResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.ingresso.UpdateAccessWorkflowSettingsRequest'
+        required: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/approvalflowsettings \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"adminApprovalEmail\":true,\"channelEvents\":[{\"channelObjectId\":\"string\",\"eventTypes\":[\"ACCESS_MANAGEMENT_EVENT_TYPE_UNSPECIFIED\"]}],\"exposeApprovalProgress\":true,\"organizationObjectId\":\"string\",\"resourceRequest\":true,\"userApprovalEmail\":true,\"userRequestEmail\":true}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflowsettings\"\n\npayload = {\n    \"adminApprovalEmail\": True,\n    \"channelEvents\": [\n        {\n            \"channelObjectId\": \"string\",\n            \"eventTypes\": [\"ACCESS_MANAGEMENT_EVENT_TYPE_UNSPECIFIED\"]\n        }\n    ],\n    \"exposeApprovalProgress\": True,\n    \"organizationObjectId\": \"string\",\n    \"resourceRequest\": True,\n    \"userApprovalEmail\": True,\n    \"userRequestEmail\": True\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowsettings'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"adminApprovalEmail":true,"channelEvents":[{"channelObjectId":"string","eventTypes":["ACCESS_MANAGEMENT_EVENT_TYPE_UNSPECIFIED"]}],"exposeApprovalProgress":true,"organizationObjectId":"string","resourceRequest":true,"userApprovalEmail":true,"userRequestEmail":true}'''
+  /approvalflowrequest/{id}/cancel:
+    post:
+      summary: Cancel Workflow Access Request
+      description: Endpoint for cancelling a workflow access request (sets status to cancelled)
+      operationId: WorkflowAccessRequestApi_CancelWorkflowAccessRequest
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.CancelWorkflowAccessRequestResponse'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/WorkflowAccessRequestApi_CancelWorkflowAccessRequestBody'
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}/cancel \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"organizationObjectId\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}/cancel\"\n\npayload = {\"organizationObjectId\": \"string\"}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}/cancel'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"organizationObjectId":"string"}'''
+  /approvalflowrequest/{id}/endsession:
+    post:
+      summary: End Session (device)
+      description: Endpoint for ending a device session (deprovision device) for an active workflow access request with resource_type device
+      operationId: WorkflowAccessRequestApi_EndSession
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.EndSessionResponse'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/WorkflowAccessRequestApi_CancelWorkflowAccessRequestBody'
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}/endsession \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"organizationObjectId\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}/endsession\"\n\npayload = {\"organizationObjectId\": \"string\"}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}/endsession'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"organizationObjectId":"string"}'''
+  /approvalflowrequest/{id}/startsession:
+    post:
+      summary: Start Session (device)
+      description: Endpoint for starting a device session (provision device) for an approved workflow access request with resource_type device
+      operationId: WorkflowAccessRequestApi_StartSession
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.StartSessionResponse'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/WorkflowAccessRequestApi_CancelWorkflowAccessRequestBody'
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}/startsession \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"organizationObjectId\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}/startsession\"\n\npayload = {\"organizationObjectId\": \"string\"}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowrequest/{id}/startsession'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"organizationObjectId":"string"}'''
+  /approvalflowrequest/revoke-ttl-active-session:
+    post:
+      summary: Revoke TTL Active Session
+      description: Revoke TTL active sessions by request IDs. Revokes access before expiry for the given access requests.
+      operationId: WorkflowAccessRequestApi_RevokeTTLActiveSession
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.RevokeTTLActiveSessionResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.ingresso.RevokeTTLActiveSessionRequest'
+        required: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/approvalflowrequest/revoke-ttl-active-session \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"organizationObjectId\":\"string\",\"requestIds\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflowrequest/revoke-ttl-active-session\"\n\npayload = {\n    \"organizationObjectId\": \"string\",\n    \"requestIds\": [\"string\"]\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowrequest/revoke-ttl-active-session'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"organizationObjectId":"string","requestIds":["string"]}'''
+  /sudoactivesessions/revoke:
+    post:
+      summary: Revoke Elevated Permissions (Active Sessions)
+      description: Bulk revoke elevated permissions for active sessions (admin portal). Revokes access for the given access request IDs.
+      operationId: WorkflowAccessRequestApi_RevokeElevatedPermissions
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.RevokeElevatedPermissionsResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.ingresso.RevokeElevatedPermissionsRequest'
+        required: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/sudoactivesessions/revoke \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"organizationObjectId\":\"string\",\"requestIds\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/sudoactivesessions/revoke\"\n\npayload = {\n    \"organizationObjectId\": \"string\",\n    \"requestIds\": [\"string\"]\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/sudoactivesessions/revoke'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"organizationObjectId":"string","requestIds":["string"]}'''
+  /approvalflowrequest/max-approved-end-time:
+    post:
+      summary: Get Max Approved End Time
+      description: Returns the maximum (latest) approved end date across active approved access requests matching the user and any of the provided group IDs. found=false means no matching AR (not an access denial).
+      operationId: WorkflowAccessRequestApi_GetMaxApprovedEndTime
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.ingresso.GetMaxApprovedEndTimeResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.ingresso.GetMaxApprovedEndTimeRequest'
+        description: GetMaxApprovedEndTimeRequest looks up the latest approved AR end time for a user across group IDs.
+        required: true
+      tags:
+      - Access Requests
+      security:
+      - x-api-key: []
+      x-dynamic-gateway: true
+      x-scopes:
+      - accessmanagement.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/approvalflowrequest/max-approved-end-time \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"groupIds\":[\"string\"],\"organizationObjectId\":\"string\",\"userId\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/approvalflowrequest/max-approved-end-time\"\n\npayload = {\n    \"groupIds\": [\"string\"],\n    \"organizationObjectId\": \"string\",\n    \"userId\": \"string\"\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/approvalflowrequest/max-approved-end-time'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"groupIds":["string"],"organizationObjectId":"string","userId":"string"}'''
+components:
+  schemas:
+    jumpcloud.ingresso.CancelWorkflowAccessRequestResponse:
+      type: object
+    jumpcloud.ingresso.GetAccessRequestApprovalProgressResponse:
+      type: object
+      properties:
+        approvers:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.ApproversProgress'
+        approversRequirement:
+          type: string
+    jumpcloud.ingresso.GetMaxApprovedEndTimeRequest:
+      type: object
+      properties:
+        groupIds:
+          type: array
+          items:
+            type: string
+          description: Eligible JC user group IDs from Step 1 (union of resource + credential policies). Min 1.
+        organizationObjectId:
+          type: string
+          format: byte
+        userId:
+          type: string
+          description: JumpCloud user ID (requestor) — hex ObjectId string.
+      description: GetMaxApprovedEndTimeRequest looks up the latest approved AR end time for a user across group IDs.
+    jumpcloud.ingresso.WorkflowAccessRequest:
+      type: object
+      properties:
+        approvalFlowDescription:
+          type: string
+        approvalFlowId:
+          type: string
+        approvalFlowName:
+          type: string
+        approvalType:
+          type: string
+        approvedDuration:
+          type: string
+        createdAt:
+          type: string
+        department:
+          type: string
+        devicePermissionLevel:
+          type: string
+        expirationDate:
+          type: string
+        group:
+          type: string
+        iconColor:
+          type: string
+        iconUrl:
+          type: string
+        id:
+          type: string
+        internalNote:
+          type: string
+        manager:
+          type: string
+        nonAdminApproval:
+          type: boolean
+        remarks:
+          type: string
+        requestedDuration:
+          type: string
+        requestor:
+          type: string
+        resourceId:
+          type: string
+        resourceType:
+          type: string
+        runId:
+          type: string
+        sessionStartDate:
+          type: string
+        status:
+          type: string
+        timeBasedAccess:
+          type: boolean
+        updatedAt:
+          type: string
+        updatedBy:
+          type: string
+        userName:
+          type: string
+        wfMetadata:
+          type: string
+          format: byte
+    jumpcloud.ingresso.RevokeTTLActiveSessionRequest:
+      type: object
+      properties:
+        organizationObjectId:
+          type: string
+          format: byte
+        requestIds:
+          type: array
+          items:
+            type: string
+    jumpcloud.ingresso.UserApprovalRequestResponse:
+      type: object
+    jumpcloud.ingresso.TtlConfig:
+      type: string
+      enum:
+      - TTL_CONFIG_UNSPECIFIED
+      - TTL_CONFIG_MULTI_SELECT_DURATIONS
+      - TTL_CONFIG_FIXED_DURATION
+      default: TTL_CONFIG_UNSPECIFIED
+    jumpcloud.ingresso.CreateAccessWorkflowSettingsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+    jumpcloud.ingresso.UpdateAccessWorkflowResponse:
+      type: object
+    jumpcloud.ingresso.SlackConfig:
+      type: object
+      properties:
+        slackResourceId:
+          type: string
+    jumpcloud.ingresso.EndSessionResponse:
+      type: object
+    jumpcloud.ingresso.ChannelEvent:
+      type: object
+      properties:
+        channelObjectId:
+          type: string
+          format: byte
+        eventTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.EventType'
+    jumpcloud.ingresso.EventType:
+      type: string
+      enum:
+      - ACCESS_MANAGEMENT_EVENT_TYPE_UNSPECIFIED
+      - ACCESS_MANAGEMENT_ACCESS_REQUEST
+      - ACCESS_MANAGEMENT_ACCESS_REQUEST_APPROVAL
+      - ACCESS_MANAGEMENT_ASSOCIATION_CHANGE
+      - ACCESS_MANAGEMENT_APPROVAL_FLOW_CREATE
+      - ACCESS_MANAGEMENT_APPROVAL_FLOW_UPDATE
+      - ACCESS_MANAGEMENT_APPROVAL_FLOW_DELETE
+      - ACCESS_MANAGEMENT_ACCESS_REQUEST_SETTINGS_UPDATE
+      default: ACCESS_MANAGEMENT_EVENT_TYPE_UNSPECIFIED
+    jumpcloud.ingresso.AccessWorkflowSettings:
+      type: object
+      properties:
+        adminApprovalEmail:
+          type: boolean
+        channelEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.ChannelEvent'
+        createdBy:
+          type: string
+        exposeApprovalProgress:
+          type: boolean
+        id:
+          type: integer
+          format: int32
+        resourceRequest:
+          type: boolean
+        updatedBy:
+          type: string
+        userApprovalEmail:
+          type: boolean
+        userRequestEmail:
+          type: boolean
+    jumpcloud.ingresso.DeleteAccessWorkflowResponse:
+      type: object
+    jumpcloud.ingresso.RevokeTTLActiveSessionResponse:
+      type: object
+    jumpcloud.ingresso.CreateAccessWorkflowSettingsRequest:
+      type: object
+      properties:
+        adminApprovalEmail:
+          type: boolean
+        channelEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.ChannelEvent'
+        exposeApprovalProgress:
+          type: boolean
+        organizationObjectId:
+          type: string
+          format: byte
+        resourceRequest:
+          type: boolean
+        userApprovalEmail:
+          type: boolean
+        userRequestEmail:
+          type: boolean
+    jumpcloud.ingresso.Approvers:
+      type: object
+      properties:
+        approvalSequence:
+          type: string
+          format: int64
+        approvalStatus:
+          type: string
+        approverId:
+          type: string
+        approverType:
+          type: string
+        createdAt:
+          type: string
+        requireAll:
+          type: boolean
+        resourceId:
+          type: string
+        resourceName:
+          type: string
+        resourceType:
+          type: string
+    jumpcloud.ingresso.ApproversProgress:
+      type: object
+      properties:
+        approvalSequence:
+          type: integer
+          format: int32
+        approvalStatus:
+          type: string
+        approvedCount:
+          type: integer
+          format: int32
+        approverId:
+          type: string
+        approverType:
+          type: string
+        createdAt:
+          type: string
+        overridenApproval:
+          type: boolean
+        requireAll:
+          type: boolean
+        resourceId:
+          type: string
+        resourceName:
+          type: string
+        resourceType:
+          type: string
+        totalCount:
+          type: integer
+          format: int32
+    jumpcloud.ingresso.ApproverResource:
+      type: object
+      properties:
+        requireAll:
+          type: boolean
+        resourceId:
+          type: string
+        resourceName:
+          type: string
+        resourceOrder:
+          type: integer
+          format: int32
+        resourceType:
+          type: string
+    jumpcloud.ingresso.CreateAccessWorkflowRequest:
+      type: object
+      properties:
+        approvalType:
+          type: string
+        approverRequirement:
+          type: string
+        approverResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.ApproverResource'
+        category:
+          type: string
+        description:
+          type: string
+        deviceLevelPermission:
+          type: array
+          items:
+            type: string
+        fixedDuration:
+          type: string
+        iconColor:
+          type: string
+        iconUrl:
+          type: string
+        multiSelectDuration:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        nonAdminApproval:
+          type: boolean
+        organizationObjectId:
+          type: string
+          format: byte
+        resourceId:
+          type: string
+        resourceType:
+          type: string
+        slackConfig:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.SlackConfig'
+        slackDmEnabled:
+          type: boolean
+        slackEnabled:
+          type: boolean
+        status:
+          type: string
+        timeBasedAccess:
+          type: boolean
+        ttlConfig:
+          $ref: '#/components/schemas/jumpcloud.ingresso.TtlConfig'
+        visibleTo:
+          type: array
+          items:
+            type: string
+    jumpcloud.ingresso.GetAllAccessWorkFlowsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.AccessWorkflow'
+        totalCount:
+          type: integer
+          format: int32
+    jumpcloud.ingresso.VisibleTo:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    jumpcloud.ingresso.GetAllWorkflowAccessRequestResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.WorkflowAccessRequest'
+        totalCount:
+          type: integer
+          format: int32
+    jumpcloud.ingresso.RevokeElevatedPermissionsResponse:
+      type: object
+    jumpcloud.ingresso.UpdateAccessWorkflowSettingsRequest:
+      type: object
+      properties:
+        adminApprovalEmail:
+          type: boolean
+        channelEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.ChannelEvent'
+        exposeApprovalProgress:
+          type: boolean
+        organizationObjectId:
+          type: string
+          format: byte
+        resourceRequest:
+          type: boolean
+        userApprovalEmail:
+          type: boolean
+        userRequestEmail:
+          type: boolean
+    jumpcloud.ingresso.AccessWorkflow:
+      type: object
+      properties:
+        approvalType:
+          type: string
+        approverRequirement:
+          type: string
+        approverResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.ApproverResource'
+        category:
+          type: string
+        createdBy:
+          type: string
+        description:
+          type: string
+        deviceLevelPermission:
+          type: array
+          items:
+            type: string
+        fixedDuration:
+          type: string
+        iconColor:
+          type: string
+        iconUrl:
+          type: string
+        id:
+          type: string
+        multiSelectDuration:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        nonAdminApproval:
+          type: boolean
+        organizationId:
+          type: string
+          format: byte
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.AccessWorkflowResources'
+        slackConfig:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.SlackConfig'
+        slackDmEnabled:
+          type: boolean
+        slackEnabled:
+          type: boolean
+        status:
+          type: string
+        timeBasedAccess:
+          type: boolean
+        ttlConfig:
+          $ref: '#/components/schemas/jumpcloud.ingresso.TtlConfig'
+        updatedBy:
+          type: string
+        visibleTo:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.VisibleTo'
+    jumpcloud.ingresso.UserApprovalRequestRequest:
+      type: object
+      properties:
+        approvedDuration:
+          type: string
+        id:
+          type: string
+        organizationObjectId:
+          type: string
+          format: byte
+        remarks:
+          type: string
+        status:
+          type: string
+    jumpcloud.ingresso.GetWorkflowAccessRequestResponse:
+      type: object
+      properties:
+        approvalFlowDescription:
+          type: string
+        approvalFlowId:
+          type: string
+        approvalFlowName:
+          type: string
+        approvalType:
+          type: string
+        approvedDuration:
+          type: string
+        approvers:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.ingresso.Approvers'
+        approversRequirement:
+          type: string
+        category:
+          type: string
+        createdAt:
+          type: string
+        department:
+          type: string
+        devicePermissionLevel:
+          type: string
+        fixedDuration:
+          type: string
+        group:
+          type: string
+        iconColor:
+          type: string
+        iconUrl:
+          type: string
+        id:
+          type: string
+        internalNote:
+          type: string
+        manager:
+          type: string
+        metadata:
+          type: string
+          format: byte
+        multiSelectDuration:
+          type: array
+          items:
+            type: string
+        nonAdminApproval:
+          type: boolean
+        remarks:
+          type: string
+        requestedDuration:
+          type: string
+        requestor:
+          type: string
+        resourceId:
+          type: string
+        resourceType:
+          type: string
+        runId:
+          type: string
+        sessionStartDate:
+          type: string
+        status:
+          type: string
+        timeBasedAccess:
+          type: boolean
+        ttlConfig:
+          type: string
+        updatedAt:
+          type: string
+        updatedBy:
+          type: string
+        userName:
+          type: string
+    jumpcloud.ingresso.AccessWorkflowResources:
+      type: object
+      properties:
+        resourceId:
+          type: string
+        resourceName:
+          type: string
+        resourceType:
+          type: string
+    jumpcloud.ingresso.CreateWorkflowAccessRequestResponse:
+      type: object
+      properties:
+        id:
+          type: string
+    jumpcloud.ingresso.StartSessionResponse:
+      type: object
+    jumpcloud.ingresso.CreateWorkflowAccessRequestRequest:
+      type: object
+      properties:
+        deviceId:
+          type: string
+        devicePermissionLevel:
+          type: string
+        id:
+          type: string
+        organizationObjectId:
+          type: string
+          format: byte
+        reason:
+          type: string
+        requestedDuration:
+          type: string
+        sessionStartDate:
+          type: string
+    jumpcloud.ingresso.UpdateWorkflowAccessRequestResponse:
+      type: object
+    jumpcloud.ingresso.GetMaxApprovedEndTimeResponse:
+      type: object
+      properties:
+        approvedEndTime:
+          type: string
+          description: RFC3339 timestamp of the maximum (latest) expiration_date across matching ARs.
+        approvedStartTime:
+          type: string
+          description: RFC3339 session_start_date from the AR that owns approved_end_time (empty if unset).
+        found:
+          type: boolean
+      description: GetMaxApprovedEndTimeResponse returns found=false when no matching active approved AR exists.
+    jumpcloud.ingresso.CreateAccessWorkflowResponse:
+      type: object
+      properties:
+        id:
+          type: string
+    jumpcloud.ingresso.RevokeElevatedPermissionsRequest:
+      type: object
+      properties:
+        organizationObjectId:
+          type: string
+          format: byte
+        requestIds:
+          type: array
+          items:
+            type: string
+    jumpcloud.ingresso.UpdateAccessWorkflowSettingsResponse:
+      type: object
+  requestBodies:
+    WorkflowAccessRequestApi_CancelWorkflowAccessRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              organizationObjectId:
+                type: string
+                format: byte
+      required: true
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

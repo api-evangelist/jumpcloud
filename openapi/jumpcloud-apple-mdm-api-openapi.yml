@@ -1,0 +1,2650 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Apple MDM API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Apple MDM
+paths:
+  /applemdms:
+    x-functionalities-tags:
+    - mdm
+    get:
+      description: 'Get a list of all Apple MDM configurations. An empty topic indicates that a signed certificate from Apple has not been provided to the PUT endpoint yet.
+
+
+        Note: currently only one MDM configuration per organization is supported.
+
+
+        #### Sample Request
+
+        ```
+
+        curl https://console.jumpcloud.com/api/v2/applemdms \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: applemdms_list
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_limitDefault1_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AppleMDM'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List Apple MDMs
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      - mdm.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applemdms?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /applemdms/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    delete:
+      description: 'Removes an Apple MDM configuration.
+
+
+        Warning: This is a destructive operation and will remove your Apple Push Certificates. We will no longer be able to manage your devices and the only recovery option is to re-register all devices into MDM.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X DELETE https://console.jumpcloud.com/api/v2/applemdms/{id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: applemdms_delete
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppleMDM'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      summary: Delete an Apple MDM
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"DELETE\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{id}'' -Method DELETE -Headers $headers'
+    put:
+      description: 'Updates an Apple MDM configuration. This endpoint is used to supply JumpCloud with a signed certificate from Apple in order to finalize the setup and allow JumpCloud to manage your devices. It may also be used to update the DEP Settings.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X PUT https://console.jumpcloud.com/api/v2/applemdms/{ID} \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "name": "MDM name",
+
+        "appleSignedCert": "{CERTIFICATE}",
+
+        "encryptedDepServerToken": "{SERVER_TOKEN}",
+
+        "dep": {
+
+        "welcomeScreen": {
+
+        "title": "Welcome",
+
+        "paragraph": "In just a few steps, you will be working securely from your Mac.",
+
+        "button": "continue",
+
+        },
+
+        },
+
+        }''
+
+        ```'
+      operationId: applemdms_put
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/apple-mdm-patch'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppleMDM'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      summary: Update an Apple MDM
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"appleSignedCert\":\"string\",\"encryptedDepServerToken\":\"string\",\"name\":\"string\",\"defaultSystemGroupID\":\"string\",\"defaultIosUserEnrollmentDeviceGroupID\":\"string\",\"allowMobileUserEnrollment\":true,\"dep\":{\"welcomeScreen\":{\"title\":\"string\",\"paragraph\":\"string\",\"button\":\"string\"},\"setupAssistantOptions\":[{\"option\":\"accessibility\"}],\"enableZeroTouchEnrollment\":true},\"ades\":{\"macos\":{\"welcomeScreen\":{\"title\":\"string\",\"paragraph\":\"string\",\"button\":\"string\"},\"setupAssistantOptions\":[{\"option\":\"accessibility\"}],\"setupOptions\":[\"accessibility\"],\"enableZeroTouchEnrollment\":true,\"defaultDeviceGroupObjectIds\":[\"string\"]},\"ios\":{\"welcomeScreen\":{\"title\":\"string\",\"paragraph\":\"string\",\"button\":\"string\"},\"setupAssistantOptions\":[{\"option\":\"accessibility\"}],\"setupOptions\":[\"accessibility\"],\"enableZeroTouchEnrollment\":true,\"defaultDeviceGroupObjectIds\":[\"string\"]}},\"appleCertCreatorAppleID\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{id}\"\n\npayload = {\n    \"appleSignedCert\": \"string\",\n    \"encryptedDepServerToken\": \"string\",\n    \"name\": \"string\",\n    \"defaultSystemGroupID\": \"string\",\n    \"defaultIosUserEnrollmentDeviceGroupID\": \"string\",\n    \"allowMobileUserEnrollment\": True,\n    \"dep\": {\n        \"welcomeScreen\": {\n            \"title\": \"string\",\n            \"paragraph\": \"string\",\n            \"button\": \"string\"\n        },\n        \"setupAssistantOptions\": [{\"option\": \"accessibility\"}],\n        \"enableZeroTouchEnrollment\": True\n    },\n    \"ades\": {\n        \"macos\": {\n            \"welcomeScreen\": {\n                \"title\": \"string\",\n                \"paragraph\": \"string\",\n                \"button\": \"string\"\n            },\n            \"setupAssistantOptions\": [{\"option\": \"accessibility\"}],\n            \"setupOptions\": [\"accessibility\"],\n            \"enableZeroTouchEnrollment\": True,\n            \"defaultDeviceGroupObjectIds\": [\"string\"]\n        },\n        \"ios\": {\n            \"welcomeScreen\": {\n                \"title\": \"string\",\n                \"paragraph\": \"string\",\n                \"button\": \"string\"\n            },\n            \"setupAssistantOptions\": [{\"option\": \"accessibility\"}],\n            \"setupOptions\": [\"accessibility\"],\n            \"enableZeroTouchEnrollment\": True,\n            \"defaultDeviceGroupObjectIds\": [\"string\"]\n        }\n    },\n    \"appleCertCreatorAppleID\": \"string\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"appleSignedCert":"string","encryptedDepServerToken":"string","name":"string","defaultSystemGroupID":"string","defaultIosUserEnrollmentDeviceGroupID":"string","allowMobileUserEnrollment":true,"dep":{"welcomeScreen":{"title":"string","paragraph":"string","button":"string"},"setupAssistantOptions":[{"option":"accessibility"}],"enableZeroTouchEnrollment":true},"ades":{"macos":{"welcomeScreen":{"title":"string","paragraph":"string","button":"string"},"setupAssistantOptions":[{"option":"accessibility"}],"setupOptions":["accessibility"],"enableZeroTouchEnrollment":true,"defaultDeviceGroupObjectIds":["string"]},"ios":{"welcomeScreen":{"title":"string","paragraph":"string","button":"string"},"setupAssistantOptions":[{"option":"accessibility"}],"setupOptions":["accessibility"],"enableZeroTouchEnrollment":true,"defaultDeviceGroupObjectIds":["string"]}},"appleCertCreatorAppleID":"string"}'''
+  /applemdms/{apple_mdm_id}/csr:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    get:
+      description: 'Retrieves an Apple MDM signed CSR Plist for an organization. The user must supply the returned plist to Apple for signing, and then provide the certificate provided by Apple back into the PUT API.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/applemdms/{APPLE_MDM_ID}/csr \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: applemdms_csrget
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/apple-mdm-signed-csr-plist'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      summary: Get Apple MDM CSR Plist
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      - mdm.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/csr \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/csr\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/csr'' -Method GET -Headers $headers'
+  /applemdms/{apple_mdm_id}/depkey:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    get:
+      description: 'Retrieves an Apple MDM DEP Public Key.
+
+
+        #### Sample Request
+
+
+        ```
+
+        curl https://console.jumpcloud.com/api/v2/applemdms/{APPLE_MDM_ID}/depkey \
+
+        -H ''accept: application/x-pem-file'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: applemdms_depkeyget
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/x-pem-file:
+              schema:
+                $ref: '#/components/schemas/apple-mdm-public-key-cert'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      summary: Get Apple MDM DEP Public Key
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      - mdm.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/depkey \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/depkey\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/depkey'' -Method GET -Headers $headers'
+  /applemdms/{apple_mdm_id}/enrollmentprofiles:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    get:
+      description: 'Get a list of enrollment profiles for an apple mdm.
+
+
+        Note: currently only one enrollment profile is supported.
+
+
+        #### Sample Request
+
+        ```
+
+        curl https://console.jumpcloud.com/api/v2/applemdms/{APPLE_MDM_ID}/enrollmentprofiles \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: applemdms_enrollmentprofileslist
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AppleMDM'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List Apple MDM Enrollment Profiles
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      - mdm.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/enrollmentprofiles \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/enrollmentprofiles\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/enrollmentprofiles'' -Method GET -Headers $headers'
+  /applemdms/{apple_mdm_id}/enrollmentprofiles/{id}:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    get:
+      description: 'Get an enrollment profile
+
+
+        Currently only requesting the mobileconfig is supported.
+
+
+        #### Sample Request
+
+
+        ```
+
+        curl https://console.jumpcloud.com/api/v2/applemdms/{APPLE_MDM_ID}/enrollmentprofiles/{ID} \
+
+        -H ''accept: application/x-apple-aspen-config'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: applemdms_enrollmentprofilesget
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/x-apple-aspen-config:
+              schema:
+                $ref: '#/components/schemas/mobileconfig'
+      security:
+      - x-api-key: []
+      summary: Get an Apple MDM Enrollment Profile
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      - mdm.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/enrollmentprofiles/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/enrollmentprofiles/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/enrollmentprofiles/{id}'' -Method GET -Headers $headers'
+  /applemdms/{apple_mdm_id}/refreshdepdevices:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    post:
+      description: 'Refreshes the list of devices that a JumpCloud admin has added to their virtual MDM in Apple Business Manager - ABM so that they can be DEP enrolled with JumpCloud.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/refreshdepdevices \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      operationId: applemdms_refreshdepdevices
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Refresh DEP Devices
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/refreshdepdevices \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/refreshdepdevices\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"POST\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/refreshdepdevices'' -Method POST -Headers $headers'
+  /applemdms/{apple_mdm_id}/devices/{device_id}/erase:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: device_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    - devices-darwin-security-command
+    post:
+      description: 'Erases a DEP-enrolled device.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/erase \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      operationId: applemdms_deviceserase
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                pin:
+                  description: 6-digit PIN, required for MacOS, to erase the device
+                  examples:
+                  - '123456'
+                  pattern: ^[0-9]{6}$
+                  type: string
+              type: object
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Erase Device
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/erase \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"pin\":\"123456\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/erase\"\n\npayload = {\"pin\": \"123456\"}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/erase'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"pin":"123456"}'''
+  /applemdms/{apple_mdm_id}/devices/{device_id}/clearPasscode:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: device_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    - devices-darwin-security-command
+    post:
+      description: 'Clear Passcode of MDM enrolled device.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearPasscode \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      operationId: applemdms_deviceClearPasscode
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '412':
+          description: Precondition Failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Clear Passcode
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearPasscode \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearPasscode\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"POST\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearPasscode'' -Method POST -Headers $headers'
+  /applemdms/{apple_mdm_id}/devices/{device_id}/lock:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: device_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    - devices-darwin-security-command
+    post:
+      description: 'Locks a DEP-enrolled device.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/lock \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      operationId: applemdms_deviceslock
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pin:
+                  description: 6-digit PIN, required for MacOS, to lock the device
+                  examples:
+                  - '123456'
+                  pattern: ^[0-9]{6}$
+                  type: string
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Lock Device
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      - systems.management
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/lock \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"pin\":\"123456\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/lock\"\n\npayload = {\"pin\": \"123456\"}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/lock'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"pin":"123456"}'''
+  /applemdms/{apple_mdm_id}/devices/{device_id}/restart:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: device_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    - devices-darwin-security-command
+    post:
+      description: 'Restarts a DEP-enrolled device.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/restart \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{"kextPaths": ["Path1", "Path2"]}''
+
+        ```'
+      operationId: applemdms_devicesrestart
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kextPaths:
+                  type: array
+                  description: The string to pass when doing a restart and performing a RebuildKernelCache.
+                  items:
+                    type: string
+        x-examples:
+          example-1:
+            kextPaths:
+            - /path/to/kext1
+            - /path/to/kext2
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Restart Device
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      - systems.management
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/restart \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"kextPaths\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/restart\"\n\npayload = {\"kextPaths\": [\"string\"]}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/restart'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"kextPaths":["string"]}'''
+  /applemdms/{apple_mdm_id}/devices/{device_id}/shutdown:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: device_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    - devices-darwin-security-command
+    post:
+      description: 'Shuts down a DEP-enrolled device.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/shutdown \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      operationId: applemdms_devicesshutdown
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Shut Down Device
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      - systems.management
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/shutdown \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/shutdown\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"POST\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/shutdown'' -Method POST -Headers $headers'
+  /applemdms/{apple_mdm_id}/devices/{device_id}/clearRestrictionsPassword:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: device_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    - devices-darwin-security-command
+    post:
+      description: 'Clear the restrictions password of a DEP-enrolled device.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearRestrictionsPassword \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      operationId: applemdms_devicesClearRestrictionsPassword
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Clear Restrictions Password
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearRestrictionsPassword \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearRestrictionsPassword\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"POST\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearRestrictionsPassword'' -Method POST -Headers $headers'
+  /applemdms/{apple_mdm_id}/devices/{device_id}/clearActivationLock:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: device_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    - devices-darwin-security-command
+    post:
+      description: 'Clears the activation lock on the specified device.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearActivationLock \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      operationId: applemdms_devicesClearActivationLock
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Clears the Activation Lock for a Device
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearActivationLock \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearActivationLock\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"POST\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/clearActivationLock'' -Method POST -Headers $headers'
+  /applemdms/{apple_mdm_id}/devices:
+    parameters:
+    - name: apple_mdm_id
+      in: path
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    get:
+      summary: List AppleMDM Devices
+      tags:
+      - Apple MDM
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/apple-mdm-device'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      operationId: applemdms_deviceslist
+      description: 'Lists all Apple MDM devices.
+
+
+        The filter and sort queries will allow the following fields:
+
+        `createdAt`
+
+        `depRegistered`
+
+        `enrolled`
+
+        `id`
+
+        `osVersion`
+
+        `serialNumber`
+
+        `udid`
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices \
+
+        -H ''accept: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      security:
+      - x-api-key: []
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      - $ref: '#/components/parameters/trait_listCount_x-total-count'
+      x-scopes:
+      - mdm
+      - mdm.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --header 'x-total-count: SOME_INTEGER_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-total-count\": \"SOME_INTEGER_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-total-count", "SOME_INTEGER_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /applemdms/{apple_mdm_id}/devices/{device_id}:
+    parameters:
+    - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+    - name: apple_mdm_id
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: device_id
+      in: path
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    get:
+      summary: Details of an AppleMDM Device
+      tags:
+      - Apple MDM
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apple-mdm-device'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      operationId: applemdms_getdevice
+      description: 'Gets a single Apple MDM device.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - mdm
+      - mdm.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}'' -Method GET -Headers $headers'
+    delete:
+      summary: Remove an Apple MDM Device's Enrollment
+      operationId: applemdms_deletedevice
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apple-mdm-device'
+      description: 'Remove a single Apple MDM device from MDM enrollment.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X DELETE https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - mdm
+      tags:
+      - Apple MDM
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"DELETE\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}'' -Method DELETE -Headers $headers'
+  /applemdms/{apple_mdm_id}/devices/{device_id}/refreshActivationLockInformation:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: device_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    post:
+      description: 'Refreshes the activation lock information for a device
+
+
+        #### Sample Request
+
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/refreshActivationLockInformation \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      operationId: applemdms_devicesRefreshActivationLockInformation
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Refresh activation lock information for a device
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      - mdm.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/refreshActivationLockInformation \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/refreshActivationLockInformation\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"POST\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/refreshActivationLockInformation'' -Method POST -Headers $headers'
+  /applemdms/{apple_mdm_id}/devices/{device_id}/scheduleOSUpdate:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: device_id
+      required: true
+      schema:
+        type: string
+    post:
+      description: 'Schedules an OS update for a device
+
+
+        #### Sample Request
+
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/scheduleOSUpdate \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{"install_action": "INSTALL_ASAP", "product_key": "key"}''
+
+        ```'
+      operationId: applemdms_devicesScheduleOSUpdate
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleOSUpdate'
+      responses:
+        '204':
+          description: ''
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Schedule an OS update for a device
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/scheduleOSUpdate \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"install_action\":\"DOWNLOAD_ONLY\",\"product_key\":\"string\",\"max_user_deferrals\":0}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/scheduleOSUpdate\"\n\npayload = {\n    \"install_action\": \"DOWNLOAD_ONLY\",\n    \"product_key\": \"string\",\n    \"max_user_deferrals\": 0\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/scheduleOSUpdate'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"install_action":"DOWNLOAD_ONLY","product_key":"string","max_user_deferrals":0}'''
+  /applemdms/{apple_mdm_id}/devices/{device_id}/osUpdateStatus:
+    parameters:
+    - in: path
+      name: apple_mdm_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: device_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - mdm
+    post:
+      description: 'Pass through to request the status of an OS update
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/osUpdateStatus \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      operationId: applemdms_devicesOSUpdateStatus
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: ''
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                type: object
+      security:
+      - x-api-key: []
+      summary: Request the status of an OS update for a device
+      tags:
+      - Apple MDM
+      x-scopes:
+      - mdm
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/osUpdateStatus \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/osUpdateStatus\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"POST\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applemdms/{apple_mdm_id}/devices/{device_id}/osUpdateStatus'' -Method POST -Headers $headers'
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      x-examples: {}
+      description: ''
+      properties:
+        code:
+          format: int32
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        status:
+          type: string
+          description: HTTP status description
+    apple-mdm-signed-csr-plist:
+      title: Apple MDM Signed CSR PList
+      type: string
+    DEP:
+      title: DEP
+      type: object
+      x-deprecated: true
+      properties:
+        welcomeScreen:
+          $ref: '#/components/schemas/DEPWelcomeScreen'
+        setupAssistantOptions:
+          items:
+            $ref: '#/components/schemas/DEPSetupAssistantOption'
+          type: array
+        enableZeroTouchEnrollment:
+          description: A toggle to determine if DEP registered devices should go through JumpCloud Zero Touch Enrollment.
+          type: boolean
+    apple-mdm-device-info:
+      title: Apple MDM Device Info
+      type: object
+      description: Apple MDM device information
+      x-tags:
+      - Apple MDM
+      properties:
+        isSupervised:
+          type: boolean
+        activationLockAllowedWhileSupervised:
+          type: boolean
+        availableDeviceCapacity:
+          type: number
+        deviceCapacity:
+          type: number
+        deviceName:
+          type: string
+        iccid:
+          type: string
+        imei:
+          type: string
+        subscriberCarrierNetwork:
+          type: string
+        secondIccid:
+          type: string
+        secondImei:
+          type: string
+        secondSubscriberCarrierNetwork:
+          type: string
+        wifiMac:
+          type: string
+        modelName:
+          type: string
+        osMarketingName:
+          type: string
+        osSupplementalBuildVersion:
+          type: string
+        osBuildVersion:
+          type: string
+        osExtraVersion:
+          type: string
+        sofwareUpdateId:
+          type: string
+        modelMarketingName:
+          type: string
+        modelNumber:
+          type: string
+        isAppleSilicon:
+          type: boolean
+    ADES:
+      title: ADES
+      type: object
+      properties:
+        macos:
+          $ref: '#/components/schemas/ADE'
+        ios:
+          $ref: '#/components/schemas/ADE'
+    DEPWelcomeScreen:
+      title: DEPWelcomeScreen
+      type: object
+      properties:
+        title:
+          maxLength: 255
+          description: The title to display on the DEP Welcome Screen.
+          type:
+          - string
+          - 'null'
+        paragraph:
+          maxLength: 1024
+          description: A message to display on the DEP Welcome Screen.
+          type:
+          - string
+          - 'null'
+        button:
+          maxLength: 64
+          description: Text to display on the button on the DEP Welcome Screen.
+          type:
+          - string
+          - 'null'
+      x-examples:
+        defaults:
+          title: Welcome
+          paragraph: In just a few steps, you will be working securely from your Mac.
+          button: continue
+    apple-mdm-public-key-cert:
+      title: Apple MDM Public Key Certificate
+      type: string
+    ErrorDetails:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          details:
+            description: 'Describes a list of objects with more detailed information of the given error. Each detail schema is according to one of the messages defined in Google''s API: https://github.com/googleapis/googleapis/blob/master/google/rpc/error_details.proto'
+            type: array
+            items:
+              type: object
+              additionalProperties: true
+              description: Object according to Google's API.
+    InstallActionType:
+      type: string
+      enum:
+      - DOWNLOAD_ONLY
+      - INSTALL_LATER
+      - INSTALL_ASAP
+      - INSTALL_FORCE_RESTART
+    ADE:
+      title: ADE
+      type: object
+      properties:
+        welcomeScreen:
+          $ref: '#/components/schemas/DEPWelcomeScreen'
+        setupAssistantOptions:
+          description: A Setup Option wrapped as an object
+          items:
+            $ref: '#/components/schemas/DEPSetupAssistantOption'
+          type: array
+          x-deprecated: true
+        setupOptions:
+          description: A list of configured setup options for this enrollment.
+          items:
+            $ref: '#/components/schemas/SetupAssistantOption'
+          type: array
+        enableZeroTouchEnrollment:
+          description: A toggle to determine if ADE registered devices should go through JumpCloud Zero Touch Enrollment.
+          type: boolean
+        defaultDeviceGroupObjectIds:
+          description: An array of ObjectIDs identifying the default device groups for this specific type (based on the OS family) of automated device enrollment. Currently, only a single DeviceGroupID is supported.
+          items:
+            type: string
+          type:
+          - array
+          - 'null'
+    DEPSetupAssistantOption:
+      properties:
+        option:
+          $ref: '#/components/schemas/SetupAssistantOption'
+      title: DEP Setup Assistant Option
+      type: object
+    AppleMDM:
+      title: AppleMDM
+      type: object
+      properties:
+        apnsPushTopic:
+          description: The push topic assigned to this enrollment by Apple after uploading the Signed CSR plist.
+          type: string
+        depServerTokenState:
+          description: The state of the dep server token, presence and expiry.
+          enum:
+          - unknown
+          - missing
+          - valid
+          - expired
+          type: string
+        id:
+          description: ObjectId uniquely identifying an MDM Enrollment,
+          type: string
+        name:
+          description: A friendly name to identify this enrollment.  Not required to be unique.
+          maxLength: 255
+          type: string
+        organization:
+          description: The identifier for an organization
+          type: string
+        apnsCertExpiry:
+          description: The expiration date and time for the APNS Certificate.
+          type:
+          - string
+          - 'null'
+        depAccessTokenExpiry:
+          description: The expiration date and time for the DEP Access Token. This aligns with the DEP Server Token State.
+          type:
+          - string
+          - 'null'
+        defaultSystemGroupID:
+          description: ObjectId uniquely identifying the MDM default System Group.
+          x-deprecated: true
+          type:
+          - string
+          - 'null'
+        defaultIosUserEnrollmentDeviceGroupID:
+          description: ObjectId uniquely identifying the MDM default iOS user enrollment device group.
+          type:
+          - string
+          - 'null'
+        dep:
+          $ref: '#/components/schemas/DEP'
+        allowMobileUserEnrollment:
+          description: A toggle to allow mobile device enrollment for an organization.
+          type:
+          - boolean
+          - 'null'
+        ades:
+          $ref: '#/components/schemas/ADES'
+        appleCertCreatorAppleID:
+          description: The Apple ID of the admin who created the Apple signed certificate associated to the Device Manager.
+          type: string
+        appleCertSerialNumber:
+          description: The serial number of the Apple signed certificate associated to the Device Manager.
+          type: string
+        serviceDiscoveryEnabled:
+          description: A flag to know whether service discovery is enabled or not for the Device Manager.
+          type:
+          - boolean
+          - 'null'
+      required:
+      - id
+    apple-mdm-device-security-info:
+      title: Apple MDM Device Security Info
+      type: object
+      description: Apple MDM device security information
+      x-tags:
+      - Apple MDM
+      properties:
+        enrolledViaDep:
+          type: boolean
+        isActivationLockManageable:
+          type: boolean
+        isUserEnrollment:
+          type: boolean
+        userApprovedEnrollment:
+          type: boolean
+        passcodePresent:
+          type: boolean
+        passcodeCompliant:
+          type: boolean
+        filevaultEnabled:
+          type: boolean
+        recoveryLockEnabled:
+          type: boolean
+    apple-mdm-device:
+      title: Apple MDM Device
+      type: object
+      x-tags:
+      - Apple MDM
+      properties:
+        id:
+          type: string
+        serialNumber:
+          type: string
+        udid:
+          type: string
+        osVersion:
+          type: string
+        depRegistered:
+          type: boolean
+        enrolled:
+          type: boolean
+        createdAt:
+          type: string
+        hasActivationLockBypassCodes:
+          type: boolean
+        modelFamily:
+          type: string
+        mdmOsFamily:
+          type: string
+        securityInfo:
+          $ref: '#/components/schemas/apple-mdm-device-security-info'
+        deviceInformation:
+          $ref: '#/components/schemas/apple-mdm-device-info'
+    SetupAssistantOption:
+      description: 'Options to skip screens during MacOS and iOS setup:
+
+        * `accessibility` - Skips the Accessibility pane, only if the Mac is connected to Ethernet and the cloud config is downloaded.
+
+        * `actionButton` - Skips the Action Button configuration pane.
+
+        * `appearance` - Skips the Choose Your Look screen.
+
+        * `appleID` - Skips Apple ID setup.
+
+        * `biometric` - Skips biometric setup.
+
+        *  `cameraButton` - Skips the Camera Button configuration pane.
+
+        * `diagnostics` - Skips the App Analytics pane.
+
+        * `displayTone` - Skips display tone setup.
+
+        * `enableLockdownMode` - Skips the Lockdown Mode pane.
+
+        * `fileVault` - Skips FileVault setup assistant screen.
+
+        * `icloudDiagnostics` - Skips iCloud analytics screen.
+
+        * `icloudStorage` - Skips iCloud documents and desktop screen.
+
+        * `intelligence` - Skips the Intelligence pane.
+
+        * `location` - Skips location services setup.
+
+        * `payment` - Skips Apple Pay setup.
+
+        * `privacy` - Skips the Privacy setup.
+
+        * `restore` - Skips restoring from backup.
+
+        * `screenTime` - Skips screen time setup.
+
+        * `siri` - Skips Siri setup.
+
+        * `termsOfAddress` - Skips the Terms of Address pane.
+
+        * `tos` - Skips terms and conditions.
+
+        * `appStore` - Skips the App Store pane.
+
+        * `deviceToDeviceMigration` - Skips Device to Device Migration pane.
+
+        * `displayZoom` - Skips zoom setup.
+
+        * `homeButton` - Skips the Meet the New Home Button screen on iPhone 7, iPhone 7 Plus, iPhone 8, iPhone 8 Plus and iPhone SE.
+
+        * `imessageAndFacetime` - Skips the iMessage and FaceTime screen in iOS.
+
+        * `messagingActivationUsingPhoneNumber` - Skips the iMessage pane.
+
+        * `moveFromAndroid` - If the Restore pane is not skipped, removes the Move from Android option in the Restore pane on iOS.O
+
+        * `passcode` - Hides and disables the passcode pane.
+
+        * `restoreComplete` - Skips the Restore Completed pane.
+
+        * `safety` - Skips the Safety pane.
+
+        * `setupCellular` - Skips the add cellular plan pane.
+
+        * `softwareUpdate` - Skips the mandatory software update screen in iOS.
+
+        * `unlockWithWatch` - Skips Unlock Your Mac with your Apple Watch pane.
+
+        * `updateComplete` - Skips the Software Update Complete pane.
+
+        * `wallpaper` - Skips the Wallpaper setup.
+
+        * `watchMigration` - Skips the screen for watch migration.
+
+        * `welcome` - Skips the Get Started pane.
+
+        * `additionalPrivacySettings` - Skips the Additional Privacy Settings pane.
+
+        * `multitasking` - Skips the Multitasking pane.
+
+        * `osShowcase` - Skips the OS Showcase pane.
+
+        * `webContentFiltering` - Skips the Web Content Filtering pane.
+
+        * `safetyAndHandling` - Skips the Safety and Handling pane.
+
+        * `liquidGlass` - Skips the Liquid Glass pane.
+
+        '
+      enum:
+      - accessibility
+      - actionButton
+      - appearance
+      - appleID
+      - biometric
+      - cameraButton
+      - diagnostics
+      - displayTone
+      - enableLockdownMode
+      - fileVault
+      - icloudDiagnostics
+      - icloudStorage
+      - intelligence
+      - location
+      - payment
+      - privacy
+      - restore
+      - safety
+      - screenTime
+      - siri
+      - tos
+      - termsOfAddress
+      - appStore
+      - displayZoom
+      - deviceToDeviceMigration
+      - homeButton
+      - imessageAndFacetime
+      - messagingActivationUsingPhoneNumber
+      - moveFromAndroid
+      - passcode
+      - restoreComplete
+      - setupCellular
+      - softwareUpdate
+      - unlockWithWatch
+      - updateComplete
+      - wallpaper
+      - watchMigration
+      - welcome
+      - additionalPrivacySettings
+      - multitasking
+      - osShowcase
+      - webContentFiltering
+      - safetyAndHandling
+      - liquidGlass
+      title: Setup Assistant Option
+      type: string
+    apple-mdm-patch:
+      properties:
+        appleSignedCert:
+          description: A signed certificate obtained from Apple after providing Apple with the plist file provided on POST.
+          type: string
+        encryptedDepServerToken:
+          description: The S/MIME encoded DEP Server Token returned by Apple Business Manager when creating an MDM instance.
+          type: string
+        name:
+          description: A new name for the Apple MDM configuration.
+          maxLength: 255
+          type: string
+        defaultSystemGroupID:
+          description: ObjectId uniquely identifying the MDM default System Group.
+          type: string
+        defaultIosUserEnrollmentDeviceGroupID:
+          description: ObjectId uniquely identifying the MDM default iOS user enrollment device group.
+          type: string
+        allowMobileUserEnrollment:
+          description: A toggle to allow mobile device enrollment for an organization.
+          type: boolean
+        dep:
+          $ref: '#/components/schemas/DEP'
+        ades:
+          $ref: '#/components/schemas/ADES'
+        appleCertCreatorAppleID:
+          description: The Apple ID of the admin who created the Apple signed certificate.
+          type: string
+      title: Apple MDM Patch
+      type: object
+    mobileconfig:
+      title: mobileconfig
+      type: string
+    ScheduleOSUpdate:
+      required:
+      - install_action
+      - product_key
+      type: object
+      properties:
+        install_action:
+          $ref: '#/components/schemas/InstallActionType'
+        product_key:
+          type: string
+        max_user_deferrals:
+          type: integer
+          format: int32
+  responses:
+    trait_standardErrors_409:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_403:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_404:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_401:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+  parameters:
+    trait_limit_limit:
+      description: The number of records to return at once. Limited to 100.
+      in: query
+      name: limit
+      schema:
+        type: integer
+        default: 10
+    trait_filter_filter:
+      description: 'A filter to apply to the query.
+
+
+        **Filter structure**: `<field>:<operator>:<value>`.
+
+
+        **field** = Populate with a valid field from an endpoint response.
+
+
+        **operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.
+
+        _Note: v1 operators differ from v2 operators._
+
+
+        **value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.
+
+
+        **EX:** `GET /api/v2/groups?filter=name:eq:Test+Group`'
+      in: query
+      name: filter
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_skip_skip:
+      description: The offset into the records to return.
+      in: query
+      name: skip
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    trait_sort_sort:
+      description: 'The comma separated fields used to sort the collection.
+
+        Default sort is ascending, prefix with `-` to sort descending.
+
+        '
+      in: query
+      name: sort
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_multiTenantRequestHeaders_x-org-id:
+      description: Organization identifier that can be obtained from console settings.
+      in: header
+      name: x-org-id
+      schema:
+        type: string
+    trait_listCount_x-total-count:
+      in: header
+      name: x-total-count
+      schema:
+        type: integer
+    trait_limitDefault1_limit:
+      in: query
+      name: limit
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 100
+        default: 1
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

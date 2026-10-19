@@ -1,82 +1,1928 @@
 openapi: 3.2.0
 info:
-  title: JumpCloud API V1 Applications API
-  description: REST API for managing core JumpCloud directory resources including applications, application templates, commands, and command results. Authenticated via the x-api-key header obtained from the JumpCloud Admin Console (username dropdown > API Settings). Multi-tenant administrators must additionally pass an x-org-id header.
-  version: '1.0'
   contact:
-    name: JumpCloud
-    url: https://docs.jumpcloud.com/api/1.0/index.html
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Applications API
+  version: '2.0'
 servers:
-- url: https://console.jumpcloud.com/api
-  description: JumpCloud production API
-security:
-- ApiKeyAuth: []
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
 tags:
 - name: Applications
-  description: SSO/SAML applications configured in the organization.
 paths:
-  /applications:
+  /applications/{application_id}:
+    parameters:
+    - description: ObjectID of the Application.
+      in: path
+      name: application_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - user-portal-applications
     get:
-      summary: List SSO/SAML applications
-      description: Returns the list of configured SSO/SAML applications for the organization.
-      operationId: listApplications
-      tags:
-      - Applications
+      description: The endpoint retrieves an Application.
+      operationId: applications_get
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
       responses:
         '200':
-          description: A list of applications.
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+      security:
+      - x-api-key: []
+      summary: Get an Application
+      tags:
+      - Applications
+      x-scopes:
+      - applications
+      - applications.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/applications/{application_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applications/{application_id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applications/{application_id}'' -Method GET -Headers $headers'
+  /applications/{application_id}/associations:
+    parameters:
+    - description: ObjectID of the Application.
+      in: path
+      name: application_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - user-portal-applications
+    get:
+      description: 'This endpoint will return the _direct_ associations of an Application. A direct association can be a non-homogeneous relationship between 2 different objects, for example Applications and User Groups.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET ''https://console.jumpcloud.com/api/v2/applications/{Application_ID}/associations?targets=user_group \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_applicationAssociationsList
+      parameters:
+      - $ref: '#/components/parameters/trait_graphTargetsApplication_targets'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphConnection'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the associations of an Application
+      tags:
+      - Applications
+      x-scopes:
+      - associations.applications
+      - associations.applications.readonly
+      - associations
+      - associations.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applications/{application_id}/associations?targets=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applications/{application_id}/associations\"\n\nquerystring = {\"targets\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applications/{application_id}/associations?targets=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
     post:
-      summary: Create an SSO/SAML application
-      description: Creates a new SSO/SAML application in the organization.
-      operationId: createApplication
-      tags:
-      - Applications
-      responses:
-        '201':
-          description: The created application.
-  /applications/{id}:
-    get:
-      summary: Retrieve an application
-      operationId: getApplication
-      tags:
-      - Applications
+      description: 'This endpoint allows you to manage the _direct_ associations of an Application. A direct association can be a non-homogeneous relationship between 2 different objects, for example Application and User Groups.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST ''https://console.jumpcloud.com/api/v2/applications/{Application_ID}/associations'' \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "op": "add",
+
+        "type": "user_group",
+
+        "id": "{Group_ID}"
+
+        }''
+
+        ```'
+      operationId: graph_applicationAssociationsPost
       parameters:
-      - $ref: '#/components/parameters/IdPath'
-      responses:
-        '200':
-          description: The requested application.
-    put:
-      summary: Update an application
-      operationId: updateApplication
-      tags:
-      - Applications
-      parameters:
-      - $ref: '#/components/parameters/IdPath'
-      responses:
-        '200':
-          description: The updated application.
-    delete:
-      summary: Delete an application
-      operationId: deleteApplication
-      tags:
-      - Applications
-      parameters:
-      - $ref: '#/components/parameters/IdPath'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphOperation-Application'
       responses:
         '204':
-          description: Application deleted.
-components:
-  parameters:
-    IdPath:
-      name: id
+          description: OK
+      security:
+      - x-api-key: []
+      summary: Manage the associations of an Application
+      tags:
+      - Applications
+      x-scopes:
+      - associations.applications
+      - associations
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applications/{application_id}/associations \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"id\":\"string\",\"op\":\"add\",\"attributes\":{},\"type\":\"agent_group\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applications/{application_id}/associations\"\n\npayload = {\n    \"id\": \"string\",\n    \"op\": \"add\",\n    \"attributes\": {},\n    \"type\": \"agent_group\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applications/{application_id}/associations'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"id":"string","op":"add","attributes":{},"type":"agent_group"}'''
+  /applications/{application_id}/import/jobs:
+    parameters:
+    - description: ObjectID of the Application.
+      in: path
+      name: application_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - user-portal-applications
+    post:
+      description: 'This endpoint allows you to create a user import job that will import new users and/or update existing users in JumpCloud from the application. The endpoint can currently only be used for applications that have an active Identity Management custom API integration. The request will fail with a “Not found” error for applications if that type of integration is not configured. To learn more about configuring this type of integration, read Import users from an external identity source using a custom API integration.
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST https://console.jumpcloud.com/api/v2/applications/{application_id}/import/jobs \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -H ''x-org-id: {ORG_ID}'' \
+
+        -d ''{
+
+        "allowUserReactivation": true,
+
+        "operations": [
+
+        "users.create",
+
+        "users.update"
+
+        ]
+
+        "queryString": "location=Chicago&department=IT"
+
+        }''
+
+        ```'
+      operationId: import_create
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportUsersRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/job-id'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      summary: Create an import job
+      tags:
+      - Applications
+      x-scopes:
+      - applications
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applications/{application_id}/import/jobs \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"queryString\":\"\",\"allowUserReactivation\":true,\"operations\":[\"users.create\",\"users.update\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applications/{application_id}/import/jobs\"\n\npayload = {\n    \"queryString\": \"\",\n    \"allowUserReactivation\": True,\n    \"operations\": [\"users.create\", \"users.update\"]\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applications/{application_id}/import/jobs'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"queryString":"","allowUserReactivation":true,"operations":["users.create","users.update"]}'''
+  /applications/{application_id}/logo:
+    x-functionalities-tags:
+    - user-portal-applications
+    post:
+      summary: Save application logo
+      tags:
+      - Applications
+      operationId: applications_postLogo
+      responses:
+        '204':
+          description: NO_CONTENT
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - applications
+      - applications.update
+      parameters:
+      - name: application_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  description: The file to upload.
+                  type: string
+                  contentMediaType: application/octet-stream
+      description: 'This endpoint sets the logo for an application.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST ''https://console.jumpcloud.com/api/v2/applications/{Application_ID}/logo \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/applications/{application_id}/logo \\\n  --header 'content-type: multipart/form-data' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --form image=string"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applications/{application_id}/logo\"\n\npayload = \"-----011000010111000001101001\\r\\nContent-Disposition: form-data; name=\\\"image\\\"\\r\\n\\r\\nstring\\r\\n-----011000010111000001101001--\\r\\n\"\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"multipart/form-data\"\n}\n\nresponse = requests.request(\"POST\", url, data=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "multipart/form-data")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applications/{application_id}/logo'' -Method POST -Headers $headers -ContentType ''multipart/form-data'' -Body ''-----011000010111000001101001
+
+          Content-Disposition: form-data; name="image"
+
+
+          string
+
+          -----011000010111000001101001--
+
+          '''
+    delete:
+      description: Deletes the specified image from an application
+      operationId: applications_deleteLogo
+      parameters:
+      - name: application_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: NO_CONTENT
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      summary: Delete application image
+      tags:
+      - Applications
+      x-scopes:
+      - applications
+      - applications.update
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/applications/{application_id}/logo \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applications/{application_id}/logo\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"DELETE\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applications/{application_id}/logo'' -Method DELETE -Headers $headers'
+  /applications/{application_id}/agents:
+    parameters:
+    - description: Application ID (24-character hexadecimal string).
+      in: path
+      name: application_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - user-portal-applications
+    - agent-groups
+    get:
+      description: Retrieves a list of all agents assigned to an application in your organization.
+      operationId: graph_applicationTraverseAgent
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - in: query
+        name: syncStatus
+        description: When `true`, includes each agent's provisioning sync status for this application in the `syncStatus` and `externalId` fields.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphObjectWithPaths'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List an application's assigned agents
+      tags:
+      - Applications
+      x-scopes:
+      - agents
+      - agents.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applications/{application_id}/agents?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE&syncStatus=SOME_BOOLEAN_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applications/{application_id}/agents\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\",\"syncStatus\":\"SOME_BOOLEAN_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applications/{application_id}/agents?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE&syncStatus=SOME_BOOLEAN_VALUE'' -Method GET -Headers $headers'
+  /applications/{application_id}/usergroups:
+    parameters:
+    - description: ObjectID of the Application.
+      in: path
+      name: application_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - user-portal-applications
+    get:
+      description: 'This endpoint will return all Users Groups bound to an Application, either directly or indirectly, essentially traversing the JumpCloud Graph for your Organization.
+
+
+        Each element will contain the group''s type, id, attributes and paths.
+
+
+        The `attributes` object is a key/value hash of compiled graph attributes for all paths followed.
+
+
+        The `paths` array enumerates each path from this Application to the corresponding User Group; this array represents all grouping and/or associations that would have to be removed to deprovision the User Group from this Application.
+
+
+        See `/members` and `/associations` endpoints to manage those collections.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/applications/{Application_ID}/usergroups \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_applicationTraverseUserGroup
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphObjectWithPaths'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the User Groups bound to an Application
+      tags:
+      - Applications
+      x-scopes:
+      - groups
+      - groups.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applications/{application_id}/usergroups?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applications/{application_id}/usergroups\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applications/{application_id}/usergroups?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /applications/{application_id}/users:
+    parameters:
+    - description: ObjectID of the Application.
+      in: path
+      name: application_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - user-portal-applications
+    get:
+      description: 'This endpoint will return all Users bound to an Application, either directly or indirectly, essentially traversing the JumpCloud Graph for your Organization.
+
+
+        Each element will contain the type, id, attributes and paths.
+
+
+        The `attributes` object is a key/value hash of compiled graph attributes for all paths followed.
+
+
+        The `paths` array enumerates each path from this Application to the corresponding User; this array represents all grouping and/or associations that would have to be removed to deprovision the User from this Application.
+
+
+        See `/members` and `/associations` endpoints to manage those collections.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/applications/{Application_ID}/users \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_applicationTraverseUser
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphObjectWithPaths'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the Users bound to an Application
+      tags:
+      - Applications
+      x-scopes:
+      - users
+      - users.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applications/{application_id}/users?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applications/{application_id}/users\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applications/{application_id}/users?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /applications/{application_id}/import/users:
+    parameters:
+    - description: ObjectID of the Application.
+      in: path
+      name: application_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - user-portal-applications
+    get:
+      description: Get a list of users to import from an Application IdM service provider.
+      operationId: import_users
+      parameters:
+      - in: query
+        name: filter
+        description: Filter users by a search term
+        schema:
+          type: string
+          default: ''
+        allowReserved: true
+      - in: query
+        name: query
+        description: URL query to merge with the service provider request
+        schema:
+          type: string
+          default: ''
+        allowReserved: true
+      - in: query
+        name: sort
+        description: Sort users by supported fields
+        schema:
+          type: string
+          enum:
+          - ''
+          - firstname
+          - lastname
+          - email
+          default: ''
+        allowReserved: true
+      - in: query
+        name: sortOrder
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+      - in: query
+        name: sessionId
+        description: Import sessionId for manual select and view user
+        schema:
+          type: string
+          default: ''
+      - in: query
+        name: isCount
+        description: IsCount indicates if the request is only for getting the total count of users.
+        schema:
+          type: boolean
+          default: false
+      - in: query
+        name: isCursor
+        description: Enable cursor-based pagination
+        schema:
+          type: boolean
+          default: false
+      - in: query
+        name: cursor
+        description: Cursor token for pagination
+        schema:
+          type: string
+          default: ''
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/importUsersResponse'
+      security:
+      - x-api-key: []
+      summary: Get a list of users to import from an Application IdM service provider
+      tags:
+      - Applications
+      x-scopes:
+      - applications
+      - applications.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/applications/{application_id}/import/users?filter=SOME_STRING_VALUE&query=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&sortOrder=SOME_STRING_VALUE&sessionId=SOME_STRING_VALUE&isCount=SOME_BOOLEAN_VALUE&isCursor=SOME_BOOLEAN_VALUE&cursor=SOME_STRING_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/applications/{application_id}/import/users\"\n\nquerystring = {\"filter\":\"SOME_STRING_VALUE\",\"query\":\"SOME_STRING_VALUE\",\"sort\":\"SOME_STRING_VALUE\",\"sortOrder\":\"SOME_STRING_VALUE\",\"sessionId\":\"SOME_STRING_VALUE\",\"isCount\":\"SOME_BOOLEAN_VALUE\",\"isCursor\":\"SOME_BOOLEAN_VALUE\",\"cursor\":\"SOME_STRING_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/applications/{application_id}/import/users?filter=SOME_STRING_VALUE&query=SOME_STRING_VALUE&sort=SOME_STRING_VALUE&sortOrder=SOME_STRING_VALUE&sessionId=SOME_STRING_VALUE&isCount=SOME_BOOLEAN_VALUE&isCursor=SOME_BOOLEAN_VALUE&cursor=SOME_STRING_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+  /providers/{provider_id}/applications:
+    parameters:
+    - name: provider_id
       in: path
       required: true
       schema:
         type: string
-      description: Resource identifier.
+        format: byte
+    x-functionalities-tags:
+    - applications
+    get:
+      description: The endpoint returns all Provider SSO / SAML Applications
+      operationId: applications_listProviderApplications
+      parameters:
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_search_search'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/application'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      summary: List Provider Applications
+      tags:
+      - Applications
+      x-scopes:
+      - applications
+      - applications.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/providers/{provider_id}/applications?filter=SOME_ARRAY_VALUE&search=SOME_STRING_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/providers/{provider_id}/applications"
+
+
+          querystring = {"filter":"SOME_ARRAY_VALUE","search":"SOME_STRING_VALUE","limit":"SOME_INTEGER_VALUE","skip":"SOME_INTEGER_VALUE","sort":"SOME_ARRAY_VALUE"}
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers, params=querystring)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/providers/{provider_id}/applications?filter=SOME_ARRAY_VALUE&search=SOME_STRING_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /providers/{provider_id}/applications/{id}/associations:
+    parameters:
+    - name: provider_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: byte
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: byte
+    x-functionalities-tags:
+    - applications
+    get:
+      description: Get the associations of a Provider SSO Application by ID. Returns organization IDs associated with the provider.
+      operationId: providerApplications_getAssociations
+      responses:
+        '200':
+          description: Successfully retrieved application associations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalCount:
+                    type: integer
+                    description: Total number of associated organizations
+                    examples:
+                    - 2
+                  results:
+                    type: array
+                    items:
+                      type: string
+                      description: Organization ID
+                    description: Array of organization IDs associated with the provider
+                    examples:
+                    - - org-id-one
+                      - org-id-two
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      summary: Get Provider Application Associations
+      tags:
+      - Applications
+      x-scopes:
+      - associations.applications
+      - associations.applications.readonly
+      - associations
+      - associations.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/providers/{provider_id}/applications/{id}/associations \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/providers/{provider_id}/applications/{id}/associations"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("GET", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/providers/{provider_id}/applications/{id}/associations'' -Method GET -Headers $headers'
+    post:
+      description: 'Associates a Provider''s SSO Application with an organization.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST ''https://console.jumpcloud.com/api/v2/providers/{provider_id}/applications/{application_id}/associations'' \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "op": "add",
+
+        "type": "Organization",
+
+        "id": "{Org_ID}"
+
+        }''
+
+        ```'
+      operationId: providerApplications_editAssociations
+      parameters:
+      - name: provider_id
+        in: path
+        required: true
+        description: ObjectID of the Provider
+        schema:
+          type: string
+          format: byte
+      - name: id
+        in: path
+        required: true
+        description: ObjectID of the Provider Application
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationAssociationRequest'
+        required: true
+      responses:
+        '204':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      summary: Edit associations of a Provider Application
+      tags:
+      - Applications
+      x-scopes:
+      - applications
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/providers/{provider_id}/applications/{id}/associations \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"id\":\"string\",\"op\":\"add\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/providers/{provider_id}/applications/{id}/associations\"\n\npayload = {\n    \"id\": \"string\",\n    \"op\": \"add\"\n}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/providers/{provider_id}/applications/{id}/associations'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"id":"string","op":"add"}'''
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      x-examples: {}
+      description: ''
+      properties:
+        code:
+          format: int32
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        status:
+          type: string
+          description: HTTP status description
+    ImportUsersRequest:
+      type: object
+      title: ImportUsersRequest
+      properties:
+        queryString:
+          description: 'Query string to filter and sort the user list returned from the application.  The supported filtering and sorting varies by application.  If no value is sent, all users are returned.
+
+            **Example:** "location=Chicago&department=IT"Query string used to retrieve users from service'
+          type: string
+          default: ''
+        allowUserReactivation:
+          description: A boolean value to allow the reactivation of suspended users
+          type: boolean
+          default: true
+        operations:
+          description: Operations to be performed on the user list returned from the application
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportOperation'
+          default:
+          - users.create
+          - users.update
+    GraphConnection:
+      description: Represents an edge between two graph objects. From can be omitted if it is clear from context.
+      properties:
+        attributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        from:
+          $ref: '#/components/schemas/GraphObject'
+        to:
+          $ref: '#/components/schemas/GraphObject'
+      required:
+      - to
+      title: GraphConnection
+      type: object
+    importUsersResponse:
+      title: Import Users Response
+      type: object
+      properties:
+        total_count:
+          type: number
+        session_id:
+          type: string
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/importUser'
+        cursor:
+          type: string
+    importUserAttribute:
+      title: Import User Attribute
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+    GraphAttributes:
+      additionalProperties: true
+      description: The graph attributes.
+      title: GraphAttributes
+      type:
+      - object
+      - 'null'
+    GraphType:
+      description: A graph object type.
+      enum:
+      - active_directory
+      - agent
+      - agent_group
+      - application
+      - command
+      - g_suite
+      - idp_routing_policy
+      - ldap_server
+      - office_365
+      - policy
+      - policy_group
+      - radius_server
+      - password_manager_item
+      - system
+      - system_group
+      - user
+      - user_group
+      title: GraphType
+      type: string
+    ImportOperation:
+      description: The operation to be executed on import
+      title: ImportOperation
+      type: string
+      enum:
+      - users.create
+      - users.update
+    ErrorDetails:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          details:
+            description: 'Describes a list of objects with more detailed information of the given error. Each detail schema is according to one of the messages defined in Google''s API: https://github.com/googleapis/googleapis/blob/master/google/rpc/error_details.proto'
+            type: array
+            items:
+              type: object
+              additionalProperties: true
+              description: Object according to Google's API.
+    job-id:
+      title: Job ID
+      type: object
+      x-examples:
+        example-1:
+          jobId: string
+      properties:
+        jobId:
+          type: string
+    sso:
+      properties:
+        _id:
+          type: string
+        active:
+          type: boolean
+        type:
+          type: string
+        jit:
+          type: object
+          properties:
+            supported:
+              type: boolean
+            enabled:
+              type: boolean
+        beta:
+          type: boolean
+        certExpired:
+          type: boolean
+        idpCertExpirationAt:
+          format: date-time
+          type: string
+        idpCertificateUpdatedAt:
+          readOnly: true
+          format: date-time
+          type: string
+        idpPrivateKeyUpdatedAt:
+          readOnly: true
+          format: date-time
+          type: string
+        spCertificateUpdatedAt:
+          readOnly: true
+          format: date-time
+          type: string
+        url:
+          type: string
+        hidden:
+          type: boolean
+      type:
+      - object
+      - 'null'
+    GraphObject:
+      properties:
+        attributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        id:
+          description: The ObjectID of the graph object.
+          type: string
+        type:
+          description: The type of graph object.
+          type: string
+      required:
+      - type
+      - id
+      title: GraphObject
+      type: object
+    application:
+      properties:
+        _id:
+          type: string
+        catalogItem:
+          type:
+          - string
+          - 'null'
+        color:
+          type:
+          - string
+          - 'null'
+        description:
+          maxLength: 256
+          type:
+          - string
+          - 'null'
+        displayLabel:
+          type: string
+        displayName:
+          type: string
+        logo:
+          properties:
+            color:
+              enum:
+              - ''
+              - '#202D38'
+              - '#005466'
+              - '#3E8696'
+              - '#006CAC'
+              - '#0617AC'
+              - '#7C6ADA'
+              - '#D5779D'
+              - '#9E2F00'
+              - '#FFB000'
+              - '#58C469'
+              - '#57C49F'
+              - '#FF6C03'
+              type: string
+            url:
+              type: string
+          type: object
+        name:
+          type: string
+        provision:
+          properties:
+            _id:
+              type: string
+            type:
+              type: string
+            beta:
+              type: boolean
+          type:
+          - object
+          - 'null'
+        sso:
+          $ref: '#/components/schemas/sso'
+        status:
+          enum:
+          - ''
+          - end_of_life
+          - end_of_support
+          - beta
+          type: string
+        associatedOrganizationsCount:
+          type:
+          - integer
+          - 'null'
+        parentApp:
+          type:
+          - string
+          - 'null'
+        aiReady:
+          type: boolean
+          description: Admin opt-in that this application instance should appear as AI Ready in the User Portal. Informational only — does not grant access. Filterable via `filter=aiReady:eq:true|false`.
+      title: Application
+      type: object
+    SyncStatus:
+      description: Sync status information for this object. Only present when syncStatus query parameter is true.
+      type: object
+      properties:
+        syncedAt:
+          description: The last time the object was synced.
+          type: string
+          format: date-time
+        code:
+          description: Status code of the sync operation.
+          type: integer
+        message:
+          description: Status message of the sync operation.
+          type: string
+        details:
+          description: Additional details about the sync status.
+          type: array
+          items:
+            type: object
+    importUserAddress:
+      title: Import User Address
+      type: object
+      properties:
+        type:
+          type: string
+        streetAddress:
+          type: string
+        locality:
+          type: string
+        region:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+    ApplicationAssociationRequest:
+      properties:
+        id:
+          description: The ObjectID of Organization being added or removed as an association.
+          type: string
+        op:
+          description: How to modify the Association.
+          enum:
+          - add
+          - remove
+          type: string
+      required:
+      - id
+      - op
+      title: ApplicationAssociationRequest
+      type: object
+    importUserPhoneNumber:
+      title: Import User Address
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+    GraphOperation:
+      properties:
+        id:
+          description: The ObjectID of graph object being added or removed as an association.
+          type: string
+        op:
+          description: How to modify the graph connection.
+          enum:
+          - add
+          - remove
+          - update
+          type: string
+      required:
+      - id
+      - op
+      title: GraphOperation
+      type: object
+    GraphObjectWithPaths:
+      properties:
+        compiledAttributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        id:
+          description: Object ID of this graph object.
+          type: string
+        paths:
+          description: Every path through the graph from the requested object to this object. Each path lists the groupings and associations it follows; all of them would have to be removed to remove this object from the requested object.
+          items:
+            items:
+              $ref: '#/components/schemas/GraphConnection'
+            type: array
+          type: array
+        type:
+          $ref: '#/components/schemas/GraphType'
+        externalId:
+          description: The external resource ID that is being synced. Only present when syncStatus query parameter is true.
+          type: string
+        syncStatus:
+          $ref: '#/components/schemas/SyncStatus'
+      required:
+      - type
+      - id
+      - paths
+      title: GraphObjectWithPaths
+      type: object
+    importUser:
+      title: Import User
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        middlename:
+          type: string
+        displayname:
+          type: string
+        department:
+          type: string
+        jobTitle:
+          type: string
+        costCenter:
+          type: string
+        employeeType:
+          type: string
+        employeeIdentifier:
+          type: string
+        company:
+          type: string
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/importUserAddress'
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/importUserPhoneNumber'
+        manager:
+          type: string
+        location:
+          type: string
+        alternateEmail:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/importUserAttribute'
+    GraphOperation-Application:
+      allOf:
+      - $ref: '#/components/schemas/GraphOperation'
+      - properties:
+          attributes:
+            $ref: '#/components/schemas/GraphAttributes'
+          type:
+            description: Targets which a "application" can be associated to.
+            enum:
+            - agent_group
+            - user
+            - user_group
+            type: string
+        required:
+        - type
+      title: GraphOperation (Application)
+      type: object
+  parameters:
+    trait_search_search:
+      description: The search string to query records
+      in: query
+      name: search
+      schema:
+        type: string
+        default: ''
+    trait_limit_limit:
+      description: The number of records to return at once. Limited to 100.
+      in: query
+      name: limit
+      schema:
+        type: integer
+        default: 10
+    trait_filter_filter:
+      description: 'A filter to apply to the query.
+
+
+        **Filter structure**: `<field>:<operator>:<value>`.
+
+
+        **field** = Populate with a valid field from an endpoint response.
+
+
+        **operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.
+
+        _Note: v1 operators differ from v2 operators._
+
+
+        **value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.
+
+
+        **EX:** `GET /api/v2/groups?filter=name:eq:Test+Group`'
+      in: query
+      name: filter
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_skip_skip:
+      description: The offset into the records to return.
+      in: query
+      name: skip
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    trait_graphTargetsApplication_targets:
+      name: targets
+      description: Targets which a "application" can be associated to.
+      in: query
+      required: true
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          enum:
+          - agent_group
+          - user
+          - user_group
+          type: string
+    trait_sort_sort:
+      description: 'The comma separated fields used to sort the collection.
+
+        Default sort is ascending, prefix with `-` to sort descending.
+
+        '
+      in: query
+      name: sort
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_multiTenantRequestHeaders_x-org-id:
+      description: Organization identifier that can be obtained from console settings.
+      in: header
+      name: x-org-id
+      schema:
+        type: string
+  responses:
+    trait_standardErrors_409:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_403:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_404:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_401:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
   securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
+    x-api-key:
+      description: API key used to authenticate requests.
       in: header
       name: x-api-key
-      description: JumpCloud API key from the Admin Console > API Settings.
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

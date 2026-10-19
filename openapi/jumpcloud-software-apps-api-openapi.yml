@@ -1,0 +1,2244 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Software Apps API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Software Apps
+paths:
+  /softwareapps:
+    x-functionalities-tags:
+    - devices-windows-software-app-crud
+    - devices-darwin-software-app-crud
+    get:
+      description: 'This endpoint allows you to get all configured Software Applications that will be managed by JumpCloud on associated JumpCloud systems.
+
+        The optional isConfigEnabled and appConfiguration apple_vpp attributes are not included in the response.
+
+
+        #### Sample Request
+
+        ```
+
+        $ curl -X GET https://console.jumpcloud.com/api/v2/softwareapps \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: softwareApps_list
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/software-app'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - systems
+      - systems.readonly
+      summary: Get all configured Software Applications
+      tags:
+      - Software Apps
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/softwareapps?filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps\"\n\nquerystring = {\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps?filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+    post:
+      description: 'This endpoint allows you to create a Software Application that will be managed by JumpCloud on associated JumpCloud systems.
+
+        The optional isConfigEnabled and appConfiguration apple_vpp attributes are not included in the response.
+
+
+        #### Sample Request
+
+        ```
+
+        $ curl -X POST https://console.jumpcloud.com/api/v2/softwareapps \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "displayName": "Adobe Reader",
+
+        "settings": [{"packageId": "adobereader"}]
+
+        }''
+
+        ```'
+      operationId: softwareApps_post
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/software-app'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/software-app-create'
+      security:
+      - x-api-key: []
+      summary: Create a Software Application that will be managed by JumpCloud
+      x-scopes:
+      - systems
+      tags:
+      - Software Apps
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/softwareapps \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"id\":\"string\",\"organization\":\"string\",\"displayName\":\"string\",\"createdAt\":\"2019-08-24T14:15:22Z\",\"updatedAt\":\"2019-08-24T14:15:22Z\",\"settings\":[{\"packageId\":\"string\",\"autoUpdate\":false,\"allowUpdateDelay\":false,\"packageManager\":\"string\",\"locationObjectId\":\"string\",\"location\":\"string\",\"desiredState\":\"string\",\"adminIntent\":\"INTENT_UNSPECIFIED\",\"managedInstallEligibilityStatus\":\"MANAGED_INSTALL_ELIGIBILITY_NOT_EVALUATED\",\"detectionRules\":{\"ruleType\":\"string\",\"expectedDisplayName\":\"string\",\"registryPath\":\"string\",\"registryValueName\":\"string\",\"registryExpectedValue\":\"string\",\"powerShellScript\":\"string\"},\"appleVpp\":{\"appConfiguration\":\"string\",\"assignedLicenses\":0,\"availableLicenses\":0,\"details\":{},\"isConfigEnabled\":true,\"supportedDeviceFamilies\":[\"IPAD\"],\"totalLicenses\":0},\"packageSubtitle\":\"string\",\"displayVersion\":\"string\",\"packageVersion\":\"string\",\"packageKind\":\"string\",\"assetKind\":\"string\",\"assetSha256Size\":0,\"assetSha256Strings\":[\"string\"],\"description\":\"string\",\"googleAndroid\":{\"name\":\"string\",\"type\":\"APP_TYPE_UNSPECIFIED\",\"iconUrl\":\"string\",\"author\":\"string\",\"category\":\"string\",\"appPricing\":\"string\",\"distributionChannel\":\"string\",\"minSdkVersion\":0,\"contentRating\":\"string\",\"updateTime\":\"string\",\"appVersion\":\"string\",\"fullDescription\":\"string\",\"startUrl\":\"string\",\"displayMode\":\"string\",\"versionCode\":0,\"managedProperties\":true,\"autoUpdateMode\":\"AUTO_UPDATE_DEFAULT\",\"runtimePermission\":\"PROMPT\",\"installType\":\"AVAILABLE\",\"managedConfigurationTemplateId\":\"string\",\"permissionGrants\":[{\"id\":\"string\",\"policy\":\"PROMPT\"}],\"androidFeatures\":[\"string\"]},\"enterpriseObjectId\":\"string\",\"commandLineArguments\":\"string\",\"storedPackage\":{\"objectId\":\"string\",\"versions\":[{\"name\":\"string\",\"version\":0,\"size\":0,\"sha256sum\":\"string\",\"status\":\"string\",\"rejectedReason\":\"string\",\"displayVersion\":\"string\",\"createdAt\":\"2019-08-24T14:15:22Z\",\"updatedAt\":\"2019-08-24T14:15:22Z\",\"metadata\":{\"metadataExe\":{\"installerEngineVersion\":\"string\",\"signatureLabel\":\"string\"}}}]},\"storedPackageObjectId\":\"string\",\"microsoftStore\":{\"packageFamilyName\":\"string\",\"nonRemovable\":true,\"doNotUpdate\":true},\"scope\":\"string\",\"appCatalogInstallableObjectId\":\"string\",\"iconUrl\":\"string\",\"installerEngineVersion\":\"string\",\"versionlessDownloadUrl\":true,\"bundleId\":\"string\",\"teamId\":\"string\",\"format\":\"string\",\"appFileName\":\"string\",\"shortVersion\":\"string\",\"signatureLabel\":\"string\",\"silentInstallFlags\":[\"string\"],\"downloadUrl\":\"string\",\"architectures\":[\"string\"],\"updateTool\":\"string\",\"updateToolArguments\":\"string\",\"uninstallOnUnbind\":true,\"unsafeUninstall\":true,\"autoUpdateNotificationsDisabled\":true,\"installerType\":\"string\",\"packageFamilyName\":\"string\",\"migrationSafe\":true,\"appDeliveryMethod\":\"string\",\"createdAt\":\"2019-08-24T14:15:22Z\",\"updatedAt\":\"2019-08-24T14:15:22Z\",\"packageVersionUpdatedAt\":\"2019-08-24T14:15:22Z\"}]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps\"\n\npayload = {\n    \"id\": \"string\",\n    \"organization\": \"string\",\n    \"displayName\": \"string\",\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"updatedAt\": \"2019-08-24T14:15:22Z\",\n    \"settings\": [\n        {\n            \"packageId\": \"string\",\n            \"autoUpdate\": False,\n            \"allowUpdateDelay\": False,\n            \"packageManager\": \"string\",\n            \"locationObjectId\": \"string\",\n            \"location\": \"string\",\n            \"desiredState\": \"string\",\n            \"adminIntent\": \"INTENT_UNSPECIFIED\",\n            \"managedInstallEligibilityStatus\": \"MANAGED_INSTALL_ELIGIBILITY_NOT_EVALUATED\",\n            \"detectionRules\": {\n                \"ruleType\": \"string\",\n                \"expectedDisplayName\": \"string\",\n                \"registryPath\": \"string\",\n                \"registryValueName\": \"string\",\n                \"registryExpectedValue\": \"string\",\n                \"powerShellScript\": \"string\"\n            },\n            \"appleVpp\": {\n                \"appConfiguration\": \"string\",\n                \"assignedLicenses\": 0,\n                \"availableLicenses\": 0,\n                \"details\": {},\n                \"isConfigEnabled\": True,\n                \"supportedDeviceFamilies\": [\"IPAD\"],\n                \"totalLicenses\": 0\n            },\n            \"packageSubtitle\": \"string\",\n            \"displayVersion\": \"string\",\n            \"packageVersion\": \"string\",\n            \"packageKind\": \"string\",\n            \"assetKind\": \"string\",\n            \"assetSha256Size\": 0,\n            \"assetSha256Strings\": [\"string\"],\n            \"description\": \"string\",\n            \"googleAndroid\": {\n                \"name\": \"string\",\n                \"type\": \"APP_TYPE_UNSPECIFIED\",\n                \"iconUrl\": \"string\",\n                \"author\": \"string\",\n                \"category\": \"string\",\n                \"appPricing\": \"string\",\n                \"distributionChannel\": \"string\",\n                \"minSdkVersion\": 0,\n                \"contentRating\": \"string\",\n                \"updateTime\": \"string\",\n                \"appVersion\": \"string\",\n                \"fullDescription\": \"string\",\n                \"startUrl\": \"string\",\n                \"displayMode\": \"string\",\n                \"versionCode\": 0,\n                \"managedProperties\": True,\n                \"autoUpdateMode\": \"AUTO_UPDATE_DEFAULT\",\n                \"runtimePermission\": \"PROMPT\",\n                \"installType\": \"AVAILABLE\",\n                \"managedConfigurationTemplateId\": \"string\",\n                \"permissionGrants\": [\n                    {\n                        \"id\": \"string\",\n                        \"policy\": \"PROMPT\"\n                    }\n                ],\n                \"androidFeatures\": [\"string\"]\n            },\n            \"enterpriseObjectId\": \"string\",\n            \"commandLineArguments\": \"string\",\n            \"storedPackage\": {\n                \"objectId\": \"string\",\n                \"versions\": [\n                    {\n                        \"name\": \"string\",\n                        \"version\": 0,\n                        \"size\": 0,\n                        \"sha256sum\": \"string\",\n                        \"status\": \"string\",\n                        \"rejectedReason\": \"string\",\n                        \"displayVersion\": \"string\",\n                        \"createdAt\": \"2019-08-24T14:15:22Z\",\n                        \"updatedAt\": \"2019-08-24T14:15:22Z\",\n                        \"metadata\": {\"metadataExe\": {\n                                \"installerEngineVersion\": \"string\",\n                                \"signatureLabel\": \"string\"\n                            }}\n                    }\n                ]\n            },\n            \"storedPackageObjectId\": \"string\",\n            \"microsoftStore\": {\n                \"packageFamilyName\": \"string\",\n                \"nonRemovable\": True,\n                \"doNotUpdate\": True\n            },\n            \"scope\": \"string\",\n            \"appCatalogInstallableObjectId\": \"string\",\n            \"iconUrl\": \"string\",\n            \"installerEngineVersion\": \"string\",\n            \"versionlessDownloadUrl\": True,\n            \"bundleId\": \"string\",\n            \"teamId\": \"string\",\n            \"format\": \"string\",\n            \"appFileName\": \"string\",\n            \"shortVersion\": \"string\",\n            \"signatureLabel\": \"string\",\n            \"silentInstallFlags\": [\"string\"],\n            \"downloadUrl\": \"string\",\n            \"architectures\": [\"string\"],\n            \"updateTool\": \"string\",\n            \"updateToolArguments\": \"string\",\n            \"uninstallOnUnbind\": True,\n            \"unsafeUninstall\": True,\n            \"autoUpdateNotificationsDisabled\": True,\n            \"installerType\": \"string\",\n            \"packageFamilyName\": \"string\",\n            \"migrationSafe\": True,\n            \"appDeliveryMethod\": \"string\",\n            \"createdAt\": \"2019-08-24T14:15:22Z\",\n            \"updatedAt\": \"2019-08-24T14:15:22Z\",\n            \"packageVersionUpdatedAt\": \"2019-08-24T14:15:22Z\"\n        }\n    ]\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"id":"string","organization":"string","displayName":"string","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","settings":[{"packageId":"string","autoUpdate":false,"allowUpdateDelay":false,"packageManager":"string","locationObjectId":"string","location":"string","desiredState":"string","adminIntent":"INTENT_UNSPECIFIED","managedInstallEligibilityStatus":"MANAGED_INSTALL_ELIGIBILITY_NOT_EVALUATED","detectionRules":{"ruleType":"string","expectedDisplayName":"string","registryPath":"string","registryValueName":"string","registryExpectedValue":"string","powerShellScript":"string"},"appleVpp":{"appConfiguration":"string","assignedLicenses":0,"availableLicenses":0,"details":{},"isConfigEnabled":true,"supportedDeviceFamilies":["IPAD"],"totalLicenses":0},"packageSubtitle":"string","displayVersion":"string","packageVersion":"string","packageKind":"string","assetKind":"string","assetSha256Size":0,"assetSha256Strings":["string"],"description":"string","googleAndroid":{"name":"string","type":"APP_TYPE_UNSPECIFIED","iconUrl":"string","author":"string","category":"string","appPricing":"string","distributionChannel":"string","minSdkVersion":0,"contentRating":"string","updateTime":"string","appVersion":"string","fullDescription":"string","startUrl":"string","displayMode":"string","versionCode":0,"managedProperties":true,"autoUpdateMode":"AUTO_UPDATE_DEFAULT","runtimePermission":"PROMPT","installType":"AVAILABLE","managedConfigurationTemplateId":"string","permissionGrants":[{"id":"string","policy":"PROMPT"}],"androidFeatures":["string"]},"enterpriseObjectId":"string","commandLineArguments":"string","storedPackage":{"objectId":"string","versions":[{"name":"string","version":0,"size":0,"sha256sum":"string","status":"string","rejectedReason":"string","displayVersion":"string","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"metadataExe":{"installerEngineVersion":"string","signatureLabel":"string"}}}]},"storedPackageObjectId":"string","microsoftStore":{"packageFamilyName":"string","nonRemovable":true,"doNotUpdate":true},"scope":"string","appCatalogInstallableObjectId":"string","iconUrl":"string","installerEngineVersion":"string","versionlessDownloadUrl":true,"bundleId":"string","teamId":"string","format":"string","appFileName":"string","shortVersion":"string","signatureLabel":"string","silentInstallFlags":["string"],"downloadUrl":"string","architectures":["string"],"updateTool":"string","updateToolArguments":"string","uninstallOnUnbind":true,"unsafeUninstall":true,"autoUpdateNotificationsDisabled":true,"installerType":"string","packageFamilyName":"string","migrationSafe":true,"appDeliveryMethod":"string","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","packageVersionUpdatedAt":"2019-08-24T14:15:22Z"}]}'''
+  /softwareapps/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - devices-windows-software-app-crud
+    - devices-darwin-software-app-crud
+    delete:
+      description: 'Removes a Software Application configuration.
+
+
+        Warning: This is a destructive operation and will unmanage the application on all affected systems.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X DELETE https://console.jumpcloud.com/api/v2/softwareapps/{id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: softwareApps_delete
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '204':
+          description: ''
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      summary: Delete a configured Software Application
+      tags:
+      - Software Apps
+      x-scopes:
+      - systems
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/softwareapps/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"DELETE\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{id}'' -Method DELETE -Headers $headers'
+    put:
+      summary: Update a Software Application Configuration
+      description: 'This endpoint updates a specific Software Application configuration for the organization.
+
+        displayName can be changed alone if no settings are provided.
+
+        If a setting is provided, it should include all its information since this endpoint will update all the settings'' fields.
+
+        The optional isConfigEnabled and appConfiguration apple_vpp attributes are not included in the response.
+
+
+        #### Sample Request - displayName only
+
+        ```
+
+        curl -X PUT https://console.jumpcloud.com/api/v2/softwareapps/{id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "displayName": "My Software App"
+
+        }''
+
+        ```
+
+
+        #### Sample Request - all attributes
+
+        ```
+
+        curl -X PUT https://console.jumpcloud.com/api/v2/softwareapps/{id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "displayName": "My Software App",
+
+        "settings": [
+
+        {
+
+        "packageId": "123456",
+
+        "autoUpdate": false,
+
+        "allowUpdateDelay": false,
+
+        "packageManager": "APPLE_VPP",
+
+        "locationObjectId": "123456789012123456789012",
+
+        "location": "123456",
+
+        "desiredState": "Install",
+
+        "appleVpp": {
+
+        "appConfiguration": "MyKeyMy String",
+
+        "assignedLicenses": 20,
+
+        "availableLicenses": 10,
+
+        "details": {},
+
+        "isConfigEnabled": true,
+
+        "supportedDeviceFamilies": [
+
+        "IPAD",
+
+        "MAC"
+
+        ],
+
+        "totalLicenses": 30
+
+        },
+
+        "packageSubtitle": "My package subtitle",
+
+        "packageVersion": "1.2.3",
+
+        "packageKind": "software-package",
+
+        "assetKind": "software",
+
+        "assetSha256Size": 256,
+
+        "assetSha256Strings": [
+
+        "a123b123c123d123"
+
+        ],
+
+        "description": "My app description"
+
+        }
+
+        ]
+
+        }''
+
+        ```'
+      operationId: softwareApps_update
+      tags:
+      - Software Apps
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/software-app'
+        x-examples:
+          displayName-only:
+            displayName: My Software App
+          all-attributes:
+            displayName: My Software App
+            settings:
+            - packageId: '123456'
+              autoUpdate: false
+              allowUpdateDelay: false
+              packageManager: APPLE_VPP
+              locationObjectId: '123456789012123456789012'
+              location: '123456'
+              desiredState: Install
+              appleVpp:
+                appConfiguration: <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>MyKey</key><string>My String</string></dict></plist>
+                assignedLicenses: 20
+                availableLicenses: 10
+                details: {}
+                isConfigEnabled: true
+                supportedDeviceFamilies:
+                - IPAD
+                - MAC
+                totalLicenses: 30
+              packageSubtitle: My package subtitle
+              packageVersion: 1.2.3
+              packageKind: software-package
+              assetKind: software
+              assetSha256Size: 256
+              assetSha256Strings:
+              - a123b123c123d123
+              description: My app description
+      security:
+      - x-api-key: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/software-app'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      x-scopes:
+      - systems
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/softwareapps/{id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"id\":\"string\",\"organization\":\"string\",\"displayName\":\"string\",\"createdAt\":\"2019-08-24T14:15:22Z\",\"updatedAt\":\"2019-08-24T14:15:22Z\",\"settings\":[{\"packageId\":\"string\",\"autoUpdate\":false,\"allowUpdateDelay\":false,\"packageManager\":\"string\",\"locationObjectId\":\"string\",\"location\":\"string\",\"desiredState\":\"string\",\"adminIntent\":\"INTENT_UNSPECIFIED\",\"managedInstallEligibilityStatus\":\"MANAGED_INSTALL_ELIGIBILITY_NOT_EVALUATED\",\"detectionRules\":{\"ruleType\":\"string\",\"expectedDisplayName\":\"string\",\"registryPath\":\"string\",\"registryValueName\":\"string\",\"registryExpectedValue\":\"string\",\"powerShellScript\":\"string\"},\"appleVpp\":{\"appConfiguration\":\"string\",\"assignedLicenses\":0,\"availableLicenses\":0,\"details\":{},\"isConfigEnabled\":true,\"supportedDeviceFamilies\":[\"IPAD\"],\"totalLicenses\":0},\"packageSubtitle\":\"string\",\"displayVersion\":\"string\",\"packageVersion\":\"string\",\"packageKind\":\"string\",\"assetKind\":\"string\",\"assetSha256Size\":0,\"assetSha256Strings\":[\"string\"],\"description\":\"string\",\"googleAndroid\":{\"name\":\"string\",\"type\":\"APP_TYPE_UNSPECIFIED\",\"iconUrl\":\"string\",\"author\":\"string\",\"category\":\"string\",\"appPricing\":\"string\",\"distributionChannel\":\"string\",\"minSdkVersion\":0,\"contentRating\":\"string\",\"updateTime\":\"string\",\"appVersion\":\"string\",\"fullDescription\":\"string\",\"startUrl\":\"string\",\"displayMode\":\"string\",\"versionCode\":0,\"managedProperties\":true,\"autoUpdateMode\":\"AUTO_UPDATE_DEFAULT\",\"runtimePermission\":\"PROMPT\",\"installType\":\"AVAILABLE\",\"managedConfigurationTemplateId\":\"string\",\"permissionGrants\":[{\"id\":\"string\",\"policy\":\"PROMPT\"}],\"androidFeatures\":[\"string\"]},\"enterpriseObjectId\":\"string\",\"commandLineArguments\":\"string\",\"storedPackage\":{\"objectId\":\"string\",\"versions\":[{\"name\":\"string\",\"version\":0,\"size\":0,\"sha256sum\":\"string\",\"status\":\"string\",\"rejectedReason\":\"string\",\"displayVersion\":\"string\",\"createdAt\":\"2019-08-24T14:15:22Z\",\"updatedAt\":\"2019-08-24T14:15:22Z\",\"metadata\":{\"metadataExe\":{\"installerEngineVersion\":\"string\",\"signatureLabel\":\"string\"}}}]},\"storedPackageObjectId\":\"string\",\"microsoftStore\":{\"packageFamilyName\":\"string\",\"nonRemovable\":true,\"doNotUpdate\":true},\"scope\":\"string\",\"appCatalogInstallableObjectId\":\"string\",\"iconUrl\":\"string\",\"installerEngineVersion\":\"string\",\"versionlessDownloadUrl\":true,\"bundleId\":\"string\",\"teamId\":\"string\",\"format\":\"string\",\"appFileName\":\"string\",\"shortVersion\":\"string\",\"signatureLabel\":\"string\",\"silentInstallFlags\":[\"string\"],\"downloadUrl\":\"string\",\"architectures\":[\"string\"],\"updateTool\":\"string\",\"updateToolArguments\":\"string\",\"uninstallOnUnbind\":true,\"unsafeUninstall\":true,\"autoUpdateNotificationsDisabled\":true,\"installerType\":\"string\",\"packageFamilyName\":\"string\",\"migrationSafe\":true,\"appDeliveryMethod\":\"string\",\"createdAt\":\"2019-08-24T14:15:22Z\",\"updatedAt\":\"2019-08-24T14:15:22Z\",\"packageVersionUpdatedAt\":\"2019-08-24T14:15:22Z\"}]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps/{id}\"\n\npayload = {\n    \"id\": \"string\",\n    \"organization\": \"string\",\n    \"displayName\": \"string\",\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"updatedAt\": \"2019-08-24T14:15:22Z\",\n    \"settings\": [\n        {\n            \"packageId\": \"string\",\n            \"autoUpdate\": False,\n            \"allowUpdateDelay\": False,\n            \"packageManager\": \"string\",\n            \"locationObjectId\": \"string\",\n            \"location\": \"string\",\n            \"desiredState\": \"string\",\n            \"adminIntent\": \"INTENT_UNSPECIFIED\",\n            \"managedInstallEligibilityStatus\": \"MANAGED_INSTALL_ELIGIBILITY_NOT_EVALUATED\",\n            \"detectionRules\": {\n                \"ruleType\": \"string\",\n                \"expectedDisplayName\": \"string\",\n                \"registryPath\": \"string\",\n                \"registryValueName\": \"string\",\n                \"registryExpectedValue\": \"string\",\n                \"powerShellScript\": \"string\"\n            },\n            \"appleVpp\": {\n                \"appConfiguration\": \"string\",\n                \"assignedLicenses\": 0,\n                \"availableLicenses\": 0,\n                \"details\": {},\n                \"isConfigEnabled\": True,\n                \"supportedDeviceFamilies\": [\"IPAD\"],\n                \"totalLicenses\": 0\n            },\n            \"packageSubtitle\": \"string\",\n            \"displayVersion\": \"string\",\n            \"packageVersion\": \"string\",\n            \"packageKind\": \"string\",\n            \"assetKind\": \"string\",\n            \"assetSha256Size\": 0,\n            \"assetSha256Strings\": [\"string\"],\n            \"description\": \"string\",\n            \"googleAndroid\": {\n                \"name\": \"string\",\n                \"type\": \"APP_TYPE_UNSPECIFIED\",\n                \"iconUrl\": \"string\",\n                \"author\": \"string\",\n                \"category\": \"string\",\n                \"appPricing\": \"string\",\n                \"distributionChannel\": \"string\",\n                \"minSdkVersion\": 0,\n                \"contentRating\": \"string\",\n                \"updateTime\": \"string\",\n                \"appVersion\": \"string\",\n                \"fullDescription\": \"string\",\n                \"startUrl\": \"string\",\n                \"displayMode\": \"string\",\n                \"versionCode\": 0,\n                \"managedProperties\": True,\n                \"autoUpdateMode\": \"AUTO_UPDATE_DEFAULT\",\n                \"runtimePermission\": \"PROMPT\",\n                \"installType\": \"AVAILABLE\",\n                \"managedConfigurationTemplateId\": \"string\",\n                \"permissionGrants\": [\n                    {\n                        \"id\": \"string\",\n                        \"policy\": \"PROMPT\"\n                    }\n                ],\n                \"androidFeatures\": [\"string\"]\n            },\n            \"enterpriseObjectId\": \"string\",\n            \"commandLineArguments\": \"string\",\n            \"storedPackage\": {\n                \"objectId\": \"string\",\n                \"versions\": [\n                    {\n                        \"name\": \"string\",\n                        \"version\": 0,\n                        \"size\": 0,\n                        \"sha256sum\": \"string\",\n                        \"status\": \"string\",\n                        \"rejectedReason\": \"string\",\n                        \"displayVersion\": \"string\",\n                        \"createdAt\": \"2019-08-24T14:15:22Z\",\n                        \"updatedAt\": \"2019-08-24T14:15:22Z\",\n                        \"metadata\": {\"metadataExe\": {\n                                \"installerEngineVersion\": \"string\",\n                                \"signatureLabel\": \"string\"\n                            }}\n                    }\n                ]\n            },\n            \"storedPackageObjectId\": \"string\",\n            \"microsoftStore\": {\n                \"packageFamilyName\": \"string\",\n                \"nonRemovable\": True,\n                \"doNotUpdate\": True\n            },\n            \"scope\": \"string\",\n            \"appCatalogInstallableObjectId\": \"string\",\n            \"iconUrl\": \"string\",\n            \"installerEngineVersion\": \"string\",\n            \"versionlessDownloadUrl\": True,\n            \"bundleId\": \"string\",\n            \"teamId\": \"string\",\n            \"format\": \"string\",\n            \"appFileName\": \"string\",\n            \"shortVersion\": \"string\",\n            \"signatureLabel\": \"string\",\n            \"silentInstallFlags\": [\"string\"],\n            \"downloadUrl\": \"string\",\n            \"architectures\": [\"string\"],\n            \"updateTool\": \"string\",\n            \"updateToolArguments\": \"string\",\n            \"uninstallOnUnbind\": True,\n            \"unsafeUninstall\": True,\n            \"autoUpdateNotificationsDisabled\": True,\n            \"installerType\": \"string\",\n            \"packageFamilyName\": \"string\",\n            \"migrationSafe\": True,\n            \"appDeliveryMethod\": \"string\",\n            \"createdAt\": \"2019-08-24T14:15:22Z\",\n            \"updatedAt\": \"2019-08-24T14:15:22Z\",\n            \"packageVersionUpdatedAt\": \"2019-08-24T14:15:22Z\"\n        }\n    ]\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"id":"string","organization":"string","displayName":"string","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","settings":[{"packageId":"string","autoUpdate":false,"allowUpdateDelay":false,"packageManager":"string","locationObjectId":"string","location":"string","desiredState":"string","adminIntent":"INTENT_UNSPECIFIED","managedInstallEligibilityStatus":"MANAGED_INSTALL_ELIGIBILITY_NOT_EVALUATED","detectionRules":{"ruleType":"string","expectedDisplayName":"string","registryPath":"string","registryValueName":"string","registryExpectedValue":"string","powerShellScript":"string"},"appleVpp":{"appConfiguration":"string","assignedLicenses":0,"availableLicenses":0,"details":{},"isConfigEnabled":true,"supportedDeviceFamilies":["IPAD"],"totalLicenses":0},"packageSubtitle":"string","displayVersion":"string","packageVersion":"string","packageKind":"string","assetKind":"string","assetSha256Size":0,"assetSha256Strings":["string"],"description":"string","googleAndroid":{"name":"string","type":"APP_TYPE_UNSPECIFIED","iconUrl":"string","author":"string","category":"string","appPricing":"string","distributionChannel":"string","minSdkVersion":0,"contentRating":"string","updateTime":"string","appVersion":"string","fullDescription":"string","startUrl":"string","displayMode":"string","versionCode":0,"managedProperties":true,"autoUpdateMode":"AUTO_UPDATE_DEFAULT","runtimePermission":"PROMPT","installType":"AVAILABLE","managedConfigurationTemplateId":"string","permissionGrants":[{"id":"string","policy":"PROMPT"}],"androidFeatures":["string"]},"enterpriseObjectId":"string","commandLineArguments":"string","storedPackage":{"objectId":"string","versions":[{"name":"string","version":0,"size":0,"sha256sum":"string","status":"string","rejectedReason":"string","displayVersion":"string","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"metadataExe":{"installerEngineVersion":"string","signatureLabel":"string"}}}]},"storedPackageObjectId":"string","microsoftStore":{"packageFamilyName":"string","nonRemovable":true,"doNotUpdate":true},"scope":"string","appCatalogInstallableObjectId":"string","iconUrl":"string","installerEngineVersion":"string","versionlessDownloadUrl":true,"bundleId":"string","teamId":"string","format":"string","appFileName":"string","shortVersion":"string","signatureLabel":"string","silentInstallFlags":["string"],"downloadUrl":"string","architectures":["string"],"updateTool":"string","updateToolArguments":"string","uninstallOnUnbind":true,"unsafeUninstall":true,"autoUpdateNotificationsDisabled":true,"installerType":"string","packageFamilyName":"string","migrationSafe":true,"appDeliveryMethod":"string","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","packageVersionUpdatedAt":"2019-08-24T14:15:22Z"}]}'''
+    get:
+      description: 'Retrieves a Software Application.
+
+        The optional isConfigEnabled and appConfiguration apple_vpp attributes are populated in this response.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/softwareapps/{id} \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: softwareApps_get
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/software-app'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      summary: Retrieve a configured Software Application
+      tags:
+      - Software Apps
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url https://console.jumpcloud.com/api/v2/softwareapps/{id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps/{id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{id}'' -Method GET -Headers $headers'
+  /softwareapps/{software_app_id}/associations:
+    parameters:
+    - description: ObjectID of the Software App.
+      name: software_app_id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      description: 'This endpoint will return the _direct_ associations of a Software Application. A direct association can be a non-homogeneous relationship between 2 different objects, for example Software Application and System Groups.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/associations?targets=system_group \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_softwareappsAssociationsList
+      parameters:
+      - $ref: '#/components/parameters/trait_graphTargetsSoftwareApp_targets'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphConnection'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the associations of a Software Application
+      tags:
+      - Software Apps
+      x-scopes:
+      - associations.systems
+      - associations
+      - associations.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/associations?targets=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/associations\"\n\nquerystring = {\"targets\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/associations?targets=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+    post:
+      description: 'This endpoint allows you to associate or disassociate a software application to a system or system group.
+
+
+        #### Sample Request
+
+        ```
+
+        $ curl -X POST https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/associations \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{
+
+        "id": "",
+
+        "op": "add",
+
+        "type": "system"
+
+        }''
+
+        ```'
+      operationId: graph_softwareappsAssociationsPost
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphOperation-SoftwareApp'
+      responses:
+        '204':
+          description: ''
+      security:
+      - x-api-key: []
+      summary: Manage the associations of a software application
+      tags:
+      - Software Apps
+      x-scopes:
+      - associations.systems
+      - associations
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/associations \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"id\":\"string\",\"op\":\"add\",\"attributes\":{},\"type\":\"system\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/associations\"\n\npayload = {\n    \"id\": \"string\",\n    \"op\": \"add\",\n    \"attributes\": {},\n    \"type\": \"system\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/associations'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"id":"string","op":"add","attributes":{},"type":"system"}'''
+  /softwareapps/{software_app_id}/stored-package-versions:
+    parameters:
+    - name: software_app_id
+      in: path
+      required: true
+      schema:
+        type: string
+    post:
+      tags:
+      - Software Apps
+      summary: Prepare a stored package version upload
+      operationId: softwareApps_prepareStoredPackageUpload
+      description: Prepares a stored package version upload for a software app.
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/software-app-stored-package-version-request'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/software-app-stored-package-version-response'
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+        '401':
+          $ref: '#/components/responses/trait_standardErrors_401'
+        '403':
+          $ref: '#/components/responses/trait_standardErrors_403'
+        '404':
+          $ref: '#/components/responses/trait_standardErrors_404'
+        '409':
+          $ref: '#/components/responses/trait_standardErrors_409'
+        '500':
+          $ref: '#/components/responses/trait_standardErrors_500'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - systems
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/stored-package-versions \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"name\":\"string\",\"size\":0,\"displayVersion\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/stored-package-versions\"\n\npayload = {\n    \"name\": \"string\",\n    \"size\": 0,\n    \"displayVersion\": \"string\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/stored-package-versions'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"name":"string","size":0,"displayVersion":"string"}'''
+  /softwareapps/{software_app_id}/reclaim-licenses:
+    parameters:
+    - name: software_app_id
+      in: path
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - software-associations
+    post:
+      summary: Reclaim Licenses for a Software Application
+      description: 'This endpoint allows you to reclaim the licenses from a software app associated with devices that are deleted.
+
+        #### Sample Request
+
+        ```
+
+        $ curl -X POST https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/reclaim-licenses \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{}''
+
+        ```'
+      tags:
+      - Software Apps
+      responses:
+        '200':
+          description: Reclaim Licenses Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/software-app-reclaim-licenses'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - systems
+      operationId: softwareApps_reclaimLicenses
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/reclaim-licenses \\\n  --header 'x-api-key: REPLACE_KEY_VALUE'"
+      - lang: Python
+        source: 'import requests
+
+
+          url = "https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/reclaim-licenses"
+
+
+          headers = {"x-api-key": "REPLACE_KEY_VALUE"}
+
+
+          response = requests.request("POST", url, headers=headers)
+
+
+          print(response.text)'
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/reclaim-licenses'' -Method POST -Headers $headers'
+  /softwareapps/{software_app_id}/retry-installation:
+    parameters:
+    - name: software_app_id
+      in: path
+      required: true
+      schema:
+        type: string
+    post:
+      summary: Retry Installation for a Software Application
+      description: 'This endpoints initiates an installation retry of an Apple VPP App for the provided system IDs
+
+        #### Sample Request
+
+        ```
+
+        $ curl -X POST https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/retry-installation \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -d ''{"system_ids": ["", "", ...]}''
+
+        ```'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SoftwareAppsRetryInstallationRequest'
+        required: true
+      tags:
+      - Software Apps
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/trait_standardErrors_400'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - systems
+      operationId: softwareApps_retryInstallation
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/retry-installation \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --data '{\"system_ids\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/retry-installation\"\n\npayload = {\"system_ids\": [\"string\"]}\nheaders = {\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/retry-installation'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"system_ids":["string"]}'''
+  /softwareapps/{software_app_id}/statuses:
+    parameters:
+    - description: ObjectID of the Software App.
+      name: software_app_id
+      in: path
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - devices-windows-software-app-crud
+    - devices-darwin-software-app-crud
+    get:
+      description: 'This endpoint allows you to get the status of the provided Software Application on associated JumpCloud systems.
+
+
+        #### Sample Request
+
+        ```
+
+        $ curl -X GET https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/statuses \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        ```'
+      operationId: softwareAppStatuses_list
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_sort_sort'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/software-app-status'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - systems
+      - systems.readonly
+      summary: Get the status of the provided Software Application
+      tags:
+      - Software Apps
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/statuses?filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/statuses\"\n\nquerystring = {\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"sort\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/statuses?filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&sort=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /softwareapps/{software_app_id}/systemgroups:
+    parameters:
+    - description: ObjectID of the Software App.
+      in: path
+      name: software_app_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - devices-windows-software-app-crud
+    - devices-darwin-software-app-crud
+    get:
+      description: 'This endpoint will return all Systems Groups bound to a Software App, either directly or indirectly, essentially traversing the JumpCloud Graph for your Organization.
+
+
+        Each element will contain the group''s type, id, attributes and paths.
+
+
+        The `attributes` object is a key/value hash of compiled graph attributes for all paths followed.
+
+
+        The `paths` array enumerates each path from this Software App to the corresponding System Group; this array represents all grouping and/or associations that would have to be removed to deprovision the System Group from this Software App.
+
+
+        See `/associations` endpoint to manage those collections.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/systemgroups \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_softwareappsTraverseSystemGroup
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphObjectWithPaths'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the System Groups bound to a Software App
+      tags:
+      - Software Apps
+      x-scopes:
+      - groups
+      - groups.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/systemgroups?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/systemgroups\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/systemgroups?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+  /softwareapps/{software_app_id}/systems:
+    parameters:
+    - description: ObjectID of the Software App.
+      in: path
+      name: software_app_id
+      required: true
+      schema:
+        type: string
+    x-functionalities-tags:
+    - devices-windows-software-app-crud
+    - devices-darwin-software-app-crud
+    get:
+      description: 'This endpoint will return all Systems bound to a Software App, either directly or indirectly, essentially traversing the JumpCloud Graph for your Organization.
+
+
+        Each element will contain the type, id, attributes and paths.
+
+
+        The `attributes` object is a key/value hash of compiled graph attributes for all paths followed.
+
+
+        The `paths` array enumerates each path from this Software App to the corresponding System; this array represents all grouping and/or associations that would have to be removed to deprovision the System from this Software App.
+
+
+        See `/associations` endpoint to manage those collections.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/systems \
+
+        -H ''Accept: application/json'' \
+
+        -H ''Content-Type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}''
+
+        ```'
+      operationId: graph_softwareappsTraverseSystem
+      parameters:
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      - $ref: '#/components/parameters/trait_filter_filter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GraphObjectWithPaths'
+                type: array
+      security:
+      - x-api-key: []
+      summary: List the Systems bound to a Software App
+      tags:
+      - Software Apps
+      x-scopes:
+      - systems
+      - systems.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/systems?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/systems\"\n\nquerystring = {\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\",\"filter\":\"SOME_ARRAY_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/softwareapps/{software_app_id}/systems?limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE&filter=SOME_ARRAY_VALUE'' -Method GET -Headers $headers'
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      x-examples: {}
+      description: ''
+      properties:
+        code:
+          format: int32
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        status:
+          type: string
+          description: HTTP status description
+    devices.MetadataPKG.ManagedInstallEligibilityStatus:
+      type: string
+      enum:
+      - MANAGED_INSTALL_ELIGIBILITY_NOT_EVALUATED
+      - MANAGED_INSTALL_ELIGIBLE
+      - MANAGED_INSTALL_INELIGIBLE
+      - MANAGED_INSTALL_ELIGIBILITY_UNKNOWN
+      default: MANAGED_INSTALL_ELIGIBILITY_NOT_EVALUATED
+    devices.MetadataEXE:
+      type: object
+      properties:
+        arch:
+          type: string
+        author:
+          type: string
+        installerEngineVersion:
+          type: string
+        sha256sum:
+          type: string
+        signatureLabel:
+          type: string
+        size:
+          type: integer
+          format: int64
+        title:
+          type: string
+        url:
+          type: string
+        version:
+          type: string
+      description: MetadataEXE holds parsed metadata for a Windows .exe installer (NSIS, Inno Setup, etc.).
+    software-app-stored-package-version-request:
+      title: softwareAppStoredPackageVersionRequest
+      type: object
+      description: Software app stored package version request
+      properties:
+        name:
+          type: string
+          description: The name of the package.
+        size:
+          type: integer
+          description: The size of the package.
+        displayVersion:
+          type: string
+          maxLength: 256
+          description: Optional display version for the package. Defaults to "Version N" when omitted.
+      required:
+      - name
+      - size
+    GraphConnection:
+      description: Represents an edge between two graph objects. From can be omitted if it is clear from context.
+      properties:
+        attributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        from:
+          $ref: '#/components/schemas/GraphObject'
+        to:
+          $ref: '#/components/schemas/GraphObject'
+      required:
+      - to
+      title: GraphConnection
+      type: object
+    devices.MetadataFile:
+      type: object
+      properties:
+        mimeType:
+          type: string
+        sha256sum:
+          type: string
+        size:
+          type: integer
+          format: int64
+    devices.ObjectStorageMetadata:
+      type: object
+      properties:
+        metadataExe:
+          $ref: '#/components/schemas/devices.MetadataEXE'
+        metadataFile:
+          $ref: '#/components/schemas/devices.MetadataFile'
+        metadataIpa:
+          $ref: '#/components/schemas/devices.MetadataIPA'
+        metadataMsi:
+          $ref: '#/components/schemas/devices.MetadataMSI'
+        metadataPkg:
+          $ref: '#/components/schemas/devices.MetadataPKG'
+    software-app-settings:
+      type: object
+      x-examples:
+        example-1:
+          packageId: string
+          autoUpdate: false
+          allowUpdateDelay: false
+          packageManager: string
+          locationObjectId: string
+          location: string
+          desiredState: string
+      properties:
+        packageId:
+          type: string
+        autoUpdate:
+          type: boolean
+          default: false
+        allowUpdateDelay:
+          type: boolean
+          default: false
+        packageManager:
+          type: string
+          description: 'App store serving the app: APPLE_VPP, CHOCOLATEY, etc.'
+        locationObjectId:
+          type: string
+          description: ID of the repository where the app is located within the package manager
+        location:
+          type: string
+          description: Repository where the app is located within the package manager
+        desiredState:
+          type: string
+          description: State of Install or Uninstall
+        adminIntent:
+          $ref: '#/components/schemas/devices.SoftwareApp.Setting.AdminManagementIntent'
+        managedInstallEligibilityStatus:
+          $ref: '#/components/schemas/devices.MetadataPKG.ManagedInstallEligibilityStatus'
+        detectionRules:
+          type: object
+          description: Rules used to detect if the software app is installed on Windows.
+          properties:
+            ruleType:
+              type: string
+            expectedDisplayName:
+              type: string
+            registryPath:
+              type: string
+            registryValueName:
+              type: string
+            registryExpectedValue:
+              type: string
+            powerShellScript:
+              type: string
+        appleVpp:
+          $ref: '#/components/schemas/software-app-apple-vpp'
+        packageSubtitle:
+          type: string
+          description: The package manifest subtitle.
+        displayVersion:
+          type: string
+          maxLength: 256
+          description: Optional display version for the software app. Defaults to "Version N" when omitted.
+        packageVersion:
+          type: string
+          description: The package manifest version.
+        packageKind:
+          type: string
+          description: 'The package manifest kind (ex: software-package).'
+        assetKind:
+          type: string
+          description: 'The manifest asset kind (ex: software).'
+        assetSha256Size:
+          type: integer
+          description: The incremental size to use for summing the package as it is downloaded.
+        assetSha256Strings:
+          type: array
+          description: The array of checksums, one each for the hash size up to the total size of the package.
+          items:
+            type: string
+        description:
+          type: string
+          description: The software app description.
+        googleAndroid:
+          $ref: '#/components/schemas/software-app-google-android'
+        enterpriseObjectId:
+          type: string
+          description: ID of the Enterprise with which this app is associated
+        commandLineArguments:
+          type: string
+          description: Command line arguments to use with the application.
+        storedPackage:
+          $ref: '#/components/schemas/object-storage-item'
+        storedPackageObjectId:
+          type: string
+          description: ID of the stored package this app uses to reference the stored install media.
+        microsoftStore:
+          $ref: '#/components/schemas/software-app-microsoft-store'
+        scope:
+          type: string
+          description: The installation scope of the software app.
+        appCatalogInstallableObjectId:
+          type: string
+          description: ID of the app catalog installable that created this app.
+        iconUrl:
+          type: string
+          description: URL to the icon for the app.
+        installerEngineVersion:
+          type: string
+          description: Installer engine/version from EXE object-storage metadata (read-only on GET).
+        versionlessDownloadUrl:
+          type: boolean
+        bundleId:
+          type: string
+        teamId:
+          type: string
+        format:
+          type: string
+        appFileName:
+          type: string
+        shortVersion:
+          type: string
+        signatureLabel:
+          type: string
+          description: Code-signing subject from EXE object-storage metadata (read-only on GET).
+        silentInstallFlags:
+          type: array
+          description: Admin override for silent install arguments (Windows custom EXE).
+          items:
+            type: string
+        downloadUrl:
+          type: string
+        architectures:
+          type: array
+          items:
+            type: string
+        updateTool:
+          type: string
+        updateToolArguments:
+          type: string
+        uninstallOnUnbind:
+          type: boolean
+        unsafeUninstall:
+          type: boolean
+        autoUpdateNotificationsDisabled:
+          type: boolean
+        installerType:
+          type: string
+          description: Winget installer format (e.g. "msix"); empty means the default winget installer.
+        packageFamilyName:
+          type: string
+          description: MSIX package family name (DisplayName_PublisherId) used for machine-wide MSIX installs.
+        migrationSafe:
+          type: boolean
+          description: Whether migrating an existing install to the configured installer type has been validated as safe.
+        appDeliveryMethod:
+          type: string
+        createdAt:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        updatedAt:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        packageVersionUpdatedAt:
+          format: date-time
+          type:
+          - string
+          - 'null'
+    GraphAttributes:
+      additionalProperties: true
+      description: The graph attributes.
+      title: GraphAttributes
+      type:
+      - object
+      - 'null'
+    software-app-reclaim-licenses:
+      type: object
+      properties:
+        assignedLicenses:
+          type: integer
+          default: 0
+        availableLicenses:
+          type: integer
+          default: 0
+        reclaimedLicenses:
+          type: integer
+          default: 0
+        totalLicenses:
+          type: integer
+          default: 0
+    software-app-permission-grants:
+      type: object
+      properties:
+        id:
+          type: string
+          description: An opaque string uniquely identifying the Android permission, e.g. android.permission.READ_CALENDAR.
+        policy:
+          type: string
+          description: The policy for granting the permission.
+          enum:
+          - PROMPT
+          - GRANT
+          - DENY
+    GraphOperation-SoftwareApp:
+      allOf:
+      - $ref: '#/components/schemas/GraphOperation'
+      - properties:
+          attributes:
+            $ref: '#/components/schemas/GraphAttributes'
+          type:
+            description: Targets which a "software_app" can be associated to.
+            enum:
+            - system
+            - system_group
+            type: string
+        required:
+        - type
+      title: GraphOperation (SoftwareApp)
+      type: object
+    software-app-google-android:
+      title: software-app-google-android
+      type: object
+      description: googleAndroid is an optional attribute, it will only be present on apps with a 'setting' 'package_manager' type of 'GOOGLE_ANDROID'.
+      properties:
+        name:
+          type: string
+          description: The name of the app in the form enterprises/{enterprise}/applications/{packageName}.
+        type:
+          type: string
+          description: Type of this android application.
+          enum:
+          - APP_TYPE_UNSPECIFIED
+          - PUBLIC
+          - PRIVATE
+          - WEBAPP
+        iconUrl:
+          type: string
+          description: A link to an image that can be used as an icon for the app.
+        author:
+          type: string
+          description: The name of the author of this app.
+        category:
+          type: string
+          description: The app category (e.g. COMMUNICATION, SOCIAL, etc.).
+        appPricing:
+          type: string
+          description: Whether this app is free, free with in-app purchases, or paid.
+        distributionChannel:
+          type: string
+          description: How and to whom the package is made available.
+        minSdkVersion:
+          type: integer
+          description: The minimum Android SDK necessary to run the app.
+        contentRating:
+          type: string
+          description: The content rating for this app.
+        updateTime:
+          type: string
+          description: The approximate time (within 7 days) the app was last published.
+        appVersion:
+          type: string
+          description: Latest version currently available for this app.
+        fullDescription:
+          type: string
+          description: Full app description, if available.
+        startUrl:
+          type: string
+          description: The start URL, i.e. the URL that should load when the user opens the application. Applicable only for webapps.
+        displayMode:
+          type: string
+          description: The display mode of the web app.
+        versionCode:
+          type: integer
+          description: The current version of the web app.
+        managedProperties:
+          type: boolean
+          description: Indicates whether this app has managed properties or not.
+        autoUpdateMode:
+          type: string
+          description: Controls the auto-update mode for the app.
+          enum:
+          - AUTO_UPDATE_DEFAULT
+          - AUTO_UPDATE_POSTPONED
+          - AUTO_UPDATE_HIGH_PRIORITY
+        runtimePermission:
+          type: string
+          description: The policy for granting permission requests to apps.
+          enum:
+          - PROMPT
+          - GRANT
+          - DENY
+        installType:
+          type: string
+          description: The type of installation to perform for an app.
+          enum:
+          - AVAILABLE
+          - FORCE_INSTALLED
+          - BLOCKED
+        managedConfigurationTemplateId:
+          type: string
+          description: The managed configurations template for the app.
+        permissionGrants:
+          type: array
+          items:
+            $ref: '#/components/schemas/software-app-permission-grants'
+        androidFeatures:
+          type: array
+          description: The array of android features for the app.
+          items:
+            type: string
+    software-app-apple-vpp:
+      title: software-app-apple-vpp
+      type: object
+      description: appleVpp is an optional attribute, it will only be present on apps with a 'setting' 'package_manager' type of 'APPLE_VPP'.
+      properties:
+        appConfiguration:
+          type: string
+          description: Text sent to configure the application, the text should be a valid plist.  Returned only by 'GET /softwareapps/{id}'.
+        assignedLicenses:
+          type: integer
+          default: 0
+        availableLicenses:
+          type: integer
+          default: 0
+        details:
+          type: object
+          description: App details returned by iTunes API. See example. The properties in this field are out of our control and we cannot guarantee consistency, so it should be checked by the client and manage the details accordingly.
+        isConfigEnabled:
+          type: boolean
+          description: Denotes if configuration has been enabled for the application.  Returned only by ''GET /softwareapps/{id}''.
+        supportedDeviceFamilies:
+          description: The supported device families for this VPP Application.
+          type: array
+          items:
+            type: string
+            enum:
+            - IPAD
+            - IPHONE
+            - IPOD
+            - MAC
+        totalLicenses:
+          type: integer
+          default: 0
+    GraphType:
+      description: A graph object type.
+      enum:
+      - active_directory
+      - agent
+      - agent_group
+      - application
+      - command
+      - g_suite
+      - idp_routing_policy
+      - ldap_server
+      - office_365
+      - policy
+      - policy_group
+      - radius_server
+      - password_manager_item
+      - system
+      - system_group
+      - user
+      - user_group
+      title: GraphType
+      type: string
+    ErrorDetails:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          details:
+            description: 'Describes a list of objects with more detailed information of the given error. Each detail schema is according to one of the messages defined in Google''s API: https://github.com/googleapis/googleapis/blob/master/google/rpc/error_details.proto'
+            type: array
+            items:
+              type: object
+              additionalProperties: true
+              description: Object according to Google's API.
+    devices.MetadataMSI:
+      type: object
+      properties:
+        manufacturer:
+          type: string
+        productCode:
+          type: string
+        productName:
+          type: string
+        productVersion:
+          type: string
+        sha256sum:
+          type: string
+        upgradeCode:
+          type: string
+    software-app-status:
+      properties:
+        id:
+          type: string
+        softwareAppId:
+          type: string
+        systemId:
+          type: string
+        state:
+          type: string
+        details:
+          type: string
+        code:
+          type: integer
+        timestamp:
+          type: string
+        version:
+          type: string
+      title: Software Application Status
+    software-app:
+      title: Software Application Package
+      type: object
+      properties:
+        id:
+          type: string
+        organization:
+          type: string
+          description: The owning organization ID.
+        displayName:
+          type: string
+        createdAt:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        updatedAt:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/software-app-settings'
+    GraphObject:
+      properties:
+        attributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        id:
+          description: The ObjectID of the graph object.
+          type: string
+        type:
+          description: The type of graph object.
+          type: string
+      required:
+      - type
+      - id
+      title: GraphObject
+      type: object
+    devices.SoftwareApp.Setting.AdminManagementIntent:
+      type: string
+      enum:
+      - INTENT_UNSPECIFIED
+      - INTENT_FORCE_MANAGED
+      - INTENT_FORCE_UNMANAGED
+      default: INTENT_UNSPECIFIED
+    devices.MetadataIPA:
+      type: object
+      properties:
+        assetKind:
+          type: string
+        bundleIdentifier:
+          type: string
+        bundleVersion:
+          type: string
+        packageKind:
+          type: string
+        sha256sum:
+          type: string
+        shortVersion:
+          type: string
+        subtitle:
+          type: string
+        title:
+          type: string
+    SyncStatus:
+      description: Sync status information for this object. Only present when syncStatus query parameter is true.
+      type: object
+      properties:
+        syncedAt:
+          description: The last time the object was synced.
+          type: string
+          format: date-time
+        code:
+          description: Status code of the sync operation.
+          type: integer
+        message:
+          description: Status message of the sync operation.
+          type: string
+        details:
+          description: Additional details about the sync status.
+          type: array
+          items:
+            type: object
+    software-app-stored-package-version-response:
+      title: softwareAppStoredPackageVersionResponse
+      type: object
+      description: Software app stored package version response
+      properties:
+        uploadUrl:
+          type: string
+          description: The upload URL for the package.
+        pendingVersionObjectId:
+          type: string
+          description: The object ID of the pending version.
+        metadata:
+          $ref: '#/components/schemas/devices.ObjectStorageMetadata'
+      required:
+      - uploadUrl
+      - pendingVersionObjectId
+    object-storage-item:
+      title: Object Storage item
+      type: object
+      description: Object storage item information.
+      properties:
+        objectId:
+          type: string
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/object-storage-version'
+    software-app-microsoft-store:
+      title: software-app-microsoft-store
+      type: object
+      description: microsoftStore is an optional attribute, it will only be present on apps with a 'setting' 'package_manager' type of 'MICROSOFT_STORE'.
+      properties:
+        packageFamilyName:
+          type: string
+          description: Package Family Name for the app from Microsoft App Store.
+        nonRemovable:
+          type: boolean
+          description: Indicates whether the app is removable by the users or not.
+        doNotUpdate:
+          type: boolean
+          description: Indicates whether the app can be updated or not.
+    object-storage-version:
+      title: Object Storage Version
+      type: object
+      description: Object storage version information.
+      properties:
+        name:
+          type: string
+        version:
+          type: integer
+          default: 0
+        size:
+          type: integer
+          default: 0
+        sha256sum:
+          type: string
+        status:
+          type: string
+        rejectedReason:
+          type: string
+        displayVersion:
+          type: string
+          description: Admin-defined display label for this package version.
+        createdAt:
+          type: string
+          format: date-time
+          description: When this package version was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: When this package version was last updated.
+        metadata:
+          type: object
+          description: Parsed package metadata for the uploaded file (e.g. EXE code-signing subject).
+          properties:
+            metadataExe:
+              type: object
+              properties:
+                installerEngineVersion:
+                  description: Installer engine identifier/version from EXE metadata (e.g. NSIS, Inno Setup).
+                  type: string
+                signatureLabel:
+                  type: string
+    devices.MetadataPKG:
+      type: object
+      properties:
+        assetKind:
+          type: string
+        bundleIdentifier:
+          type: string
+        bundleVersion:
+          type: string
+        managedInstallEligibilityStatus:
+          $ref: '#/components/schemas/devices.MetadataPKG.ManagedInstallEligibilityStatus'
+        packageKind:
+          type: string
+        sha256sum:
+          type: string
+        shortVersion:
+          type: string
+        subtitle:
+          type: string
+        title:
+          type: string
+    GraphOperation:
+      properties:
+        id:
+          description: The ObjectID of graph object being added or removed as an association.
+          type: string
+        op:
+          description: How to modify the graph connection.
+          enum:
+          - add
+          - remove
+          - update
+          type: string
+      required:
+      - id
+      - op
+      title: GraphOperation
+      type: object
+    GraphObjectWithPaths:
+      properties:
+        compiledAttributes:
+          $ref: '#/components/schemas/GraphAttributes'
+        id:
+          description: Object ID of this graph object.
+          type: string
+        paths:
+          description: Every path through the graph from the requested object to this object. Each path lists the groupings and associations it follows; all of them would have to be removed to remove this object from the requested object.
+          items:
+            items:
+              $ref: '#/components/schemas/GraphConnection'
+            type: array
+          type: array
+        type:
+          $ref: '#/components/schemas/GraphType'
+        externalId:
+          description: The external resource ID that is being synced. Only present when syncStatus query parameter is true.
+          type: string
+        syncStatus:
+          $ref: '#/components/schemas/SyncStatus'
+      required:
+      - type
+      - id
+      - paths
+      title: GraphObjectWithPaths
+      type: object
+    software-app-create:
+      title: SoftwareApplicationCreate
+      type: object
+      properties:
+        id:
+          type: string
+        organization:
+          type: string
+          description: The owning organization ID.
+        displayName:
+          type: string
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/software-app-settings'
+        uploadUrl:
+          type: string
+        createdAt:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        updatedAt:
+          format: date-time
+          type:
+          - string
+          - 'null'
+    SoftwareAppsRetryInstallationRequest:
+      title: SoftwareAppsRetryInstallationRequest
+      type: object
+      properties:
+        system_ids:
+          type: array
+          items:
+            type: string
+          description: An array of system IDs to retry the software application installation.
+  responses:
+    trait_standardErrors_409:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_403:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_404:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_401:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    trait_standardErrors_400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+  parameters:
+    trait_limit_limit:
+      description: The number of records to return at once. Limited to 100.
+      in: query
+      name: limit
+      schema:
+        type: integer
+        default: 10
+    trait_graphTargetsSoftwareApp_targets:
+      name: targets
+      description: Targets which a "software_app" can be associated to.
+      in: query
+      required: true
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          enum:
+          - system
+          - system_group
+          type: string
+    trait_filter_filter:
+      description: 'A filter to apply to the query.
+
+
+        **Filter structure**: `<field>:<operator>:<value>`.
+
+
+        **field** = Populate with a valid field from an endpoint response.
+
+
+        **operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.
+
+        _Note: v1 operators differ from v2 operators._
+
+
+        **value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.
+
+
+        **EX:** `GET /api/v2/groups?filter=name:eq:Test+Group`'
+      in: query
+      name: filter
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_skip_skip:
+      description: The offset into the records to return.
+      in: query
+      name: skip
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    trait_sort_sort:
+      description: 'The comma separated fields used to sort the collection.
+
+        Default sort is ascending, prefix with `-` to sort descending.
+
+        '
+      in: query
+      name: sort
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_multiTenantRequestHeaders_x-org-id:
+      description: Organization identifier that can be obtained from console settings.
+      in: header
+      name: x-org-id
+      schema:
+        type: string
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly

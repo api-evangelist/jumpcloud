@@ -1,0 +1,1244 @@
+openapi: 3.2.0
+info:
+  contact:
+    name: JumpCloud Support
+    url: https://jumpcloud.com/support/contact-jumpcloud-support
+  description: '# Overview
+
+
+    JumpCloud''s V2 API. This set of endpoints allows JumpCloud customers to manage objects, groupings and mappings and interact with the JumpCloud Graph. > **Note:** See JumpCloud Data Centers: Login URLs and Service Endpoints to learn more. ## API Best Practices
+
+
+    Read the linked Help Article below for guidance on retrying failed requests to JumpCloud''s REST API, as well as best practices for structuring subsequent retry requests. Customizing retry mechanisms based on these recommendations will increase the reliability and dependability of your API calls. Covered topics include:
+
+    1. Important Considerations
+
+    2. Supported HTTP Request Methods
+
+    3. Response codes
+
+    4. API Key rotation
+
+    5. Paginating
+
+    6. Error handling
+
+    7. Retry rates
+
+
+    JumpCloud Help Center - API Best Practices
+
+
+    # Directory Objects
+
+
+    This API offers the ability to interact with some of our core features; otherwise known as Directory Objects. The Directory Objects are:
+
+
+    * Commands
+
+    * Policies
+
+    * Policy Groups
+
+    * Applications
+
+    * Systems
+
+    * Users
+
+    * User Groups
+
+    * System Groups
+
+    * Radius Servers
+
+    * Directories: Office 365, LDAP,G-Suite, Active Directory
+
+    * Duo accounts and applications. The Directory Object is an important concept to understand in order to successfully use JumpCloud API. ## JumpCloud Graph
+
+
+    We''ve also introduced the concept of the JumpCloud Graph along with Directory Objects. The Graph is a powerful aspect of our platform which will enable you to associate objects with each other, or establish membership for certain objects to become members of other objects. Specific `GET` endpoints will allow you to traverse the JumpCloud Graph to return all indirect and directly bound objects in your organization. | !alt text |
+
+    |:--:|
+
+    | **This diagram highlights our association and membership model as it relates to Directory Objects.** |
+
+
+    # API Key
+
+
+    ## Access Your API Key
+
+
+    To locate your API Key:
+
+
+    1. Log into the JumpCloud Admin Console. 2. Go to the username drop down located in the top-right of the Console. 3. Retrieve your API key from API Settings. ## API Key Considerations
+
+
+    This API key is associated to the currently logged in administrator. Other admins will have different API keys. **WARNING** Please keep this API key secret, as it grants full access to any data accessible via your JumpCloud console account. You can also reset your API key in the same location in the JumpCloud Admin Console. ## Recycling or Resetting Your API Key
+
+
+    In order to revoke access with the current API key, simply reset your API key. This will render all calls using the previous API key inaccessible. Your API key will be passed in as a header with the header name "x-api-key". ```bash
+
+    curl -H "x-api-key: [YOUR_API_KEY_HERE]" "https://console.jumpcloud.com/api/v2/systemgroups"
+
+    ```
+
+
+    # System Context
+
+
+    * Introduction
+
+    * Supported endpoints
+
+    * Response codes
+
+    * Authentication
+
+    * Additional examples
+
+    * Third party
+
+
+    ## Introduction
+
+
+    JumpCloud System Context Authorization is an alternative way to authenticate with a subset of JumpCloud''s REST APIs. Using this method, a system can manage its information and resource associations, allowing modern auto provisioning environments to scale as needed. **Notes:**
+
+
+    * The following documentation applies to Linux Operating Systems only. * Systems that have been automatically enrolled using Apple''s Device Enrollment Program (DEP) or systems enrolled using the User Portal install are not eligible to use the System Context API to prevent unauthorized access to system groups and resources. If a script that utilizes the System Context API is invoked on a system enrolled in this way, it will display an error. ## Supported Endpoints
+
+
+    JumpCloud System Context Authorization can be used in conjunction with Systems endpoints found in the V1 API and certain System Group endpoints found in the v2 API.'
+  title: JumpCloud Translation Rules API
+  version: '2.0'
+servers:
+- url: https://console.jumpcloud.com/api/v2
+  description: United States (US)
+  x-jc-region: us
+- url: https://console.eu.jumpcloud.com/api/v2
+  description: European Union (EU)
+  x-jc-region: eu
+- url: https://console.in.jumpcloud.com/api/v2
+  description: India (IN)
+  x-jc-region: in
+tags:
+- name: Translation Rules
+paths:
+  /activedirectories/{activedirectory_id}/translation-rules/bulk:
+    parameters:
+    - in: path
+      name: activedirectory_id
+      required: true
+      schema:
+        type: string
+    post:
+      tags:
+      - Translation Rules
+      summary: Bulk Translation Rules Operations
+      operationId: activedirectoriesTranslationRules_bulk
+      description: 'This endpoint allows performing multiple translation rule operations (insert, update, delete) in a single request.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translationrules/bulk'' \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -H ''x-org-id: {ORG_ID}'' \
+
+        -d ''{
+
+        "insertTranslationRule": [
+
+        {
+
+        "source": "title",
+
+        "destination": "jobTitle",
+
+        "sourceType": "PATH",
+
+        "direction": "EXPORT",
+
+        "appliedOn": [
+
+        "CREATE",
+
+        "UPDATE"
+
+        ]
+
+        }
+
+        ],
+
+        "updateTranslationRule": [
+
+        {
+
+        "objectId": "{RULE_ID_BASE64_1}",
+
+        "source": "department",
+
+        "destination": "customDepartmentV3",
+
+        "sourceType": "GOLANG_TEMPLATE",
+
+        "appliedOn": [
+
+        "UPDATE"
+
+        ]
+
+        }
+
+        ],
+
+        "deleteTranslationRuleObjectIds": [
+
+        "{RULE_ID_BASE64_2}",
+
+        "{RULE_ID_BASE64_3}"
+
+        ]
+
+        }''
+
+        ```'
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActiveDirectoriesTranslationRulesBulkRequest'
+      responses:
+        '200':
+          description: Result of the bulk operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jumpcloud.idm.TranslationRulesBulkResponse'
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - directories
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules/bulk \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"insertTranslationRules\":[{\"appliedOn\":[\"CREATE\"],\"destination\":\"string\",\"direction\":\"UNSPECIFIED\",\"source\":\"string\",\"sourceType\":\"PATH\"}],\"updateTranslationRules\":[{\"objectId\":\"string\",\"source\":\"string\",\"destination\":\"string\",\"direction\":\"UNSPECIFIED\",\"sourceType\":\"PATH\",\"appliedOn\":[\"CREATE\"]}],\"deleteTranslationRuleObjectIds\":[\"string\"]}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules/bulk\"\n\npayload = {\n    \"insertTranslationRules\": [\n        {\n            \"appliedOn\": [\"CREATE\"],\n            \"destination\": \"string\",\n            \"direction\": \"UNSPECIFIED\",\n            \"source\": \"string\",\n            \"sourceType\": \"PATH\"\n        }\n    ],\n    \"updateTranslationRules\": [\n        {\n            \"objectId\": \"string\",\n            \"source\": \"string\",\n            \"destination\": \"string\",\n            \"direction\": \"UNSPECIFIED\",\n            \"sourceType\": \"PATH\",\n            \"appliedOn\": [\"CREATE\"]\n        }\n    ],\n    \"deleteTranslationRuleObjectIds\": [\"string\"]\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules/bulk'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"insertTranslationRules":[{"appliedOn":["CREATE"],"destination":"string","direction":"UNSPECIFIED","source":"string","sourceType":"PATH"}],"updateTranslationRules":[{"objectId":"string","source":"string","destination":"string","direction":"UNSPECIFIED","sourceType":"PATH","appliedOn":["CREATE"]}],"deleteTranslationRuleObjectIds":["string"]}'''
+  /activedirectories/{activedirectory_id}/translation-rules:
+    parameters:
+    - description: ObjectID of the Active Directory instance.
+      in: path
+      name: activedirectory_id
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Translation Rules
+      summary: List Translation Rules of the given active directory
+      description: 'This endpoint allows you to list all translation rules for a given Active Directory domain instance.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translationrules?limit=100&skip=0'' \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -H ''x-org-id: {ORG_ID}''
+
+        ```'
+      operationId: activedirectoriesTranslationRules_list
+      parameters:
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      responses:
+        '200':
+          description: A list of translation rules.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveDirectoriesTranslationRulesListResponse'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - directories
+      - directories.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules?filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules\"\n\nquerystring = {\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules?filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+    post:
+      tags:
+      - Translation Rules
+      summary: Create Translation Rule
+      operationId: activedirectoriesTranslationRules_post
+      description: 'This endpoint allows you to create a new translation rule for a given Active Directory domain instance.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translationrules'' \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -H ''x-org-id: {ORG_ID}'' \
+
+        -d ''{
+
+        "organization_object_id": "{ORG_ID_BASE64}",
+
+        "domain_object_id": "{AD_ID_BASE64}",
+
+        "translation_rule": {
+
+        "source": "department",
+
+        "destination": "customDepartment",
+
+        "source_type": "PATH",
+
+        "direction": "EXPORT",
+
+        "applied_on": [
+
+        "CREATE",
+
+        "UPDATE"
+
+        ]
+
+        }
+
+        }''
+
+        ```'
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.idm.IdmTranslationRulesInsertRequest'
+      responses:
+        '200':
+          description: The created translation rule's object ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveDirectoriesTranslationRulesInsertResponse'
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - directories
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"appliedOn\":[\"CREATE\"],\"destination\":\"string\",\"direction\":\"UNSPECIFIED\",\"source\":\"string\",\"sourceType\":\"PATH\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules\"\n\npayload = {\n    \"appliedOn\": [\"CREATE\"],\n    \"destination\": \"string\",\n    \"direction\": \"UNSPECIFIED\",\n    \"source\": \"string\",\n    \"sourceType\": \"PATH\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"appliedOn":["CREATE"],"destination":"string","direction":"UNSPECIFIED","source":"string","sourceType":"PATH"}'''
+  /activedirectories/{provider_name}/translation-rules/recommendation:
+    parameters:
+    - description: Provider name.
+      in: path
+      name: provider_name
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Translation Rules
+      summary: List Recommendation Translation Rules of the given active directory
+      description: 'This endpoint allows you to list all translation rules for a given Active Directory domain instance.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X GET ''https://console.jumpcloud.com/api/v2/activedirectories/{provider_name}/translationrules/recommendations?limit=100&skip=0'' \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -H ''x-org-id: {ORG_ID}''
+
+        ```'
+      operationId: activedirectoriesTranslationRules_recommendations
+      parameters:
+      - $ref: '#/components/parameters/trait_filter_filter'
+      - $ref: '#/components/parameters/trait_limit_limit'
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      - $ref: '#/components/parameters/trait_skip_skip'
+      responses:
+        '200':
+          description: A list of translation rules.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveDirectoriesTranslationRulesListResponse'
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - directories
+      - directories.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request GET \\\n  --url 'https://console.jumpcloud.com/api/v2/activedirectories/{provider_name}/translation-rules/recommendation?filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/activedirectories/{provider_name}/translation-rules/recommendation\"\n\nquerystring = {\"filter\":\"SOME_ARRAY_VALUE\",\"limit\":\"SOME_INTEGER_VALUE\",\"skip\":\"SOME_INTEGER_VALUE\"}\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, params=querystring)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/activedirectories/{provider_name}/translation-rules/recommendation?filter=SOME_ARRAY_VALUE&limit=SOME_INTEGER_VALUE&skip=SOME_INTEGER_VALUE'' -Method GET -Headers $headers'
+  /activedirectories/{activedirectory_id}/translation-rules/{translation_rule_object_id}:
+    parameters:
+    - in: path
+      name: activedirectory_id
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: translation_rule_object_id
+      required: true
+      schema:
+        type: string
+    put:
+      tags:
+      - Translation Rules
+      summary: Update Translation Rule
+      operationId: activedirectoriesTranslationRules_update
+      description: 'This endpoint allows you to update an existing translation rule. It supports partial updates using PATCH.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X PUT ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translationrules/{translation_rule_object_id}'' \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -H ''x-org-id: {ORG_ID}'' \
+
+        -d ''{
+
+        "organization_object_id": "{ORG_ID_BASE64}",
+
+        "domain_object_id": "{AD_ID_BASE64}",
+
+        "translation_rule_object_id": "{RULE_ID_BASE64}",
+
+        "translation_rule": {
+
+        "source": "department",
+
+        "destination": "customDepartmentV2",
+
+        "source_type": "PATH",
+
+        "applied_on": [
+
+        "UPDATE"
+
+        ]
+
+        }
+
+        }''
+
+        ```'
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jumpcloud.idm.IdmTranslationRulesUpdateRequest'
+      responses:
+        '200':
+          description: The updated translation rule's object ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveDirectoriesTranslationRulesUpdateResponse'
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - directories
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request PUT \\\n  --url https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules/{translation_rule_object_id} \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"appliedOn\":[\"CREATE\"],\"destination\":\"string\",\"source\":\"string\",\"sourceType\":\"PATH\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules/{translation_rule_object_id}\"\n\npayload = {\n    \"appliedOn\": [\"CREATE\"],\n    \"destination\": \"string\",\n    \"source\": \"string\",\n    \"sourceType\": \"PATH\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"PUT\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules/{translation_rule_object_id}'' -Method PUT -Headers $headers -ContentType ''application/json'' -Body ''{"appliedOn":["CREATE"],"destination":"string","source":"string","sourceType":"PATH"}'''
+    delete:
+      tags:
+      - Translation Rules
+      summary: Delete Translation Rule
+      operationId: activedirectoriesTranslationRules_delete
+      description: 'This endpoint allows you to delete a specific translation rule.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X DELETE ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translationrules/{translation_rule_object_id}'' \
+
+        -H ''accept: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -H ''x-org-id: {ORG_ID}''
+
+        ```'
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      responses:
+        '200':
+          description: Translation rule deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: boolean
+                examples:
+                - true
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - directories
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request DELETE \\\n  --url https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules/{translation_rule_object_id} \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules/{translation_rule_object_id}\"\n\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\"\n}\n\nresponse = requests.request(\"DELETE\", url, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translation-rules/{translation_rule_object_id}'' -Method DELETE -Headers $headers'
+  /activedirectories/translation-rules/preview:
+    post:
+      tags:
+      - Translation Rules
+      summary: Preview of Translation Rules
+      operationId: activedirectoriesTranslationRules_preview
+      description: 'This endpoint previews the translation rules for a user.
+
+
+        #### Sample Request
+
+        ```
+
+        curl -X POST ''https://console.jumpcloud.com/api/v2/activedirectories/{activedirectory_id}/translationrules/preview'' \
+
+        -H ''accept: application/json'' \
+
+        -H ''content-type: application/json'' \
+
+        -H ''x-api-key: {API_KEY}'' \
+
+        -H ''x-org-id: {ORG_ID}'' \
+
+        -d ''{
+
+        "userObjectId": "{USER_ID_HEX}",
+
+        "idmTranslationRules": [
+
+        {
+
+        "source": "department",
+
+        "destination": "customDepartment",
+
+        "sourceType": "PATH",
+
+        "direction": "IMPORT",
+
+        "appliedOn": [
+
+        "CREATE"
+
+        ]
+
+        }
+
+        ]
+
+        }''
+
+        ```'
+      parameters:
+      - $ref: '#/components/parameters/trait_multiTenantRequestHeaders_x-org-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActiveDirectoriesTranslationRulesPreviewRequest'
+      responses:
+        '200':
+          description: Result of the preview operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveDirectoriesTranslationRulesPreviewResponse'
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - x-api-key: []
+      x-scopes:
+      - directories
+      - directories.readonly
+      x-codeSamples:
+      - lang: Shell
+        source: "curl --request POST \\\n  --url https://console.jumpcloud.com/api/v2/activedirectories/translation-rules/preview \\\n  --header 'content-type: application/json' \\\n  --header 'x-api-key: REPLACE_KEY_VALUE' \\\n  --header 'x-org-id: SOME_STRING_VALUE' \\\n  --data '{\"translationRules\":[{\"appliedOn\":[\"CREATE\"],\"default\":true,\"destination\":\"string\",\"direction\":\"UNSPECIFIED\",\"editable\":true,\"id\":\"string\",\"required\":true,\"source\":\"string\",\"sourceType\":\"PATH\"}],\"userObjectId\":\"string\",\"activeDirectoryId\":\"string\"}'"
+      - lang: Python
+        source: "import requests\n\nurl = \"https://console.jumpcloud.com/api/v2/activedirectories/translation-rules/preview\"\n\npayload = {\n    \"translationRules\": [\n        {\n            \"appliedOn\": [\"CREATE\"],\n            \"default\": True,\n            \"destination\": \"string\",\n            \"direction\": \"UNSPECIFIED\",\n            \"editable\": True,\n            \"id\": \"string\",\n            \"required\": True,\n            \"source\": \"string\",\n            \"sourceType\": \"PATH\"\n        }\n    ],\n    \"userObjectId\": \"string\",\n    \"activeDirectoryId\": \"string\"\n}\nheaders = {\n    \"x-org-id\": \"SOME_STRING_VALUE\",\n    \"x-api-key\": \"REPLACE_KEY_VALUE\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.request(\"POST\", url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: Powershell
+        source: '$headers=@{}
+
+          $headers.Add("x-org-id", "SOME_STRING_VALUE")
+
+          $headers.Add("x-api-key", "REPLACE_KEY_VALUE")
+
+          $headers.Add("content-type", "application/json")
+
+          $response = Invoke-RestMethod -Uri ''https://console.jumpcloud.com/api/v2/activedirectories/translation-rules/preview'' -Method POST -Headers $headers -ContentType ''application/json'' -Body ''{"translationRules":[{"appliedOn":["CREATE"],"default":true,"destination":"string","direction":"UNSPECIFIED","editable":true,"id":"string","required":true,"source":"string","sourceType":"PATH"}],"userObjectId":"string","activeDirectoryId":"string"}'''
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      x-examples: {}
+      description: ''
+      properties:
+        code:
+          format: int32
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        status:
+          type: string
+          description: HTTP status description
+    ActiveDirectoriesTranslationRulesBulkRequest:
+      type: object
+      properties:
+        insertTranslationRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.idm.IdmTranslationRulesInsertRequest'
+        updateTranslationRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActiveDirectoriesBulkTranslationRulesUpdateRequest'
+        deleteTranslationRuleObjectIds:
+          type: array
+          items:
+            type: string
+            format: byte
+    jumpcloud.idm.IdmTranslationRulesUpdateRequest:
+      type: object
+      properties:
+        appliedOn:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.idm.AppliedOn'
+          description: Updated operations when this translation rule is applied
+        destination:
+          type: string
+          description: Updated destination field path
+        source:
+          type: string
+          description: Updated source field path or expression
+        sourceType:
+          $ref: '#/components/schemas/jumpcloud.idm.SourceType'
+      title: 'NOTE: Do not use the same name for an RPC wrapper message and a nested message.
+
+        Previously, both the wrapper and nested messages were named TranslationRulesUpdateRequest.
+
+        This caused dynamic-gateway to misinterpret field mappings.
+
+        As a workaround, the nested message was renamed to IdmTranslationRulesUpdateRequest in IDM,
+
+        instead of changing the RPC wrapper message in SCIM. If dynamic-gateway is fixed, this may be reverted.
+
+        See Slack: https://thejumpcloud.slack.com/archives/C03LAL5MCEL/p1749447300486039'
+    jumpcloud.idm.IdmTranslationRulesInsertRequest:
+      type: object
+      properties:
+        appliedOn:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.idm.AppliedOn'
+          description: Operations when this translation rule is applied (CREATE, UPDATE)
+        destination:
+          type: string
+          description: Destination field path where translated value will be stored
+        direction:
+          $ref: '#/components/schemas/jumpcloud.idm.Direction'
+        source:
+          type: string
+          description: Source field path or expression to be translated
+        sourceType:
+          $ref: '#/components/schemas/jumpcloud.idm.SourceType'
+    jumpcloud.idm.SourceType:
+      type: string
+      enum:
+      - PATH
+      - GOLANG_TEMPLATE
+      - CONSTANT
+      - EXPR
+      default: PATH
+      description: SourceType defines the type of the source field in attribute mapping.
+    ActiveDirectoriesTranslationRulesListResponse:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.idm.TranslationRule'
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of translation rules matching the criteria.
+    jumpcloud.idm.AppliedOn:
+      type: string
+      enum:
+      - CREATE
+      - UPDATE
+      default: CREATE
+      description: AppliedOn defines when the attribute mapping is applied.
+    ActiveDirectoriesTranslationRulesInsertResponse:
+      type: object
+      properties:
+        translation_rule:
+          $ref: '#/components/schemas/jumpcloud.idm.TranslationRule'
+    ActiveDirectoriesTranslationRulesUpdateResponse:
+      type: object
+      properties:
+        object_id:
+          type: string
+          format: byte
+          description: Base64-encoded Object ID of the updated translation rule.
+    ActiveDirectoriesTranslationRulesPreviewResponse:
+      type: object
+      description: The result of a translation rule preview, showing the original and translated user data.
+      properties:
+        destinationUser:
+          type: string
+          description: The user data after the translation rules have been applied. This represents the final state in the destination system (e.g., JumpCloud).
+        sourceUser:
+          type: string
+          description: The original user data from the source system (e.g., Active Directory) before any translation rules were applied.
+    jumpcloud.idm.TranslationRulesBulkResponse:
+      type: object
+      properties:
+        deletedTranslationRuleObjectIds:
+          type: array
+          format: hex
+          items:
+            type: string
+            format: byte
+          description: IDs of translation rules deleted
+        insertedTranslationRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.idm.TranslationRule'
+          description: The inserted translation rule
+    jumpcloud.idm.Direction:
+      type: string
+      enum:
+      - UNSPECIFIED
+      - EXPORT
+      - IMPORT
+      default: UNSPECIFIED
+      description: Direction defines the direction of the attribute mapping.
+    jumpcloud.idm.TranslationRule:
+      type: object
+      properties:
+        appliedOn:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.idm.AppliedOn'
+          description: Operations when this translation rule is applied (CREATE, UPDATE)
+        default:
+          type: boolean
+          description: Indicates if this is a default translation rule created by jumpcloud
+        destination:
+          type: string
+          description: Destination field path where translated value will be stored
+        direction:
+          $ref: '#/components/schemas/jumpcloud.idm.Direction'
+        editable:
+          type: boolean
+          description: Indicates if this translation rule can be modified
+        id:
+          type: string
+          format: byte
+          description: Unique identifier for the translation rule
+        required:
+          type: boolean
+          description: Indicates if this translation is required
+        source:
+          type: string
+          description: Source field path or expression to be translated
+        sourceType:
+          $ref: '#/components/schemas/jumpcloud.idm.SourceType'
+      description: TranslationRule proto message will only be used for responses.
+    ActiveDirectoriesTranslationRulesPreviewRequest:
+      type: object
+      description: Request to preview the result of applying a set of translation rules to a user's data.
+      properties:
+        translationRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.idm.TranslationRule'
+          description: A list of translation rules to apply for the preview.
+        userObjectId:
+          type: string
+          format: hex
+          description: The unique identifier (Object ID) of the user whose data will be translated.
+        activeDirectoryId:
+          type: string
+          format: hex
+          description: The ObjectID of the Active Directory instance. Optional parameter to specify which Active Directory instance to use for the preview.
+      required:
+      - translationRules
+      - userObjectId
+    ActiveDirectoriesBulkTranslationRulesUpdateRequest:
+      type: object
+      properties:
+        objectId:
+          type: string
+          description: The objectId.
+        source:
+          type: string
+          description: Source field path or expression to be translated
+        destination:
+          type: string
+          description: Destination field path where translated value will be stored
+        direction:
+          $ref: '#/components/schemas/jumpcloud.idm.Direction'
+        sourceType:
+          $ref: '#/components/schemas/jumpcloud.idm.SourceType'
+        appliedOn:
+          type: array
+          items:
+            $ref: '#/components/schemas/jumpcloud.idm.AppliedOn'
+          description: Operations when this translation rule is applied (CREATE, UPDATE)
+      required:
+      - objectId
+  parameters:
+    trait_limit_limit:
+      description: The number of records to return at once. Limited to 100.
+      in: query
+      name: limit
+      schema:
+        type: integer
+        default: 10
+    trait_filter_filter:
+      description: 'A filter to apply to the query.
+
+
+        **Filter structure**: `<field>:<operator>:<value>`.
+
+
+        **field** = Populate with a valid field from an endpoint response.
+
+
+        **operator** =  Supported operators are: eq, ne, gt, ge, lt, le, between, search, in.
+
+        _Note: v1 operators differ from v2 operators._
+
+
+        **value** = Populate with the value you want to search for. Is case sensitive. Supports wild cards.
+
+
+        **EX:** `GET /api/v2/groups?filter=name:eq:Test+Group`'
+      in: query
+      name: filter
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        default: []
+    trait_skip_skip:
+      description: The offset into the records to return.
+      in: query
+      name: skip
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    trait_multiTenantRequestHeaders_x-org-id:
+      description: Organization identifier that can be obtained from console settings.
+      in: header
+      name: x-org-id
+      schema:
+        type: string
+  securitySchemes:
+    x-api-key:
+      description: API key used to authenticate requests.
+      in: header
+      name: x-api-key
+      type: apiKey
+x-tagGroups:
+- name: API Reference
+  tags:
+  - Access Requests
+  - Access Risk Settings
+  - Active Directory
+  - Administrators
+  - Agent Groups
+  - Agents
+  - Aggregated Policy Stats
+  - App Catalog
+  - Apple MDM
+  - Applications
+  - Assets
+  - Authentication Policies
+  - Bulk Job Requests
+  - Commands
+  - Custom Emails
+  - Directories
+  - Directory Insights
+  - Duo
+  - Email Subscriptions
+  - FeatureTrials
+  - G Suite
+  - G Suite Import
+  - GCEP
+  - Google EMM
+  - Graph
+  - Groups
+  - IP Lists
+  - Identity Providers
+  - Identity Risk
+  - Image
+  - LDAP Servers
+  - Logos
+  - Managed Service Provider
+  - Microsoft MDM
+  - Monitoring and Alerting
+  - Notifications Channels
+  - Object Storage
+  - Office 365
+  - Office 365 Import
+  - Organization Feature Settings
+  - Organizations
+  - Password Manager
+  - Password Policy
+  - Password Vault
+  - PasswordManagerItem
+  - Policies
+  - Policy Group Associations
+  - Policy Group Members & Membership
+  - Policy Group Templates
+  - Policy Groups
+  - Policytemplates
+  - Privileged Access
+  - Providers
+  - Push Verification
+  - RADIUS Servers
+  - Reports
+  - Roles
+  - Rules
+  - SCIM Import
+  - SaaS App Management
+  - Samba Domains
+  - Sample Data
+  - Saved Views
+  - Scope Groups
+  - Service Accounts
+  - Slack Notifications
+  - Software Apps
+  - Subscriptions
+  - System Group Associations
+  - System Group Members & Membership
+  - System Groups
+  - System Insights
+  - Systems
+  - Systems Organization Settings
+  - Translation Rules
+  - User Group Associations
+  - User Group Members & Membership
+  - User Groups
+  - Users
+  - Webhook Notifications
+  - Webhook Notifications Channels
+  - Workday Import
+  - Workflows
+  - fde
+  - mdm
+x-scopes:
+- accessmanagement
+- accessmanagement.readonly
+- accessrequest
+- accessrequest.readonly
+- administratorLinks
+- administrators
+- administrators.readonly
+- agents
+- agents.create
+- agents.credentials.delete
+- agents.credentials.readonly
+- agents.credentials.update
+- agents.delete
+- agents.readonly
+- agents.state
+- agents.state.activate
+- agents.state.suspend
+- agents.update
+- anonymous
+- applications
+- applications.readonly
+- applications.update
+- assets
+- assets.readonly
+- associations
+- associations.applications
+- associations.applications.readonly
+- associations.authn
+- associations.authn.readonly
+- associations.commands
+- associations.commands.readonly
+- associations.directories
+- associations.directories.readonly
+- associations.groups
+- associations.groups.readonly
+- associations.radius
+- associations.radius.readonly
+- associations.readonly
+- associations.self
+- associations.systems
+- associations.systems.readonly
+- associations.users
+- associations.users.readonly
+- authn
+- authn.readonly
+- billing
+- commandrunner.legacy
+- commands
+- commands.readonly
+- directories
+- directories.readonly
+- directoryinsights.readonly
+- groups
+- groups.readonly
+- groups.self
+- healthmonitoring.alerts
+- healthmonitoring.alerts.readonly
+- healthmonitoring.rules
+- healthmonitoring.rules.readonly
+- identityrisk
+- identityrisk.readonly
+- mdm
+- mdm.readonly
+- mfa
+- mfa.readonly
+- notifications.channels
+- notifications.channels.readonly
+- notifications.subscriptions
+- notifications.subscriptions.readonly
+- organizations
+- organizations.billing
+- organizations.readonly
+- pam
+- pam.backup
+- pam.blocking-rules.create
+- pam.blocking-rules.delete
+- pam.blocking-rules.readonly
+- pam.blocking-rules.update
+- pam.jump-servers.create
+- pam.jump-servers.delete
+- pam.jump-servers.readonly
+- pam.jump-servers.update
+- pam.manage-all-privileged-resources
+- pam.overview
+- pam.privileged-credentials.create
+- pam.privileged-credentials.delete
+- pam.privileged-credentials.readonly
+- pam.privileged-credentials.update
+- pam.privileged-databases.create
+- pam.privileged-databases.delete
+- pam.privileged-databases.readonly
+- pam.privileged-databases.update
+- pam.privileged-servers.create
+- pam.privileged-servers.delete
+- pam.privileged-servers.readonly
+- pam.privileged-servers.update
+- pam.privileged-websites.create
+- pam.privileged-websites.delete
+- pam.privileged-websites.readonly
+- pam.privileged-websites.update
+- pam.readonly
+- pam.resource-managers.create
+- pam.resource-managers.delete
+- pam.resource-managers.readonly
+- pam.resource-managers.update
+- pam.session-history
+- pam.user-groups.create
+- pam.user-groups.delete
+- pam.user-groups.readonly
+- pam.user-groups.update
+- partners
+- partners.readonly
+- passwordmanager
+- passwordmanager.readonly
+- protect
+- providers
+- providers.readonly
+- radius
+- radius.readonly
+- reports
+- reports.readonly
+- roles
+- roles.readonly
+- saas
+- saas.readonly
+- serviceaccounts
+- serviceaccounts.readonly
+- subscriptions.readonly
+- support
+- support.readonly
+- systeminsights.readonly
+- systems
+- systems.management
+- systems.readonly
+- transfer
+- users
+- users.create
+- users.password
+- users.password.expire
+- users.properties
+- users.properties.update
+- users.readonly
+- users.self
+- users.state
+- users.state.delete
+- users.state.readonly
+- users.state.unlock
+- users.state.update
+- workflows
+- workflows.readonly
