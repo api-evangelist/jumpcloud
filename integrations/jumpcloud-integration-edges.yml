@@ -6,6 +6,8 @@ checked:
 - https://registry.modelcontextprotocol.io/v0/servers
 - https://zapier.com/api/v4/apps/
 - zoom/integrations/zoom-integration-edges.yml
+- https://androidenterprisepartners.withgoogle.com/api/search/products?aesd_product_type=EMM
+- https://androidenterprisepartners.withgoogle.com/emm/
 source:
 - crowdstrike/integrations/crowdstrike-integration-edges.yml
 edges:
@@ -26,37 +28,6 @@ edges:
   listing_count: 2
   detected: '2026-10-14'
   detected_by: mirror-platform-listings.py
-- partner_name: MCP Registry
-  partner: mcp
-  partner_match: register
-  type: register
-  channel: standard-directory
-  relationship: standard-participant
-  direction: partner-built
-  evidence: https://registry.modelcontextprotocol.io/v0/servers?search=com.jumpcloud
-  contract_reference:
-    register: registry.modelcontextprotocol.io
-    spec_file: null
-    role: mcp-server-listing
-    registered_name: com.jumpcloud/jumpcloud-genai
-    register_id: com.jumpcloud/jumpcloud-genai
-    detected_by: sweep-agent-tools.py
-    detected: '2026-10-15'
-  mcp_registry:
-    servers:
-    - com.jumpcloud/jumpcloud-genai
-    hosted_remote: 1
-    local_package: 0
-    transports:
-      streamable-http: 1
-    auth_declared: 0
-    catalog_declared: false
-    namespace_domains:
-    - jumpcloud.com
-  matched_by:
-  - namespace-domain
-  detected_by: sweep-agent-tools.py
-  first_seen: '2026-10-14'
 - partner_name: Zapier
   partner: zapier
   partner_match: aggregator
@@ -116,3 +87,63 @@ edges:
   detected: '2026-10-18'
   detected_by: mirror-platform-listings.py
   category: Zoom app
+- partner_name: MCP Registry
+  partner: mcp
+  partner_match: register
+  type: register
+  channel: standard-directory
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://registry.modelcontextprotocol.io/v0/servers?search=com.jumpcloud
+  contract_reference:
+    register: registry.modelcontextprotocol.io
+    spec_file: null
+    role: mcp-server-listing
+    registered_name: com.jumpcloud/jumpcloud-genai
+    register_id: com.jumpcloud/jumpcloud-genai
+    detected_by: sweep-agent-tools.py
+    detected: '2026-10-19'
+  mcp_registry:
+    servers:
+    - com.jumpcloud/jumpcloud-genai
+    hosted_remote: 1
+    local_package: 0
+    transports:
+      streamable-http: 1
+    auth_declared: 0
+    catalog_declared: false
+    namespace_domains:
+    - jumpcloud.com
+  matched_by:
+  - namespace-domain
+  detected_by: sweep-agent-tools.py
+  first_seen: '2026-10-14'
+- partner_name: Android Enterprise (Google partner program)
+  partner: null
+  partner_match: register
+  type: register
+  channel: standard-directory
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://androidenterprisepartners.withgoogle.com/emm/
+  category: Android Enterprise solution partner
+  contract_reference:
+    register: Android Enterprise Solutions Directory (androidenterprisepartners.withgoogle.com /api/search/products)
+    standard: Android Enterprise Recommended
+    spec_file: null
+    role: android-enterprise-partner
+    registered_name: JumpCloud
+    register_id: a2FHs000005cSPjMAM
+    matched_domain: jumpcloud.com
+    matched_by: domain
+    product_types:
+    - EMM
+    products_sample:
+    - JumpCloud
+    signal_note: listing = participation; certified_products = ONE entry per product type Google validated against
+      the Android Enterprise Recommended requirements (badge on the listing); the directory carries current validations
+      only, so lapsed is always false; partner_tier is the program badge (Gold / Silver), recorded, never counted
+    detected_by: sweep-device-management.py
+    detected: '2026-10-20'
+  detected_by: sweep-device-management.py
+  detected: '2026-10-20'

@@ -15,25 +15,6 @@
   relationship: platform-app
   status: not-a-workflow
   arazzo: null
-- slug: jumpcloud-mcp-registry
-  label: MCP Registry
-  partner: mcp
-  partner_name: MCP Registry
-  type: register
-  channel: standard-directory
-  evidence: https://registry.modelcontextprotocol.io/v0/servers?search=com.jumpcloud
-  source: edge
-  relationship: standard-participant
-  contract_reference:
-    register: registry.modelcontextprotocol.io
-    spec_file: null
-    role: mcp-server-listing
-    registered_name: com.jumpcloud/jumpcloud-genai
-    register_id: com.jumpcloud/jumpcloud-genai
-    detected_by: sweep-agent-tools.py
-    detected: '2026-10-15'
-  status: not-a-workflow
-  arazzo: null
 - slug: jumpcloud-zapier
   label: Zapier
   partner: zapier
@@ -83,5 +64,53 @@
   evidence: https://marketplace.zoom.us/apps/bEolCMntTFmtaGhmu40Kcg
   source: edge
   relationship: platform-app
+  status: not-a-workflow
+  arazzo: null
+- slug: jumpcloud-mcp-registry
+  label: MCP Registry
+  partner: mcp
+  partner_name: MCP Registry
+  type: register
+  channel: standard-directory
+  evidence: https://registry.modelcontextprotocol.io/v0/servers?search=com.jumpcloud
+  source: edge
+  relationship: standard-participant
+  contract_reference:
+    register: registry.modelcontextprotocol.io
+    spec_file: null
+    role: mcp-server-listing
+    registered_name: com.jumpcloud/jumpcloud-genai
+    register_id: com.jumpcloud/jumpcloud-genai
+    detected_by: sweep-agent-tools.py
+    detected: '2026-10-19'
+  status: not-a-workflow
+  arazzo: null
+- slug: jumpcloud-android-enterprise-google-partner-program
+  label: Android Enterprise (Google partner program)
+  partner_name: Android Enterprise (Google partner program)
+  category: Android Enterprise solution partner
+  type: register
+  channel: standard-directory
+  evidence: https://androidenterprisepartners.withgoogle.com/emm/
+  source: edge
+  relationship: standard-participant
+  contract_reference:
+    register: Android Enterprise Solutions Directory (androidenterprisepartners.withgoogle.com /api/search/products)
+    standard: Android Enterprise Recommended
+    spec_file: null
+    role: android-enterprise-partner
+    registered_name: JumpCloud
+    register_id: a2FHs000005cSPjMAM
+    matched_domain: jumpcloud.com
+    matched_by: domain
+    product_types:
+    - EMM
+    products_sample:
+    - JumpCloud
+    signal_note: listing = participation; certified_products = ONE entry per product type Google validated against
+      the Android Enterprise Recommended requirements (badge on the listing); the directory carries current validations
+      only, so lapsed is always false; partner_tier is the program badge (Gold / Silver), recorded, never counted
+    detected_by: sweep-device-management.py
+    detected: '2026-10-20'
   status: not-a-workflow
   arazzo: null
