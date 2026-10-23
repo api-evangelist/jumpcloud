@@ -8567,3 +8567,9 @@ x-scopes:
 - users.state.update
 - workflows
 - workflows.readonly
+x-provenance:
+  method: harvested
+  publisher: JumpCloud
+  source: https://docs.jumpcloud.com/api/2.0/index.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
