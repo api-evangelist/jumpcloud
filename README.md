@@ -1,4 +1,4 @@
-# JumpCloud (jumpcloud)
+# JumpCloud
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,103 +66,109 @@
 
 JumpCloud is an open directory platform that unifies identity, access, and device management across users, devices, networks, and SaaS applications. Its cloud directory supports SSO, MFA, device management (MDM), conditional access policies, RADIUS, LDAP, and HR system integration. JumpCloud's REST APIs (V1 and V2) provide programmatic access to users, groups, systems, policies, applications, and directory insights for IT automation.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/jumpcloud/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/jumpcloud/refs/heads/main/apis.yml)
+**Areas:** Identity · Directory Services · SSO · MFA · Device Management · MDM · IT Operations · Zero Trust · Identity Federation · Identity and Access Management
 
-## Scope
+## JumpCloud on APIs.io
 
-- **Type:** Index
+Everything profiled for JumpCloud is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/jumpcloud/](https://apis.io/providers/jumpcloud/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (7)
 
-- Identity
-- Directory Services
-- SSO
-- MFA
-- Device Management
-- MDM
-- IT Operations
-- Zero Trust
+- [JumpCloud API V1](https://apis.io/apis/jumpcloud/v1-api/) — REST API for managing core directory resources including users, systems, system users, tags, commands, policies, and SSO applications. Uses API key…
+- [JumpCloud API V2](https://apis.io/apis/jumpcloud/v2-api/) — REST API V2 for managing groups, group memberships, associations, directory insights, system insights, organizations, and modern policies. Uses API key…
+- [JumpCloud System Context API](https://apis.io/apis/jumpcloud/system-context-api/) — API for managed systems to interact with JumpCloud on their own behalf using HTTP Signatures authentication. Used for system-initiated actions such as user…
+- [JumpCloud Application Templates API](https://apis.io/apis/jumpcloud/jumpcloud-application-templates-api/) — SSO/SAML application templates available for use.
+- [JumpCloud Applications API](https://apis.io/apis/jumpcloud/jumpcloud-applications-api/) — SSO/SAML applications configured in the organization.
+- [JumpCloud Command Results API](https://apis.io/apis/jumpcloud/jumpcloud-command-results-api/) — Execution results produced by commands run against systems.
+- [JumpCloud Commands API](https://apis.io/apis/jumpcloud/jumpcloud-commands-api/) — Commands that can be executed across managed systems.
 
-## Timestamps
+### Published properties
 
-- **Created:** 2026-05-11
-- **Modified:** 2026-05-11
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### Agentic access (1)
 
-### JumpCloud API V1
+Which operations an agent can call, which act, and which need a human in the loop.
 
-REST API for managing core directory resources including users, systems, system users, tags, commands, policies, and SSO applications. Uses API key authentication via the x-api-key header.
+- [Jumpcloud Agentic Access](https://apis.io/agentic-access/jumpcloud/jumpcloud-agentic-access/)
 
-- **Human URL:** [https://docs.jumpcloud.com/api/1.0/index.html](https://docs.jumpcloud.com/api/1.0/index.html)
-- **Base URL:** `https://console.jumpcloud.com/api`
+#### Collections (5)
 
-#### Tags
+Postman and Open Collection request collections.
 
-- Identity
-- Directory Services
-- Users
-- Systems
-- Policies
+- [JumpCloud API V1](https://apis.io/collections/jumpcloud/open-jumpcloud/)
+- [JumpCloud API V1 Application Templates API](https://apis.io/collections/jumpcloud/open-jumpcloud-application-templates-api/)
+- [JumpCloud API V1 Application Templates Applications API](https://apis.io/collections/jumpcloud/open-jumpcloud-applications-api/)
+- [JumpCloud API V1 Application Templates Command Results API](https://apis.io/collections/jumpcloud/open-jumpcloud-command-results-api/)
+- [JumpCloud API V1 Application Templates Commands API](https://apis.io/collections/jumpcloud/open-jumpcloud-commands-api/)
 
-#### Properties
+#### Security (2)
 
-- [Documentation](https://docs.jumpcloud.com/api/1.0/index.html)
-- [Postman Collection](collections/jumpcloud.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/jumpcloud.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Authentication, trust centre, and vulnerability disclosure.
 
-### JumpCloud API V2
+- [Jumpcloud Authentication](https://apis.io/security/jumpcloud/jumpcloud-authentication/)
+- [Jumpcloud Domain Security](https://apis.io/security/jumpcloud/jumpcloud-domain-security/)
 
-REST API V2 for managing groups, group memberships, associations, directory insights, system insights, organizations, and modern policies. Uses API key authentication via the x-api-key header.
+## Where to find this API
 
-- **Human URL:** [https://docs.jumpcloud.com/api/2.0/index.html](https://docs.jumpcloud.com/api/2.0/index.html)
-- **Base URL:** `https://console.jumpcloud.com/api/v2`
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-#### Tags
-
-- Identity
-- Groups
-- Associations
-- Directory Insights
-
-#### Properties
-
-- [Documentation](https://docs.jumpcloud.com/api/2.0/index.html)
-- [Postman Collection](collections/jumpcloud.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/jumpcloud.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### JumpCloud System Context API
-
-API for managed systems to interact with JumpCloud on their own behalf using HTTP Signatures authentication. Used for system-initiated actions such as user provisioning and event reporting.
-
-- **Human URL:** [https://docs.jumpcloud.com/api/systemcontext/index.html](https://docs.jumpcloud.com/api/systemcontext/index.html)
-- **Base URL:** `https://console.jumpcloud.com/api/systems`
-
-#### Tags
-
-- Systems
-- Agents
-- HTTP Signatures
-
-#### Properties
-
-- [Documentation](https://docs.jumpcloud.com/api/systemcontext/index.html)
-- [Git Hub](https://github.com/TheJumpCloud/SystemContextAPI)
-- [Postman Collection](collections/jumpcloud.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/jumpcloud.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-## Common Properties
-
-- [LinkedIn](https://www.linkedin.com/company/jumpcloud)
 - [Website](https://jumpcloud.com)
 - [Documentation](https://docs.jumpcloud.com)
-- [Support](https://jumpcloud.com/support)
-- [Sign Up](https://console.jumpcloud.com/signup)
 - [Pricing](https://jumpcloud.com/pricing)
-- [GitHub Organization](https://github.com/TheJumpCloud)
-- [L L Ms Txt](https://jumpcloud.com/llms.txt)
+- [Support](https://jumpcloud.com/support)
+- [Blog](https://jumpcloud.com/blog/feed)
+- [GitHub](https://github.com/TheJumpCloud)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 29.7** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 51.2 |
+| Contract governance | 0.0 |
+| Operational transparency | 2.6 |
+| Developer ergonomics | 28.6 |
+| Access clarity | 23.7 |
+
+**Agent readiness 17.3** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | — |
+| Rate Limit Signal | — |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 11.8** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/jumpcloud/](https://apis.io/providers/jumpcloud/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for JumpCloud: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/jumpcloud/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
